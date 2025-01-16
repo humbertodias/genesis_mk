@@ -1,0 +1,1 @@
+SPRITE player_seletor "sprite/player_seletor.png" 7 8 FAST 7
