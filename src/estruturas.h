@@ -6,6 +6,7 @@
 enum GAME_ROOM
 {
     TELA_TITULO,
+    TELA_START,
     SELECAO_PERSONAGENS
 };
 
