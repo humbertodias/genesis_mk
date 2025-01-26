@@ -6,11 +6,11 @@
 #ifndef _TYPEWRITER_P_H_
 #define _TYPEWRITER_P_H_
 
-#include "string.h"
-
 #include "types.h"
 #include "sys.h"
 #include "vdp_tile.h"
+#include "string.h"
+#include "estruturas.h"
 
 /**
  * @brief
@@ -26,18 +26,8 @@
  *      - WINDOW<br> - not tested yet
  * @param numPal Palette number: PAL0, PAL1, PAL2 or PAL3
  */
-void typewriterEffect(const char *text, u16 x, u16 y, u16 delay, VDPPlane plane, u16 numPal)
-{
-    u16 len = strlen(text);
-    for (u16 i = 0; i < len; i++)
-    {
-        VDP_setTileMapXY(plane, TILE_ATTR_FULL(numPal, TRUE, FALSE, FALSE, TILE_FONT_INDEX + text[i] - ' '), x + i, y);
-        SYS_doVBlankProcess(); // Espera o V-Blank
-        for (u16 j = 0; j < delay; j++)
-        {
-            SYS_doVBlankProcess(); // Atraso adicional
-        }
-    }
-}
+void typewriterEffect(const char *text, u16 x, u16 y, u16 delay, VDPPlane plane, u16 numPal);
+
+void typewriterWriteAllLines(TextLine *lines, u16 numLines, VDPPlane plane, u16 numPal);
 
 #endif
