@@ -5,8 +5,10 @@ IMAGE baw_a      "stages/a/01_baw_a.png"       BEST
 IMAGE baw_b      "stages/a/01_baw_b.png"       BEST
 IMAGE midway     "stages/a/03_midway.png"      BEST
 IMAGE mk_title   "stages/a/04_mk_title.png"    BEST
+IMAGE mk_title_b "stages/a/04_mk_title_b.png"  BEST
 IMAGE goro_lives "stages/a/05_goro_lives.png"  BEST
 IMAGE goro_a     "stages/a/06_goro_a.png"      BEST
+IMAGE bio_b      "stages/a/07_bio.png"         BEST     
 
 # SELECAO DE PERSONAGENS
 IMAGE stage_char_select_a "stages/b/char_select_a.png" BEST
