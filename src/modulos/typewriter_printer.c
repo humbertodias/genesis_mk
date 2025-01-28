@@ -7,9 +7,13 @@ void typewriterEffect(const char *text, u16 x, u16 y, u16 delay, VDPPlane plane,
     {
         VDP_setTileMapXY(plane, TILE_ATTR_FULL(numPal, TRUE, FALSE, FALSE, TILE_FONT_INDEX + text[i] - ' '), x + i, y);
         SYS_doVBlankProcess(); // Espera o V-Blank
-        for (u16 j = 0; j < delay; j++)
+
+        if (delay != 0)
         {
-            SYS_doVBlankProcess(); // Atraso adicional
+            for (u16 j = 0; j < delay; j++)
+            {
+                SYS_doVBlankProcess(); // Atraso adicional
+            }
         }
     }
 }
