@@ -9,7 +9,7 @@
 #define DEBUG FALSE
 
 // -- DECLARACAO DE VARIAVEIS -- //
-u8 gRoom;         // Sala atual
+u8  gRoom;        // Sala atual
 u32 gFrames;      // Frame Counter
 u16 gInd_tileset; // Variable used to load background data
 u16 prevInputP1 = 0, prevInputP2 = 0;
@@ -43,7 +43,7 @@ int main(bool hardReset)
   VDP_setScreenWidth320();
   VDP_setScreenHeight224();
 
-  gRoom = TELA_START;
+  gRoom = TELA_DEMO_INTRO;
   gFrames = 0;
   gInd_tileset = 0;
 
@@ -54,7 +54,7 @@ int main(bool hardReset)
   {
     gFrames++;
 
-    if (gRoom == TELA_START)
+    if (gRoom == TELA_DEMO_INTRO)
     {
       // enquanto não pressionar start...
       processIntro();

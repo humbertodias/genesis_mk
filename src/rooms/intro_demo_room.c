@@ -1,11 +1,7 @@
 #include "intro_demo_room.h"
 
-// Map *map_action;
 Sprite *bioAnimation;
 Sprite *headName;
-
-// Paleta escurecida
-const u16 darkPalette[16] = {0x0000, 0x0100, 0x0200, 0x0300, 0x0400, 0x0500, 0x0600, 0x0700, 0x0800, 0x0900, 0x0A00, 0x0B00, 0x0C00, 0x0D00, 0x0E00, 0x0F00};
 
 TextLine goroLines[] = {
     {"A 2.000 YEAR OLD HALF HUMAN DRAGON", 3, 7},
@@ -30,13 +26,26 @@ TextLine jcLines[] = {
     {"WINNING SUDDEN VIOLENCE.", 7, 25},
 };
 
+TextLine kanoLines[] = {
+    {"A MERCENARY, THUG, EXTORTIONIST", 3, 17},
+    {"THIEF - KANO LIVES A LIFE OF CRIME", 2, 18},
+    {"AND INJUSTICE. HE IS A DEVOTED MEMBER", 7, 19},
+    {"OF THE BLACK DRAGON, A DANGEROUS", 10, 20},
+    {"GROUP OF CUT-THROAT MADMEN FEARED", 3, 21},
+    {"AND RESPECTED THROUGHOUT ALL OF", 3, 22},
+    {"CRIME'S INNER CIRCLES.", 4, 23},
+};
+
+void loadBrainAtWorkScreen();
+void loadMidwayTitleMKScreen();
+void loadGoroLivesScreen();
 void loadBioScreen();
 
 void clearVDP()
 {
     SYS_disableInts();
-    VDP_clearPlane(BG_A, TRUE);
-    VDP_clearPlane(BG_B, TRUE);
+    // VDP_clearPlane(BG_A, TRUE);
+    // VDP_clearPlane(BG_B, TRUE);
     VDP_resetScreen();
     SYS_enableInts();
     gInd_tileset = 0;
@@ -44,71 +53,22 @@ void clearVDP()
 
 void processIntro()
 {
-    // TELA BRAIN AT WORK
-    if (gFrames == 1)
+    loadBrainAtWorkScreen();
+
+    loadMidwayTitleMKScreen();
+
+    loadGoroLivesScreen();
+
+    if (gFrames == 1200)
     {
-        VDP_loadTileSet(baw_a.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, baw_a.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-        PAL_setPalette(PAL0, baw_a.palette->data, DMA);
-        gInd_tileset += baw_a.tileset->numTile;
-
-        VDP_loadTileSet(baw_b.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_B, baw_b.tilemap, TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-        PAL_setPalette(PAL1, baw_b.palette->data, DMA);
-        gInd_tileset += baw_b.tileset->numTile;
-
-        PAL_fadeIn(0, 15, baw_a.palette->data, 8, FALSE);
-        PAL_fadeIn(16, 30, baw_b.palette->data, 8, FALSE);
+        VDP_waitVSync();
+        loadBioScreen();
     }
+}
 
-    if (gFrames == 200)
-    {
-        // VDP_waitVSync();
-        PAL_fadeOut(0, 15, 5, FALSE);
-        PAL_fadeOut(16, 30, 5, FALSE);
-        clearVDP();
-    }
-
-    // TELA MIDWAY
-    if (gFrames == 230)
-    {
-        SND_PCM4_startPlay(snd_midway, sizeof(snd_midway), SOUND_PCM_CH1, FALSE);
-
-        VDP_loadTileSet(midway.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, midway.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-        PAL_setPalette(PAL0, midway.palette->data, DMA);
-        gInd_tileset += midway.tileset->numTile;
-        // VDP_waitVSync();
-        PAL_fadeIn(0, 15, midway.palette->data, 18, FALSE);
-    }
-
-    if (gFrames == 360)
-    {
-        PAL_fadeOut(0, 15, 5, FALSE);
-    }
-
-    // TELA TITULO MK
-    if (gFrames == 365)
-    {
-        // TODO: Porque o volume está baixo ?
-        SND_PCM4_setVolume(SOUND_PCM_CH1, 15);
-        SND_PCM4_startPlay(snd_title, sizeof(snd_title), SOUND_PCM_CH1, FALSE);
-
-        VDP_loadTileSet(mk_title.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, mk_title.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-        PAL_setPalette(PAL0, mk_title.palette->data, DMA);
-        gInd_tileset += mk_title.tileset->numTile;
-
-        VDP_loadTileSet(mk_title_b.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_B, mk_title_b.tilemap, TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-        PAL_setPalette(PAL1, mk_title_b.palette->data, DMA);
-        gInd_tileset += mk_title_b.tileset->numTile;
-
-        // PAL_fadeIn(0, 15, mk_title.palette->data, 5, FALSE);
-        // PAL_fadeIn(16, 30, mk_title_b.palette->data, 5, FALSE);
-    }
-
-    // TELA GORO LIVES
+// TELA GORO LIVES
+void loadGoroLivesScreen()
+{
     if (gFrames == 700)
     {
         clearVDP();
@@ -154,38 +114,88 @@ void processIntro()
         for (u16 volume = 15; volume > 0; volume--)
         {
             SND_PCM4_setVolume(SOUND_PCM_CH1, volume);
-            VDP_waitVSync(); // Espera pelo próximo frame 
+            // VDP_waitVSync(); // Espera pelo próximo frame
         }
         SND_PCM4_stopPlay(SOUND_PCM_CH1);
 
         clearVDP();
         PAL_setColors(0, palette_black, 64, DMA);
     }
+}
 
-    if (gFrames == 1200)
-    {
-        loadBioScreen();
+void loadMidwayTitleMKScreen()
+{
+    // TELA MIDWAY
+    if (gFrames == 230)
+    { 
+        XGM2_playPCM(mus_midway, sizeof(mus_midway), SOUND_PCM_CH_AUTO);
+
+        VDP_loadTileSet(midway.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_A, midway.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
+        PAL_setPalette(PAL0, midway.palette->data, DMA);
+        gInd_tileset += midway.tileset->numTile;
     }
 
-    // if(gFrames == 2300){
-    //     clearVDP();
-    //     gFrames = 0;
-    // }
+    // TELA TITULO MK
+    if (gFrames == 320)
+    {
+        VDP_loadTileSet(mk_title.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_A, mk_title.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
+        PAL_setPalette(PAL0, mk_title.palette->data, DMA);
+        gInd_tileset += mk_title.tileset->numTile;
+
+        VDP_loadTileSet(mk_title_b.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_B, mk_title_b.tilemap, TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
+        PAL_setPalette(PAL1, mk_title_b.palette->data, DMA);
+        gInd_tileset += mk_title_b.tileset->numTile;
+
+        XGM2_playPCM(mus_title, sizeof(mus_title), SOUND_PCM_CH_AUTO);
+    }
+}
+
+// TELA BRAIN AT WORK
+void loadBrainAtWorkScreen()
+{
+    if (gFrames == 1)
+    {
+        VDP_loadTileSet(baw_a.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_A, baw_a.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
+        PAL_setPalette(PAL0, baw_a.palette->data, DMA);
+        gInd_tileset += baw_a.tileset->numTile;
+
+        VDP_loadTileSet(baw_b.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_B, baw_b.tilemap, TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
+        PAL_setPalette(PAL1, baw_b.palette->data, DMA);
+        gInd_tileset += baw_b.tileset->numTile;
+
+        PAL_fadeIn(0, 15, baw_a.palette->data, 8, FALSE);
+        PAL_fadeIn(16, 30, baw_b.palette->data, 8, FALSE);
+    }
+
+    if (gFrames == 200)
+    {
+        PAL_fadeOut(0, 15, 5, FALSE);
+        PAL_fadeOut(16, 30, 5, FALSE);
+
+        clearVDP();
+    }
 }
 
 void loadBioScreen()
 {
+    // plano de fundo
     VDP_loadTileSet(bio_b.tileset, gInd_tileset, DMA);
     VDP_setTileMapEx(BG_A, bio_b.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
     PAL_setPalette(PAL0, bio_b.palette->data, DMA);
     gInd_tileset += bio_b.tileset->numTile;
 
-    bioAnimation = SPR_addSprite(&jc_a, 112, 48, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-    PAL_setPalette(PAL1, jc_a.palette->data, DMA);
+    bioAnimation = SPR_addSprite(&jc_bio, 112, 48, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+    PAL_setPalette(PAL1, jc_bio.palette->data, DMA);
     SPR_setAnimationLoop(bioAnimation, FALSE);
     // SPR_setAnim(bioAnimation, 0);
     SPR_setDepth(bioAnimation, 0);
-
+    waitMs
+    // nome do personagem
     headName = SPR_addSprite(&jc_name, 112, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
     PAL_setPalette(PAL2, jc_name.palette->data, DMA);
 
@@ -195,7 +205,7 @@ void loadBioScreen()
     VDP_setTextPalette(PAL3);
 
     typewriterWriteAllLines(jcLines, sizeof(jcLines) / sizeof(jcLines[0]), BG_B, PAL3);
-    SND_PCM4_setVolume(SOUND_PCM_CH1, 15);
-    SND_PCM4_startPlay(loc_jc, sizeof(loc_jc), SOUND_PCM_CH2, FALSE);
-    SND_PCM4_startPlay(mus_the_beginning, sizeof(mus_the_beginning), SOUND_PCM_CH1, FALSE);
+
+    XGM2_playPCM(loc_jc, sizeof(loc_jc), SOUND_PCM_CH2);
+    XGM2_play(mus_the_beginning);
 }
