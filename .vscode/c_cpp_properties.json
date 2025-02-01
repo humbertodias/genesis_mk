@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "W:/repositorios/SGDK/inc/**",
+                "${workspaceFolder}/res/**",
+                "W:/repositorios/genesis_mk/src",
+                "W:/repositorios/genesis_mk/res",
+                "${workspaceFolder}/res"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "cStandard": "c11"
+        }
+    ],
+    "version": 4
+}
