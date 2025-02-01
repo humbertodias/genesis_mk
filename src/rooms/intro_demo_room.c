@@ -194,7 +194,7 @@ void loadBioScreen()
     SPR_setAnimationLoop(bioAnimation, FALSE);
     // SPR_setAnim(bioAnimation, 0);
     SPR_setDepth(bioAnimation, 0);
-    waitMs
+    
     // nome do personagem
     headName = SPR_addSprite(&jc_name, 112, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
     PAL_setPalette(PAL2, jc_name.palette->data, DMA);

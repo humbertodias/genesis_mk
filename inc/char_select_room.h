@@ -10,11 +10,6 @@
 
 #include "estruturas.h"
 
-// u8 loadCharSelectRoom(u8 index);
-// u8 initPlayerOneSelector(void);
-// u8 initPlayerTwoSelector(void);
-// void inputSeletor(u16 curInput, u16 prevInput, u8 seletor, Sprite *sprSeletor);
-
 // Declaração das variáveis globais como extern 
 extern u32 gFrames;
 extern u16 gInd_tileset;
