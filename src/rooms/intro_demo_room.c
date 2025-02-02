@@ -1,5 +1,7 @@
 #include "intro_demo_room.h"
 
+#include "bio_textlines.h"
+
 Sprite *bioAnimation;
 Sprite *headName;
 
@@ -12,28 +14,6 @@ TextLine goroLines[] = {
     {"THIS PERIOD THAT TOURNAMENT FELL", 2, 17},
     {"INTO SHANG TSUNG'S HANDS AND WAS", 4, 19},
     {"CORRUPTED", 15, 21},
-};
-
-TextLine jcLines[] = {
-    {"A MARTIAL ARTS SUPERSTAR TRAINED BY", 3, 17},
-    {"GREAT MASTERS FROM AROUND THE WORLD.", 2, 18},
-    {"CAGE USES HIS TALENTS ON", 7, 19},
-    {"THE BIG SCREEN,", 10, 20},
-    {"HE IS THE CURRENT BOX-OFFICE CHAMP", 3, 21},
-    {"AND STAR OF SUCH MOVIES AS DRAGON", 3, 22},
-    {"FIST AND DRAGON FIST II AS WELL", 4, 23},
-    {"AS THE AWARD", 13, 24},
-    {"WINNING SUDDEN VIOLENCE.", 7, 25},
-};
-
-TextLine kanoLines[] = {
-    {"A MERCENARY, THUG, EXTORTIONIST", 3, 17},
-    {"THIEF - KANO LIVES A LIFE OF CRIME", 2, 18},
-    {"AND INJUSTICE. HE IS A DEVOTED MEMBER", 7, 19},
-    {"OF THE BLACK DRAGON, A DANGEROUS", 10, 20},
-    {"GROUP OF CUT-THROAT MADMEN FEARED", 3, 21},
-    {"AND RESPECTED THROUGHOUT ALL OF", 3, 22},
-    {"CRIME'S INNER CIRCLES.", 4, 23},
 };
 
 void loadBrainAtWorkScreen();
@@ -181,6 +161,7 @@ void loadBrainAtWorkScreen()
     }
 }
 
+//TODO: Parametrizar esta função
 void loadBioScreen()
 {
     // plano de fundo
@@ -189,22 +170,24 @@ void loadBioScreen()
     PAL_setPalette(PAL0, bio_b.palette->data, DMA);
     gInd_tileset += bio_b.tileset->numTile;
 
-    bioAnimation = SPR_addSprite(&jc_bio, 112, 48, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-    PAL_setPalette(PAL1, jc_bio.palette->data, DMA);
+    bioAnimation = SPR_addSprite(&scorpion_bio, 112, 48, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+    PAL_setPalette(PAL1, scorpion_bio.palette->data, DMA);
     SPR_setAnimationLoop(bioAnimation, FALSE);
     // SPR_setAnim(bioAnimation, 0);
     SPR_setDepth(bioAnimation, 0);
+
+    u16 size_name = (VDP_getScreenWidth() / 2) - (scorpion_name.w/2);
     
     // nome do personagem
-    headName = SPR_addSprite(&jc_name, 112, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
-    PAL_setPalette(PAL2, jc_name.palette->data, DMA);
+    headName = SPR_addSprite(&scorpion_name, size_name, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+    PAL_setPalette(PAL2, scorpion_name.palette->data, DMA);
 
     VDP_setTextPlane(BG_B);
     VDP_loadFontData(font_a.tiles, font_a.numTile, CPU);
     PAL_setPalette(PAL3, font_a_pal.data, DMA);
     VDP_setTextPalette(PAL3);
 
-    typewriterWriteAllLines(jcLines, sizeof(jcLines) / sizeof(jcLines[0]), BG_B, PAL3);
+    typewriterWriteAllLines(scorpionLines, sizeof(scorpionLines) / sizeof(scorpionLines[0]), BG_B, PAL3);
 
     XGM2_playPCM(loc_jc, sizeof(loc_jc), SOUND_PCM_CH2);
     XGM2_play(mus_the_beginning);
