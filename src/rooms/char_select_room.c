@@ -135,9 +135,7 @@ void processSelecaoPersonagens()
     VDP_loadTileSet(stage_char_select_a.tileset, gInd_tileset, DMA);
     VDP_setTileMapEx(BG_A, stage_char_select_a.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
     PAL_setPalette(PAL0, char_select_a_pal.data, DMA);
-    // VDP_loadTileSet(stage_char_select.tileset, gInd_tileset, DMA);
-    // VDP_setTileMapEx(BG_A, stage_char_select.tilemap, TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-    // PAL_setPalette(PAL1, stage_char_select.palette->data, DMA);
+
     // desenrolarBackground();
     gInd_tileset += stage_char_select_a.tileset->numTile;
 
@@ -167,7 +165,8 @@ void processSelecaoPersonagens()
   if (gP1Seletor == 2 && !spr_p1_fighter)
   {
 
-    spr_p1_fighter = SPR_addSprite(&spr_subzero, 7, 61, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+    // spr_p1_fighter = SPR_addSprite(&spr_subzero, 7, 61, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+    spr_p1_fighter = SPR_addSprite(&spr_subzero, 24, 104, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
     PAL_setPalette(PAL2, spr_subzero.palette->data, DMA);
     SPR_setAnim(spr_p1_fighter, 0);
     SPR_setDepth(spr_p1_fighter, 0);
@@ -182,7 +181,8 @@ void processSelecaoPersonagens()
     if (gP2Seletor == 2 && !spr_p2_fighter)
   {
 
-    spr_p2_fighter = SPR_addSprite(&spr_subzero, 153, 61, TILE_ATTR(PAL3, FALSE, FALSE, TRUE));
+    // spr_p2_fighter = SPR_addSprite(&spr_subzero, 153, 61, TILE_ATTR(PAL3, FALSE, FALSE, TRUE));
+    spr_p2_fighter = SPR_addSprite(&spr_subzero, 168, 104, TILE_ATTR(PAL3, FALSE, FALSE, TRUE));
     PAL_setPalette(PAL3, spr_subzero.palette->data, DMA);
     SPR_setAnim(spr_p2_fighter, 0);
     SPR_setDepth(spr_p2_fighter, 0);

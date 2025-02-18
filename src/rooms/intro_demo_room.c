@@ -62,7 +62,7 @@ void loadGoroLivesScreen()
     }
 
     // TELA GORO E HISTORIA
-    if (gFrames == 865)
+    if (gFrames == 855)
     {
         clearVDP();
 
@@ -103,36 +103,6 @@ void loadGoroLivesScreen()
     }
 }
 
-void loadMidwayTitleMKScreen()
-{
-    // TELA MIDWAY
-    if (gFrames == 230)
-    { 
-        XGM2_playPCM(mus_midway, sizeof(mus_midway), SOUND_PCM_CH_AUTO);
-
-        VDP_loadTileSet(midway.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, midway.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-        PAL_setPalette(PAL0, midway.palette->data, DMA);
-        gInd_tileset += midway.tileset->numTile;
-    }
-
-    // TELA TITULO MK
-    if (gFrames == 320)
-    {
-        VDP_loadTileSet(mk_title.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_A, mk_title.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-        PAL_setPalette(PAL0, mk_title.palette->data, DMA);
-        gInd_tileset += mk_title.tileset->numTile;
-
-        VDP_loadTileSet(mk_title_b.tileset, gInd_tileset, DMA);
-        VDP_setTileMapEx(BG_B, mk_title_b.tilemap, TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-        PAL_setPalette(PAL1, mk_title_b.palette->data, DMA);
-        gInd_tileset += mk_title_b.tileset->numTile;
-
-        XGM2_playPCM(mus_title, sizeof(mus_title), SOUND_PCM_CH_AUTO);
-    }
-}
-
 // TELA BRAIN AT WORK
 void loadBrainAtWorkScreen()
 {
@@ -157,11 +127,43 @@ void loadBrainAtWorkScreen()
         PAL_fadeOut(0, 15, 5, FALSE);
         PAL_fadeOut(16, 30, 5, FALSE);
 
+        VDP_setBackgroundColor(0);
+
         clearVDP();
     }
 }
 
-//TODO: Parametrizar esta função
+void loadMidwayTitleMKScreen()
+{
+    // TELA MIDWAY
+    if (gFrames == 230)
+    {
+        XGM2_playPCM(mus_midway, sizeof(mus_midway), SOUND_PCM_CH1_MSK);
+
+        VDP_loadTileSet(midway.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_A, midway.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
+        PAL_setPalette(PAL0, midway.palette->data, DMA);
+        gInd_tileset += midway.tileset->numTile;
+    }
+
+    // TELA TITULO MK
+    if (gFrames == 370)
+    {
+        XGM2_playPCM(mus_title, sizeof(mus_title), SOUND_PCM_CH1_MSK);
+
+        VDP_loadTileSet(mk_title.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_A, mk_title.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
+        PAL_setPalette(PAL0, mk_title.palette->data, DMA);
+        gInd_tileset += mk_title.tileset->numTile;
+
+        VDP_loadTileSet(mk_title_b.tileset, gInd_tileset, DMA);
+        VDP_setTileMapEx(BG_B, mk_title_b.tilemap, TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
+        PAL_setPalette(PAL1, mk_title_b.palette->data, DMA);
+        gInd_tileset += mk_title_b.tileset->numTile;
+    }
+}
+
+// TODO: Parametrizar esta função
 void loadBioScreen()
 {
     // plano de fundo
@@ -176,8 +178,8 @@ void loadBioScreen()
     // SPR_setAnim(bioAnimation, 0);
     SPR_setDepth(bioAnimation, 0);
 
-    u16 size_name = (VDP_getScreenWidth() / 2) - (scorpion_name.w/2);
-    
+    u16 size_name = (VDP_getScreenWidth() / 2) - (scorpion_name.w / 2);
+
     // nome do personagem
     headName = SPR_addSprite(&scorpion_name, size_name, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
     PAL_setPalette(PAL2, scorpion_name.palette->data, DMA);
@@ -187,8 +189,8 @@ void loadBioScreen()
     PAL_setPalette(PAL3, font_a_pal.data, DMA);
     VDP_setTextPalette(PAL3);
 
+    XGM2_playPCM(loc_jc, sizeof(loc_jc), SOUND_PCM_CH2);
     typewriterWriteAllLines(scorpionLines, sizeof(scorpionLines) / sizeof(scorpionLines[0]), BG_B, PAL3);
 
-    XGM2_playPCM(loc_jc, sizeof(loc_jc), SOUND_PCM_CH2);
     XGM2_play(mus_the_beginning);
 }
