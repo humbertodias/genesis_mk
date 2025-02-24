@@ -9,6 +9,7 @@ XGM2    mus_the_beginning   "sound/mus/mus_in_the_beginning.vgm"
 XGM2    mus_select_player   "sound/mus/mus_select_player.vgm"
 
 #sound effects
-WAV snd_title   "sound/sfx/sndTitle.wav"        XGM2
-WAV snd_midway  "sound/sfx/sfx_midway.wav"      XGM2
+# WAV snd_title   "sound/sfx/sndTitle.wav"        XGM2
+# WAV snd_midway  "sound/sfx/sfx_midway.wav"      XGM2
 WAV snd_cursor  "sound/sfx/cursor.wav"          XGM2
+WAV snd_gongo   "sound/sfx/snd_gongo.wav"       XGM2
