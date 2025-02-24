@@ -2,12 +2,45 @@
 #include "stages.h"
 #include "sprites.h"
 
+#define TILEMAP_WIDTH 40
+#define TILEMAP_HEIGHT 28
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 224
+#define LINE_HEIGHT 2 // Altura da linha em pixels
+
+typedef struct
+{
+  u16 startLine;          // linha onde começa o efeito
+  u16 nextLine;           // linha onde deve começar o próximo efeito
+  u16 endLine;            // linha onde termina o efeito
+  u16 currentLine;        // linha atual da iteração
+  void (*callback)(void); // ponteiro para a função de callback TODO: verificar HInt pra tentar usar isso
+} VenetianBlinds;
+
+void drawBackground();
+void revealBackground();
+void revealBackgroundNew(VenetianBlinds effect);
+void initScrollLine();
 void updateSelector(Player *player);
-
 void playCursor();
+void callbackPersiana();
 
-Sprite *spr_p1_fighter; // Sprite de personagem no icone ativo
-Sprite *spr_p2_fighter; // Sprite de personagem no icone ativo
+VenetianBlinds persiana[7] = {
+    {0, 13, 31, 0, callbackPersiana},
+    {32, 43, 63, 0, callbackPersiana},
+    {64, 73, 95, 0, callbackPersiana},
+    {96, 105, 127, 0, callbackPersiana},
+    {128, 137, 159, 0, callbackPersiana},
+    {160, 167, 191, 0, callbackPersiana},
+    {192, 0, 223, 0, callbackPersiana},
+};
+
+s16 scrollLine[SCREEN_HEIGHT]; // usado para fazer o efeito de persiana
+
+int ind = 0; // usado para o controle da persiana.
+
+Sprite *spr_p1_fighter; // Sprite de personagem 1 no icone ativo
+Sprite *spr_p2_fighter; // Sprite de personagem 2 no icone ativo
 
 // CAGE      20, 44
 // KANO      76, 44
@@ -26,42 +59,34 @@ PlayerOption pOptions[7] = {
     {244, 44},
 };
 
-// void desenrolarBackground() {
-//   for (u16 y = 0; y < 28; y+=4) {
-//     VDP_setTileMapEx(BG_A, stage_char_select.tilemap, TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, gInd_tileset), 0, y, 0, y, 40, 4, DMA_QUEUE);
-//     PAL_setPalette(PAL1, stage_char_select.palette->data, DMA);
-//     SYS_doVBlankProcess(); // Sincroniza com o VBlank para criar o efeito gradual
-//   }
-// }
-
 void processSelecaoPersonagens()
 {
+  VDP_setPlaneSize(128, 64, TRUE);
+  VDP_setScrollingMode(HSCROLL_LINE, VSCROLL_PLANE);
+
   if (gFrames == 1)
   {
+    initScrollLine();
+    drawBackground();
+  }
+
+  if (gFrames == 40)
+  {
+    XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH3, 0, FALSE, 0);
+
+    revealBackground();
+    // revealBackgroundNew(persiana[ind++]);
     XGM2_play(mus_select_player);
-    VDP_setBackgroundColor(0);
-
-    // desenrolarBackground();
-
-    VDP_loadTileSet(stage_char_select_a.tileset, gInd_tileset, DMA);
-    VDP_setTileMapEx(BG_A, stage_char_select_a.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-    PAL_setPalette(PAL0, char_select_a_pal.data, DMA);
-    gInd_tileset += stage_char_select_a.tileset->numTile;
-
-    VDP_loadTileSet(stage_char_select_b.tileset, gInd_tileset, DMA);
-    VDP_setTileMapEx(BG_B, stage_char_select_b.tilemap, TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
-    PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
-    gInd_tileset += stage_char_select_b.tileset->numTile;
 
     player[0].sprite = SPR_addSprite(&player_seletor, pOptions[KANO].x, pOptions[KANO].y, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-    PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
+    // PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
     SPR_setDepth(player[0].sprite, 1);
     // Player 1 olhando para Direita começando no KANO
     player[0].direcao = 1;
     player[0].id = KANO;
 
     player[1].sprite = SPR_addSprite(&player_seletor, pOptions[SUBZERO].x, pOptions[SUBZERO].y, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-    PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
+    // PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
     SPR_setAnim(player[1].sprite, 1);
     SPR_setDepth(player[1].sprite, 2);
     // Player 2 olhando para Esquerda começando no SUBZERO
@@ -108,6 +133,171 @@ void processSelecaoPersonagens()
   // VDP_drawText(stri, 1, 2);
 }
 
+/**
+ * @brief Carrega as informações dos backgrounds
+ */
+void drawBackground()
+{
+  // para evitar problemas ao carregar a tela carrego o tile preto no index 0
+  VDP_loadTileSet(&black_tile, gInd_tileset, DMA);
+  gInd_tileset += black_tile.numTile;
+
+  // BACKGROUND A
+  VDP_loadTileSet(stage_char_select_a.tileset, gInd_tileset, DMA);
+  VDP_setTileMapEx(BG_A, stage_char_select_a.tilemap,
+                   TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset),
+                   0, 0,
+                   0, 0,
+                   TILEMAP_WIDTH, TILEMAP_HEIGHT, DMA);
+  PAL_setPalette(PAL0, char_select_a_pal.data, DMA);
+  gInd_tileset += stage_char_select_a.tileset->numTile;
+
+  // BACKGROUND B
+  VDP_loadTileSet(stage_char_select_b.tileset, gInd_tileset, DMA);
+  VDP_setTileMapEx(BG_B, stage_char_select_b.tilemap,
+                   TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, gInd_tileset),
+                   0, 0,
+                   0, 0,
+                   TILEMAP_WIDTH, TILEMAP_HEIGHT, DMA);
+  PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
+  gInd_tileset += stage_char_select_b.tileset->numTile;
+}
+
+/**
+ * @brief move a tela para fora da parte visível a esquerda
+ * para iniciar o efeito de Persiana.
+ */
+void initScrollLine()
+{
+  for (int x = 0; x < SCREEN_HEIGHT; x++)
+  {
+    scrollLine[x] = -SCREEN_WIDTH; // inicia as linhas com 320px
+  }
+  VDP_setHorizontalScrollLine(BG_A, 0, scrollLine, SCREEN_HEIGHT, DMA);
+  VDP_setHorizontalScrollLine(BG_B, 0, scrollLine, SCREEN_HEIGHT, DMA);
+}
+
+void callbackPersiana()
+{
+  revealBackgroundNew(persiana[ind++]);
+}
+
+/**
+ * @brief Revela a tela fazendo o efeito de persiana.
+ */
+void revealBackground()
+{
+  for (int y = 0; y < SCREEN_HEIGHT / 2; y += 1)
+  {
+    // 0
+    if (y >= persiana[0].startLine && y <= persiana[0].endLine)
+    {
+      persiana[0].currentLine = y;
+      scrollLine[persiana[0].currentLine] = 0;
+      scrollLine[persiana[0].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, y, &scrollLine[y], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, y, &scrollLine[y], LINE_HEIGHT, DMA);
+    }
+    // 1
+    if (y >= persiana[0].nextLine && persiana[1].currentLine <= persiana[1].endLine)
+    {
+      if (persiana[0].nextLine == y)
+        persiana[1].currentLine = persiana[1].startLine;
+      else
+        persiana[1].currentLine += 1;
+      scrollLine[persiana[1].currentLine] = 0;
+      scrollLine[persiana[1].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[1].currentLine, &scrollLine[persiana[1].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[1].currentLine, &scrollLine[persiana[1].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 2
+    if (persiana[1].currentLine >= persiana[1].nextLine && persiana[2].currentLine <= persiana[2].endLine)
+    {
+      if (persiana[1].nextLine == persiana[1].currentLine)
+        persiana[2].currentLine = persiana[2].startLine;
+      else
+        persiana[2].currentLine += 1;
+      scrollLine[persiana[2].currentLine] = 0;
+      scrollLine[persiana[2].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[2].currentLine, &scrollLine[persiana[2].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[2].currentLine, &scrollLine[persiana[2].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 3
+    if (persiana[2].currentLine >= persiana[2].nextLine && persiana[3].currentLine <= persiana[3].endLine)
+    {
+      if (persiana[2].nextLine == persiana[2].currentLine)
+        persiana[3].currentLine = persiana[3].startLine;
+      else
+        persiana[3].currentLine += 1;
+      scrollLine[persiana[3].currentLine] = 0;
+      scrollLine[persiana[3].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[3].currentLine, &scrollLine[persiana[3].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[3].currentLine, &scrollLine[persiana[3].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 4
+    if (persiana[3].currentLine >= persiana[3].nextLine && persiana[4].currentLine <= persiana[4].endLine)
+    {
+      if (persiana[3].nextLine == persiana[3].currentLine)
+        persiana[4].currentLine = persiana[4].startLine;
+      else
+        persiana[4].currentLine += 1;
+      scrollLine[persiana[4].currentLine] = 0;
+      scrollLine[persiana[4].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[4].currentLine, &scrollLine[persiana[4].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[4].currentLine, &scrollLine[persiana[4].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 5
+    if (persiana[4].currentLine >= persiana[4].nextLine && persiana[5].currentLine <= persiana[5].endLine)
+    {
+      if (persiana[4].nextLine == persiana[4].currentLine)
+        persiana[5].currentLine = persiana[5].startLine;
+      else
+        persiana[5].currentLine += 1;
+      scrollLine[persiana[5].currentLine] = 0;
+      scrollLine[persiana[5].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[5].currentLine, &scrollLine[persiana[5].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[5].currentLine, &scrollLine[persiana[5].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 6
+    if (persiana[5].currentLine >= persiana[5].nextLine && persiana[6].currentLine <= persiana[6].endLine)
+    {
+      if (persiana[5].nextLine == persiana[5].currentLine)
+        persiana[6].currentLine = persiana[6].startLine;
+      else
+        persiana[6].currentLine += 1;
+      scrollLine[persiana[6].currentLine] = 0;
+      scrollLine[persiana[6].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[6].currentLine, &scrollLine[persiana[6].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[6].currentLine, &scrollLine[persiana[6].currentLine], LINE_HEIGHT, DMA);
+    }
+    SYS_doVBlankProcess();
+  }
+}
+
+// tentativa de fazer por recursividade.
+// funciona mas ...
+void revealBackgroundNew(VenetianBlinds effect)
+{
+  for (int y = effect.startLine; y <= effect.endLine; y += 1)
+  {
+    scrollLine[y] = 0;
+    scrollLine[y + 1] = 0;
+    VDP_setHorizontalScrollLine(BG_A, y, &scrollLine[y], LINE_HEIGHT, DMA);
+    VDP_setHorizontalScrollLine(BG_B, y, &scrollLine[y], LINE_HEIGHT, DMA);
+    SYS_doVBlankProcess();
+
+    if (effect.nextLine != 0 && effect.nextLine == y)
+    {
+      effect.callback();
+    }
+  }
+}
+
+/**
+ * @brief Atualiza a posição do cursor de seleção de acordo com o ID
+ *
+ * @param player
+ */
 void updateSelector(Player *player)
 {
   switch (player->id)
@@ -164,8 +354,8 @@ void updateSelector(Player *player)
       SPR_setPosition(player->sprite, pOptions[SCORPION].x, pOptions[SCORPION].y);
       player->id = SCORPION;
     }
-
     break;
+
   case SONYA:
     if (player->key_JOY_LEFT_status == 1)
     {
@@ -174,6 +364,7 @@ void updateSelector(Player *player)
       player->id = SUBZERO;
     }
     break;
+
   case SCORPION:
     if (player->key_JOY_LEFT_status == 1)
     {
@@ -188,6 +379,7 @@ void updateSelector(Player *player)
       player->id = SUBZERO;
     }
     break;
+
   case LIU_KANG:
     if (player->key_JOY_RIGHT_status == 1)
     {
@@ -202,6 +394,7 @@ void updateSelector(Player *player)
       player->id = RAIDEN;
     }
     break;
+
   case RAIDEN:
     if (player->key_JOY_RIGHT_status == 1)
     {
@@ -222,6 +415,8 @@ void updateSelector(Player *player)
   }
 }
 
+/**
+ * @brief Executa o áudio do cursor */
 void playCursor()
 {
   XGM2_playPCMEx(snd_cursor, sizeof(snd_cursor), SOUND_PCM_CH3, 0, FALSE, 0);
