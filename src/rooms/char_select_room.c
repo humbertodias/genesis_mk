@@ -8,36 +8,13 @@
 #define SCREEN_HEIGHT 224
 #define LINE_HEIGHT 2 // Altura da linha em pixels
 
-typedef struct
-{
-  u16 startLine;          // linha onde começa o efeito
-  u16 nextLine;           // linha onde deve começar o próximo efeito
-  u16 endLine;            // linha onde termina o efeito
-  u16 currentLine;        // linha atual da iteração
-  void (*callback)(void); // ponteiro para a função de callback TODO: verificar HInt pra tentar usar isso
-} VenetianBlinds;
-
 void drawBackground();
 void revealBackground();
-void revealBackgroundNew(VenetianBlinds effect);
 void initScrollLine();
 void updateSelector(Player *player);
 void playCursor();
-void callbackPersiana();
 
-VenetianBlinds persiana[7] = {
-    {0, 13, 31, 0, callbackPersiana},
-    {32, 43, 63, 0, callbackPersiana},
-    {64, 73, 95, 0, callbackPersiana},
-    {96, 105, 127, 0, callbackPersiana},
-    {128, 137, 159, 0, callbackPersiana},
-    {160, 167, 191, 0, callbackPersiana},
-    {192, 0, 223, 0, callbackPersiana},
-};
-
-s16 scrollLine[SCREEN_HEIGHT]; // usado para fazer o efeito de persiana
-
-int ind = 0; // usado para o controle da persiana.
+static s16 scrollLine[SCREEN_HEIGHT]; // usado para fazer o efeito de persiana
 
 Sprite *spr_p1_fighter; // Sprite de personagem 1 no icone ativo
 Sprite *spr_p2_fighter; // Sprite de personagem 2 no icone ativo
@@ -75,7 +52,7 @@ void processSelecaoPersonagens()
     XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH3, 0, FALSE, 0);
 
     revealBackground();
-    // revealBackgroundNew(persiana[ind++]);
+
     XGM2_play(mus_select_player);
 
     player[0].sprite = SPR_addSprite(&player_seletor, pOptions[KANO].x, pOptions[KANO].y, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
@@ -177,16 +154,29 @@ void initScrollLine()
   VDP_setHorizontalScrollLine(BG_B, 0, scrollLine, SCREEN_HEIGHT, DMA);
 }
 
-void callbackPersiana()
-{
-  revealBackgroundNew(persiana[ind++]);
-}
-
 /**
  * @brief Revela a tela fazendo o efeito de persiana.
  */
 void revealBackground()
 {
+  struct VenetianBlindsEffect
+  {
+    u16 startLine;   // linha onde começa o efeito
+    u16 nextLine;    // linha onde deve começar o próximo efeito
+    u16 endLine;     // linha onde termina o efeito
+    u16 currentLine; // linha atual da iteração
+  };
+
+  struct VenetianBlindsEffect persiana[7] = {
+      {0, 13, 31, 0},
+      {32, 43, 63, 0},
+      {64, 73, 95, 0},
+      {96, 105, 127, 0},
+      {128, 137, 159, 0},
+      {160, 167, 191, 0},
+      {192, 0, 223, 0},
+  };
+
   for (int y = 0; y < SCREEN_HEIGHT / 2; y += 1)
   {
     // 0
@@ -271,25 +261,6 @@ void revealBackground()
       VDP_setHorizontalScrollLine(BG_B, persiana[6].currentLine, &scrollLine[persiana[6].currentLine], LINE_HEIGHT, DMA);
     }
     SYS_doVBlankProcess();
-  }
-}
-
-// tentativa de fazer por recursividade.
-// funciona mas ...
-void revealBackgroundNew(VenetianBlinds effect)
-{
-  for (int y = effect.startLine; y <= effect.endLine; y += 1)
-  {
-    scrollLine[y] = 0;
-    scrollLine[y + 1] = 0;
-    VDP_setHorizontalScrollLine(BG_A, y, &scrollLine[y], LINE_HEIGHT, DMA);
-    VDP_setHorizontalScrollLine(BG_B, y, &scrollLine[y], LINE_HEIGHT, DMA);
-    SYS_doVBlankProcess();
-
-    if (effect.nextLine != 0 && effect.nextLine == y)
-    {
-      effect.callback();
-    }
   }
 }
 
