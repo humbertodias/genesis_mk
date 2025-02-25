@@ -29,13 +29,6 @@ enum GAME_ROOM
   PALACE_GATES
 };
 
-// Usado na seleção de personagens para saber a posição do seletor
-typedef struct
-{
-  u16 x;
-  u16 y;
-} PlayerOption;
-
 // Linhas de texto e sua posição em tela
 typedef struct
 {

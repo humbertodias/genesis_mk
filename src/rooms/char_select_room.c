@@ -9,16 +9,15 @@
 #define LINE_HEIGHT 2 // Altura da linha em pixels
 
 void drawBackground();
-void revealBackground();
 void initScrollLine();
+void revealBackground();
 void updateSelector(Player *player);
 void playCursor();
-
-static s16 scrollLine[SCREEN_HEIGHT]; // usado para fazer o efeito de persiana
 
 Sprite *spr_p1_fighter; // Sprite de personagem 1 no icone ativo
 Sprite *spr_p2_fighter; // Sprite de personagem 2 no icone ativo
 
+static s16 scrollLine[SCREEN_HEIGHT]; // usado para fazer o efeito de persiana
 // CAGE      20, 44
 // KANO      76, 44
 // RAYDEN    76, 108
@@ -26,15 +25,8 @@ Sprite *spr_p2_fighter; // Sprite de personagem 2 no icone ativo
 // SUBZERO  188, 44
 // SCORPION 188, 108
 // SONYA    244, 44
-PlayerOption pOptions[7] = {
-    {20, 44},
-    {76, 44},
-    {76, 108},
-    {132, 108},
-    {188, 44},
-    {188, 108},
-    {244, 44},
-};
+static const u8 OPTIONS_X[7] = {20, 76, 76, 132, 188, 188, 244};
+static const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
 
 void processSelecaoPersonagens()
 {
@@ -55,14 +47,14 @@ void processSelecaoPersonagens()
 
     XGM2_play(mus_select_player);
 
-    player[0].sprite = SPR_addSprite(&player_seletor, pOptions[KANO].x, pOptions[KANO].y, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+    player[0].sprite = SPR_addSprite(&player_seletor, OPTIONS_X[KANO], OPTIONS_Y[KANO], TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
     // PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
     SPR_setDepth(player[0].sprite, 1);
     // Player 1 olhando para Direita começando no KANO
     player[0].direcao = 1;
     player[0].id = KANO;
 
-    player[1].sprite = SPR_addSprite(&player_seletor, pOptions[SUBZERO].x, pOptions[SUBZERO].y, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+    player[1].sprite = SPR_addSprite(&player_seletor, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO], TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
     // PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
     SPR_setAnim(player[1].sprite, 1);
     SPR_setDepth(player[1].sprite, 2);
@@ -278,19 +270,19 @@ void updateSelector(Player *player)
     if (player->key_JOY_LEFT_status == 1) // se apertar para esquerda, seleciona CAGE
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[CAGE].x, pOptions[CAGE].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[CAGE], OPTIONS_Y[CAGE]);
       player->id = CAGE;
     }
     else if (player->key_JOY_RIGHT_status == 1) // se apertar para direita, Subzero
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[SUBZERO].x, pOptions[SUBZERO].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
       player->id = SUBZERO;
     }
     else if (player->key_JOY_DOWN_status == 1) // se apertar para baixo, Raiden
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[RAIDEN].x, pOptions[RAIDEN].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[RAIDEN], OPTIONS_Y[RAIDEN]);
       player->id = RAIDEN;
     }
     break;
@@ -300,7 +292,7 @@ void updateSelector(Player *player)
     if (player->key_JOY_RIGHT_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[KANO].x, pOptions[KANO].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
       player->id = KANO;
     }
     break;
@@ -310,19 +302,19 @@ void updateSelector(Player *player)
     if (player->key_JOY_LEFT_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[KANO].x, pOptions[KANO].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
       player->id = KANO;
     }
     else if (player->key_JOY_RIGHT_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[SONYA].x, pOptions[SONYA].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]);
       player->id = SONYA;
     }
     else if (player->key_JOY_DOWN_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[SCORPION].x, pOptions[SCORPION].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[SCORPION], OPTIONS_Y[SCORPION]);
       player->id = SCORPION;
     }
     break;
@@ -331,7 +323,7 @@ void updateSelector(Player *player)
     if (player->key_JOY_LEFT_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[SUBZERO].x, pOptions[SUBZERO].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
       player->id = SUBZERO;
     }
     break;
@@ -340,13 +332,13 @@ void updateSelector(Player *player)
     if (player->key_JOY_LEFT_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[LIU_KANG].x, pOptions[LIU_KANG].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[LIU_KANG], OPTIONS_Y[LIU_KANG]);
       player->id = LIU_KANG;
     }
     else if (player->key_JOY_UP_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[SUBZERO].x, pOptions[SUBZERO].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
       player->id = SUBZERO;
     }
     break;
@@ -355,13 +347,13 @@ void updateSelector(Player *player)
     if (player->key_JOY_RIGHT_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[SCORPION].x, pOptions[SCORPION].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[SCORPION], OPTIONS_Y[SCORPION]);
       player->id = SCORPION;
     }
     else if (player->key_JOY_LEFT_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[RAIDEN].x, pOptions[RAIDEN].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[RAIDEN], OPTIONS_Y[RAIDEN]);
       player->id = RAIDEN;
     }
     break;
@@ -370,13 +362,13 @@ void updateSelector(Player *player)
     if (player->key_JOY_RIGHT_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[LIU_KANG].x, pOptions[LIU_KANG].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[LIU_KANG], OPTIONS_Y[LIU_KANG]);
       player->id = LIU_KANG;
     }
     else if (player->key_JOY_UP_status == 1)
     {
       playCursor();
-      SPR_setPosition(player->sprite, pOptions[KANO].x, pOptions[KANO].y);
+      SPR_setPosition(player->sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
       player->id = KANO;
     }
     break;
