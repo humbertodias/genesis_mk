@@ -1,6 +1,6 @@
 #include "estruturas.h"
 
-TextLine johnnyCageLines[] = {
+const TextLine johnnyCageLines[] = {
     {"A MARTIAL ARTS SUPERSTAR TRAINED BY", 3, 17},
     {"GREAT MASTERS FROM AROUND THE WORLD.", 2, 18},
     {"CAGE USES HIS TALENTS ON", 7, 19},
@@ -12,7 +12,7 @@ TextLine johnnyCageLines[] = {
     {"WINNING SUDDEN VIOLENCE.", 7, 25},
 };
 
-TextLine kanoLines[] = {
+const TextLine kanoLines[] = {
     {"A MERCENARY, THUG, EXTORTIONIST", 4, 17},
     {"THIEF - KANO LIVES A LIFE OF CRIME", 3, 18},
     {"AND INJUSTICE. HE IS A DEVOTED", 5, 19},
@@ -23,7 +23,7 @@ TextLine kanoLines[] = {
     {"INNER CIRCLES.", 12, 24},
 };
 
-TextLine liuKangLines[] = {
+const TextLine liuKangLines[] = {
     {"ONCE A MEMBER OF THE SUPER SECRET", 3, 18},
     {"WHITE LOTUS SOCIETY, LIU KANG LEFT", 3, 19},
     {"THE ORGANIZATION IN ORDER TO", 5, 20},
@@ -32,7 +32,7 @@ TextLine liuKangLines[] = {
     {"BELIEFS AND DESPISES SHANG TSUNG", 3, 23},
 };
 
-TextLine scorpionLines[] = {
+const TextLine scorpionLines[] = {
     {"LIKE SUB-ZERO, SCORPION'S TRUE", 5, 18},
     {"NAME AND ORIGIN ARE NOT KNOWN", 5, 19},
     {"HE HAS SHOWN FROM TIME TO TIME", 5, 20},
@@ -42,7 +42,7 @@ TextLine scorpionLines[] = {
     {"OPPOSING CLANS", 13, 24},
 };
 
-TextLine subzeroLines[] = {
+const TextLine subzeroLines[] = {
     {"THE ACTUAL NAME OR IDENTITY OF", 5, 18},
     {"THIS WARRIOR IS UNKNOWN. HOWEVER", 4, 19},
     {"BASED ON THE MARKINGS OF HIS", 5, 20},
@@ -51,7 +51,7 @@ TextLine subzeroLines[] = {
     {"CLAN OF CHINESE NINJA.", 10, 23},
 };
 
-TextLine raidenLines[] = {
+const TextLine raidenLines[] = {
     {"THE NAME RAIDEN IS ACTUALLY THAT OF", 3, 18},
     {"A DEITY KNOWN AS THE THUNDER GOD.", 4, 19},
     {"IT IS RUMORED HE RECEIVED A", 7, 20},
@@ -60,7 +60,7 @@ TextLine raidenLines[] = {
     {"HUMAN TO COMPETE IN THE TOURNAMENT", 3, 23},
 };
 
-TextLine sonyaLines[] = {
+const TextLine sonyaLines[] = {
     {"SONYA IS A MEMBER OF A TOP U.S.", 5, 18},
     {"SPECIAL FORCES UNIT, HER TEAM WAS", 4, 19},
     {"HOT ON THE TRAIL OF KANO'S BLACK", 5, 20},
@@ -68,4 +68,15 @@ TextLine sonyaLines[] = {
     {"FOLLOWED THEM TO AN UNCHARTED", 6, 22},
     {"ISLAND WHERE THEY WERE AMBUSHED", 5, 23},
     {"BY SHANG TSUNG'S PERSONAL ARMY.", 5, 24},
+};
+
+const TextLine goroLines[] = {
+    {"A 2.000 YEAR OLD HALF HUMAN DRAGON", 3, 7},
+    {"GORO REMAINS UNDERFEATED FOR THE PAST", 2, 9},
+    {"500 YEARS. HE WON THE TITLE OF GRAND", 2, 11},
+    {"CHAMPION BY DEFEATING KUNG LAO, A", 3, 13},
+    {"SHAOLIN FIGHTING MONK. IT WAS DURING", 2, 15},
+    {"THIS PERIOD THAT TOURNAMENT FELL", 2, 17},
+    {"INTO SHANG TSUNG'S HANDS AND WAS", 4, 19},
+    {"CORRUPTED", 15, 21},
 };

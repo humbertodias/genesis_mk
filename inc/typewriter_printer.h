@@ -28,6 +28,6 @@
  */
 void typewriterEffect(const char *text, u16 x, u16 y, u16 delay, VDPPlane plane, u16 numPal);
 
-void typewriterWriteAllLines(TextLine *lines, u16 numLines, VDPPlane plane, u16 numPal);
+void typewriterWriteAllLines(const TextLine *lines, u16 numLines, VDPPlane plane, u16 numPal);
 
 #endif

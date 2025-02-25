@@ -19,7 +19,7 @@ void typewriterEffect(const char *text, u16 x, u16 y, u16 delay, VDPPlane plane,
 }
 
 // Função para escrever todas as linhas de texto de uma vez
-void typewriterWriteAllLines(TextLine *lines, u16 numLines, VDPPlane plane, u16 numPal)
+void typewriterWriteAllLines(const TextLine *lines, u16 numLines, VDPPlane plane, u16 numPal)
 {
     for (u16 i = 0; i < numLines; i++)
     {

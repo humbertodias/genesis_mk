@@ -5,17 +5,6 @@
 Sprite *bioAnimation;
 Sprite *headName;
 
-TextLine goroLines[] = {
-    {"A 2.000 YEAR OLD HALF HUMAN DRAGON", 3, 7},
-    {"GORO REMAINS UNDERFEATED FOR THE PAST", 2, 9},
-    {"500 YEARS. HE WON THE TITLE OF GRAND", 2, 11},
-    {"CHAMPION BY DEFEATING KUNG LAO, A", 3, 13},
-    {"SHAOLIN FIGHTING MONK. IT WAS DURING", 2, 15},
-    {"THIS PERIOD THAT TOURNAMENT FELL", 2, 17},
-    {"INTO SHANG TSUNG'S HANDS AND WAS", 4, 19},
-    {"CORRUPTED", 15, 21},
-};
-
 void loadBrainAtWorkScreen();
 void loadMidwayTitleMKScreen();
 void loadGoroLivesScreen();
