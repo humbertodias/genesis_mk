@@ -1,6 +1,5 @@
 SPRITE  player_seletor "sprite/player_seletor.png"         7 8 FAST 7
 SPRITE  spPressStart   "sprite/txt/press_start.png"       16 2 BEST 6
-#SPRITE  spBlack        "sprite/black_sprite.png"          20 1 BEST
 
 #SPRITE  spr_subzero    "sprite/subzero.png"              20 20 NONE 6
 SPRITE spr_subzero     "sprite/subzero.png"                16 15 NONE 6

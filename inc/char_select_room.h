@@ -13,6 +13,7 @@
 // Declaração das variáveis globais como extern
 extern u32 gFrames;
 extern u16 gInd_tileset;
+extern GraphicElement GE[25];
 
 void processSelecaoPersonagens();
 

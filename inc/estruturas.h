@@ -29,6 +29,17 @@ enum GAME_ROOM
   PALACE_GATES
 };
 
+enum PLAYER_STATUS
+{
+  PARADO,
+  ABAIXANDO,
+  ANDAR_FRENTE,
+  ANDAR_TRAS,
+  INI_PULO_TRAS,
+  INI_PULO_NEUTRO,
+  INI_PULO_FRENTE
+};
+
 // Linhas de texto e sua posição em tela
 typedef struct
 {
@@ -39,13 +50,30 @@ typedef struct
 
 typedef struct
 {
+  Sprite *sprite;
+} GraphicElement;
+
+typedef struct
+{
   u8 id;
   Sprite *sprite;
+  int paleta;
   s16 x;      // posição X do jogador
   s16 y;      // posição Y do jogador
   u8 w;       // Largura do Sprite
   u8 h;       // Altura do Sprite
+  u8 axisX;   // Posição X do ponto pivot
+  u8 axisY;   // Posição Y do ponto pivot
   s8 direcao; // Direção para onde está olhando (1 - Direita, -1 - Esquerda)
+  u16 state;  // Estado atual do jogador
+  u8 hSpeed;  // Velocidade Horizontal
+
+  u16 animFrame;      // frame de animação atual
+  u16 animFrameTotal; // quantidade total de frames deste estado de animação
+  u16 frameTimeAtual; // tempo atual do frame de animação corrente
+  u16 frameTimeTotal; // tempo total do frame de animação corrente
+
+  u16 dataAnim[60]; // total de frames disponíveis para cada estado (animação)
 
   // JOYSTICK
   u8 key_JOY_UP_status;
