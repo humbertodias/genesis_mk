@@ -8,7 +8,7 @@ Material de estudo para desenvolvimento de um jogo de luta para o Mega Drive usa
 
 -- Framework de desenvolvimento [SGDK](https://github.com/Stephane-D/SGDK)
 
--- [docker-sgdk](https://gitlab.com/doragasu/docker-sgdk)
+-- SDGK via docker [docker-sgdk](https://gitlab.com/doragasu/docker-sgdk)
 
 ## Build
 
