@@ -13,7 +13,6 @@ IMAGE   stage_char_select_a "stages/b/char_select_a.png"     BEST
 IMAGE   stage_char_select_b "stages/b/char_select_b.png"     BEST
 PALETTE char_select_a_pal   "stages/b/char_select_a_pal.png" NONE
 PALETTE char_select_b_pal   "stages/b/char_select_b_pal.png" NONE
-TILESET black_tile          "stages/b/black_tile.png"        NONE
 
 # TELA DE START DO JOGO
 IMAGE screen_opt_a "stages/scr_opt/screen_options_a.png" NONE
