@@ -7,7 +7,7 @@
 // Lista de Personagens
 enum Fighters
 {
-  CAGE,
+  JOHNNY_CAGE,
   KANO,
   RAIDEN,
   LIU_KANG,

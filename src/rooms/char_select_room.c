@@ -14,8 +14,10 @@ void revealBackground();
 void updateSelector(Player *player, int ind);
 void playCursor();
 void initPlayer();
+void freeScrollLine();
 
-static s16 scrollLine[SCREEN_HEIGHT]; // usado para fazer o efeito de persiana
+// TODO: talvez mover para a main.c para possibilidades de uso em outras telas.
+s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
 // CAGE      20, 44
 // KANO      76, 44
 // RAYDEN    76, 108
@@ -44,7 +46,7 @@ void processSelecaoPersonagens()
   {
     revealBackground();
 
-    XGM2_play(mus_select_player);
+    playMusic();
 
     initPlayer();
 
@@ -66,6 +68,37 @@ void processSelecaoPersonagens()
   for (int ind = 0; ind < 2; ind++)
   {
     updateSelector(&player[ind], ind);
+  }
+
+  if (player[0].key_JOY_START_status > 0)
+  {
+    switch (player[0].id)
+    {
+    case JOHNNY_CAGE:
+      XGM2_playPCMEx(loc_jc, sizeof(loc_jc), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case KANO:
+      XGM2_playPCMEx(loc_kano, sizeof(loc_kano), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case SUBZERO:
+      XGM2_playPCMEx(loc_suzero, sizeof(loc_suzero), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case SONYA:
+      XGM2_playPCMEx(loc_sonya, sizeof(loc_sonya), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case RAIDEN:
+      XGM2_playPCMEx(loc_raiden, sizeof(loc_raiden), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case LIU_KANG:
+      XGM2_playPCMEx(loc_liu_kang, sizeof(loc_liu_kang), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case SCORPION:
+      XGM2_playPCMEx(loc_scorpion, sizeof(loc_scorpion), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+
+    default:
+      break;
+    }
   }
 
   // TODO: ajustar isso depois e remover
@@ -93,12 +126,19 @@ void processSelecaoPersonagens()
     SPR_releaseSprite(player[1].sprite);
     player[1].sprite = NULL;
   }
+
   // Mostra os IDs dos personagens
   // char stri[64];
   // sprintf(stri, "p1: %d", player[0].id);
   // VDP_drawText(stri, 1, 1);
   // sprintf(stri, "p2: %d", player[1].id);
   // VDP_drawText(stri, 1, 2);
+}
+
+void playMusic()
+{
+  XGM2_setFMVolume(50);
+  XGM2_play(mus_select_player);
 }
 
 /**
@@ -134,6 +174,14 @@ void drawBackground()
  */
 void initScrollLine()
 {
+  // Aloca dinamicamente memória
+  scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
+  if (!scrollLine) // Verifica se a alocação foi bem-sucedida
+  {
+    // Falha na alocação
+    return;
+  }
+
   for (int x = 0; x < SCREEN_HEIGHT; x++)
   {
     scrollLine[x] = -SCREEN_WIDTH; // inicia as linhas com 320px
@@ -173,8 +221,8 @@ void revealBackground()
       persiana[0].currentLine = y;
       scrollLine[persiana[0].currentLine] = 0;
       scrollLine[persiana[0].currentLine + 1] = 0;
-      VDP_setHorizontalScrollLine(BG_A, y, &scrollLine[y], LINE_HEIGHT, DMA);
-      VDP_setHorizontalScrollLine(BG_B, y, &scrollLine[y], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_A, y, &scrollLine[persiana[0].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, y, &scrollLine[persiana[0].currentLine], LINE_HEIGHT, DMA);
     }
     // 1
     if (y >= persiana[0].nextLine && persiana[1].currentLine <= persiana[1].endLine)
@@ -251,6 +299,8 @@ void revealBackground()
 
     SYS_doVBlankProcess();
   }
+
+  freeScrollLine();
 }
 
 /**
@@ -268,8 +318,8 @@ void updateSelector(Player *player, int ind)
     if (player->key_JOY_LEFT_status == 1) // se apertar para esquerda, seleciona CAGE
     {
       playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[CAGE], OPTIONS_Y[CAGE]);
-      player->id = CAGE;
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[JOHNNY_CAGE], OPTIONS_Y[JOHNNY_CAGE]);
+      player->id = JOHNNY_CAGE;
     }
     else if (player->key_JOY_RIGHT_status == 1) // se apertar para direita, Subzero
     {
@@ -285,13 +335,18 @@ void updateSelector(Player *player, int ind)
     }
     break;
 
-  case CAGE:
+  case JOHNNY_CAGE:
 
     if (player->key_JOY_RIGHT_status == 1)
     {
       playCursor();
       SPR_setPosition(GE[ind].sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
       player->id = KANO;
+    } else if(player->key_JOY_LEFT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]);
+      player->id = SONYA;
     }
     break;
 
@@ -323,6 +378,11 @@ void updateSelector(Player *player, int ind)
       playCursor();
       SPR_setPosition(GE[ind].sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
       player->id = SUBZERO;
+    } else if(player->key_JOY_RIGHT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[JOHNNY_CAGE], OPTIONS_Y[JOHNNY_CAGE]);
+      player->id = JOHNNY_CAGE;
     }
     break;
 
@@ -391,24 +451,37 @@ void initPlayer()
   player[0].paleta = PAL2;
   player[0].direcao = 1;
 
-  player[0].key_JOY_countdown[2] = 0;
-  player[0].key_JOY_countdown[4] = 0;
-  player[0].key_JOY_countdown[6] = 0;
-  player[0].key_JOY_countdown[8] = 0;
-
   player[1].id = SUBZERO;
   player[1].state = PARADO;
   player[1].paleta = PAL3;
   player[1].direcao = -1;
 
-  player[1].key_JOY_countdown[2] = 0;
-  player[1].key_JOY_countdown[4] = 0;
-  player[1].key_JOY_countdown[6] = 0;
-  player[1].key_JOY_countdown[8] = 0;
+  memset(player[0].key_JOY_countdown, 0, sizeof(player[0].key_JOY_countdown));
+  memset(player[1].key_JOY_countdown, 0, sizeof(player[1].key_JOY_countdown));
+
+  // player[0].key_JOY_countdown[2] = 0;
+  // player[0].key_JOY_countdown[4] = 0;
+  // player[0].key_JOY_countdown[6] = 0;
+  // player[0].key_JOY_countdown[8] = 0;
+
+  // player[1].key_JOY_countdown[2] = 0;
+  // player[1].key_JOY_countdown[4] = 0;
+  // player[1].key_JOY_countdown[6] = 0;
+  // player[1].key_JOY_countdown[8] = 0;
 }
+
 /**
  * @brief Executa o áudio do cursor */
 void playCursor()
 {
-  XGM2_playPCMEx(snd_cursor, sizeof(snd_cursor), SOUND_PCM_CH2, 0, FALSE, 0);
+  XGM2_playPCMEx(snd_cursor, sizeof(snd_cursor), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+}
+
+void freeScrollLine()
+{
+  if (scrollLine)
+  {
+    free(scrollLine); // Libera a memória alocada dinamicamente
+    scrollLine = NULL;
+  }
 }

@@ -17,4 +17,6 @@ extern GraphicElement GE[25];
 
 void processSelecaoPersonagens();
 
+void playMusic();
+
 #endif
