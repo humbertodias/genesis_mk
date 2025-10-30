@@ -12,6 +12,7 @@ void drawBackground();
 void initScrollLine();
 void revealBackground();
 void updateSelector(Player *player, int ind);
+void playerSelected(int ind);
 void playCursor();
 void initPlayer();
 void freeScrollLine();
@@ -68,37 +69,8 @@ void processSelecaoPersonagens()
   for (int ind = 0; ind < 2; ind++)
   {
     updateSelector(&player[ind], ind);
-  }
 
-  if (player[0].key_JOY_START_status > 0)
-  {
-    switch (player[0].id)
-    {
-    case JOHNNY_CAGE:
-      XGM2_playPCMEx(loc_jc, sizeof(loc_jc), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-      break;
-    case KANO:
-      XGM2_playPCMEx(loc_kano, sizeof(loc_kano), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-      break;
-    case SUBZERO:
-      XGM2_playPCMEx(loc_suzero, sizeof(loc_suzero), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-      break;
-    case SONYA:
-      XGM2_playPCMEx(loc_sonya, sizeof(loc_sonya), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-      break;
-    case RAIDEN:
-      XGM2_playPCMEx(loc_raiden, sizeof(loc_raiden), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-      break;
-    case LIU_KANG:
-      XGM2_playPCMEx(loc_liu_kang, sizeof(loc_liu_kang), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-      break;
-    case SCORPION:
-      XGM2_playPCMEx(loc_scorpion, sizeof(loc_scorpion), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-      break;
-
-    default:
-      break;
-    }
+    playerSelected(ind);
   }
 
   // TODO: ajustar isso depois e remover
@@ -133,6 +105,42 @@ void processSelecaoPersonagens()
   // VDP_drawText(stri, 1, 1);
   // sprintf(stri, "p2: %d", player[1].id);
   // VDP_drawText(stri, 1, 2);
+}
+
+// TODO: ver o que fazer quando ambos selecionam ao mesmo tempo
+// Verifica se o jogador selecionou um personagem e toca o áudio correspondente
+void playerSelected(int ind)
+{
+  if (player[ind].key_JOY_START_status > 0)
+  {
+    switch (player[ind].id)
+    {
+    case JOHNNY_CAGE:
+      XGM2_playPCMEx(loc_jc, sizeof(loc_jc), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case KANO:
+      XGM2_playPCMEx(loc_kano, sizeof(loc_kano), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case SUBZERO:
+      XGM2_playPCMEx(loc_suzero, sizeof(loc_suzero), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case SONYA:
+      XGM2_playPCMEx(loc_sonya, sizeof(loc_sonya), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case RAIDEN:
+      XGM2_playPCMEx(loc_raiden, sizeof(loc_raiden), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case LIU_KANG:
+      XGM2_playPCMEx(loc_liu_kang, sizeof(loc_liu_kang), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+    case SCORPION:
+      XGM2_playPCMEx(loc_scorpion, sizeof(loc_scorpion), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+      break;
+
+    default:
+      break;
+    }
+  }
 }
 
 void playMusic()
@@ -342,7 +350,8 @@ void updateSelector(Player *player, int ind)
       playCursor();
       SPR_setPosition(GE[ind].sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
       player->id = KANO;
-    } else if(player->key_JOY_LEFT_status == 1)
+    }
+    else if (player->key_JOY_LEFT_status == 1)
     {
       playCursor();
       SPR_setPosition(GE[ind].sprite, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]);
@@ -378,7 +387,8 @@ void updateSelector(Player *player, int ind)
       playCursor();
       SPR_setPosition(GE[ind].sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
       player->id = SUBZERO;
-    } else if(player->key_JOY_RIGHT_status == 1)
+    }
+    else if (player->key_JOY_RIGHT_status == 1)
     {
       playCursor();
       SPR_setPosition(GE[ind].sprite, OPTIONS_X[JOHNNY_CAGE], OPTIONS_Y[JOHNNY_CAGE]);
