@@ -189,42 +189,106 @@ void playerState(int numPlayer, u16 State)
     default:
       break;
     }
-    // Flipa o sprite
-    SPR_setHFlip(player[numPlayer].sprite, (player[numPlayer].direcao == 1) ? FALSE : TRUE);
+    // // Flipa o sprite
+    // SPR_setHFlip(player[numPlayer].sprite, (player[numPlayer].direcao == 1) ? FALSE : TRUE);
 
-    SPR_setAnimAndFrame(player[numPlayer].sprite, 0, player[numPlayer].animFrame - 1);
-    player[numPlayer].frameTimeTotal = player[numPlayer].dataAnim[1];
+    // SPR_setAnimAndFrame(player[numPlayer].sprite, 0, player[numPlayer].animFrame - 1);
+    // player[numPlayer].frameTimeTotal = player[numPlayer].dataAnim[1];
 
-    if (player[numPlayer].sprite)
+    // if (player[numPlayer].sprite)
+    // {
+    //   // FUNCAO_DEPTH
+    // }
+    // // FUNCAO_SPR_POSITION
+    // // ajusta posicao do sprite
+    // if (player[1].direcao == 1)
+    // {
+    //   SPR_setPosition(player[1].sprite,
+    //                   player[1].x - (player[1].w - player[1].axisX) - camPosX,
+    //                   player[1].y - player[1].axisY);
+    // }
+    // if (player[1].direcao == -1)
+    // {
+    //   SPR_setPosition(player[1].sprite,
+    //                   player[1].x - player[1].axisX - camPosX,
+    //                   player[1].y - player[1].axisY);
+    // }
+    // if (player[2].direcao == 1)
+    // {
+    //   SPR_setPosition(player[2].sprite,
+    //                   player[2].x - (player[2].w - player[2].axisX) - camPosX,
+    //                   player[2].y - player[2].axisY);
+    // }
+    // if (player[2].direcao == -1)
+    // {
+    //   SPR_setPosition(player[2].sprite,
+    //                   player[2].x - player[2].axisX - camPosX,
+    //                   player[2].y - player[2].axisY);
+    // }
+  }
+
+  if (player[numPlayer].id == KANO)
+  {
+    switch (State)
     {
-      // FUNCAO_DEPTH
+    case PARADO:
+      player[numPlayer].y = gAlturaDoPiso;
+      player[numPlayer].w = 16 * 8;
+      player[numPlayer].h = 15 * 8;
+      player[numPlayer].dataAnim[1] = 5;
+      player[numPlayer].dataAnim[2] = 5;
+      player[numPlayer].dataAnim[3] = 5;
+      player[numPlayer].dataAnim[4] = 5;
+      player[numPlayer].dataAnim[5] = 5;
+      player[numPlayer].dataAnim[6] = 5;
+      player[numPlayer].dataAnim[7] = 5;
+      player[numPlayer].animFrameTotal = 7;
+      player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_kano, player[numPlayer].x - player[numPlayer].axisX,
+                                                     player[numPlayer].y - player[numPlayer].axisY,
+                                                     TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
+                                                     SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
+      break;
+
+    default:
+      break;
     }
-    // FUNCAO_SPR_POSITION
-    // ajusta posicao do sprite
-    if (player[1].direcao == 1)
-    {
-      SPR_setPosition(player[1].sprite,
-                      player[1].x - (player[1].w - player[1].axisX) - camPosX,
-                      player[1].y - player[1].axisY);
-    }
-    if (player[1].direcao == -1)
-    {
-      SPR_setPosition(player[1].sprite,
-                      player[1].x - player[1].axisX - camPosX,
-                      player[1].y - player[1].axisY);
-    }
-    if (player[2].direcao == 1)
-    {
-      SPR_setPosition(player[2].sprite,
-                      player[2].x - (player[2].w - player[2].axisX) - camPosX,
-                      player[2].y - player[2].axisY);
-    }
-    if (player[2].direcao == -1)
-    {
-      SPR_setPosition(player[2].sprite,
-                      player[2].x - player[2].axisX - camPosX,
-                      player[2].y - player[2].axisY);
-    }
+  }
+
+  // Flipa o sprite
+  SPR_setHFlip(player[numPlayer].sprite, (player[numPlayer].direcao == 1) ? FALSE : TRUE);
+
+  SPR_setAnimAndFrame(player[numPlayer].sprite, 0, player[numPlayer].animFrame - 1);
+  player[numPlayer].frameTimeTotal = player[numPlayer].dataAnim[1];
+
+  if (player[numPlayer].sprite)
+  {
+    // FUNCAO_DEPTH
+  }
+  // FUNCAO_SPR_POSITION
+  // ajusta posicao do sprite
+  if (player[1].direcao == 1)
+  {
+    SPR_setPosition(player[1].sprite,
+                    player[1].x - (player[1].w - player[1].axisX) - camPosX,
+                    player[1].y - player[1].axisY);
+  }
+  if (player[1].direcao == -1)
+  {
+    SPR_setPosition(player[1].sprite,
+                    player[1].x - player[1].axisX - camPosX,
+                    player[1].y - player[1].axisY);
+  }
+  if (player[2].direcao == 1)
+  {
+    SPR_setPosition(player[2].sprite,
+                    player[2].x - (player[2].w - player[2].axisX) - camPosX,
+                    player[2].y - player[2].axisY);
+  }
+  if (player[2].direcao == -1)
+  {
+    SPR_setPosition(player[2].sprite,
+                    player[2].x - player[2].axisX - camPosX,
+                    player[2].y - player[2].axisY);
   }
 }
 

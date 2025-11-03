@@ -7,6 +7,10 @@
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 224
 #define LINE_HEIGHT 2 // Altura da linha em pixels
+#define PLAYER_1_POS_X 24
+#define PLAYER_1_POS_Y 104
+#define PLAYER_2_POS_X 168
+#define PLAYER_2_POS_Y 104
 
 void drawBackground();
 void initScrollLine();
@@ -16,6 +20,7 @@ void playerSelected(int ind);
 void playCursor();
 void initPlayer();
 void freeScrollLine();
+void changePlayerSprite(Player *player, int isPlayer2);
 
 // TODO: talvez mover para a main.c para possibilidades de uso em outras telas.
 s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
@@ -28,6 +33,17 @@ s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
 // SONYA    244, 44
 static const u8 OPTIONS_X[7] = {20, 76, 76, 132, 188, 188, 244};
 static const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
+
+// Mapeamento dos sprites e paletas de cada personagem
+const SpriteDefinition *CHAR_SPRITES[7] = {
+    &spr_jcage,    // JOHNNY_CAGE
+    &spr_kano,     // KANO
+    &spr_rayden,   // RAIDEN
+    &spr_liu_kang, // LIU_KANG
+    &spr_subzero,  // SUBZERO
+    &spr_scorpion, // SCORPION
+    &spr_sonya     // SONYA
+};
 
 void processSelecaoPersonagens()
 {
@@ -66,45 +82,22 @@ void processSelecaoPersonagens()
     SYS_enableInts();
   }
 
-  for (int ind = 0; ind < 2; ind++)
-  {
-    updateSelector(&player[ind], ind);
+  if (scrollLine == NULL)
+  { // TESTE
+    for (int ind = 0; ind < 2; ind++)
+    {
+      updateSelector(&player[ind], ind);
 
-    playerSelected(ind);
-  }
+      playerSelected(ind);
+    }
 
-  // TODO: ajustar isso depois e remover
-  if (player[0].id != SUBZERO && player[0].sprite)
-  {
-    SPR_releaseSprite(player[0].sprite);
-    player[0].sprite = NULL;
+    // Mostra os IDs dos personagens
+    // char stri[64];
+    // sprintf(stri, "p1: %d", player[0].id);
+    // VDP_drawText(stri, 1, 1);
+    // sprintf(stri, "p2: %d", player[1].id);
+    // VDP_drawText(stri, 1, 2);
   }
-  else if (player[0].id == SUBZERO && !player[0].sprite)
-  {
-    player[0].sprite = SPR_addSprite(&spr_subzero, 24, 104, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
-    PAL_setPalette(PAL2, spr_subzero.palette->data, DMA);
-    SPR_setAnim(player[0].sprite, 0);
-    SPR_setDepth(player[0].sprite, SPR_MIN_DEPTH);
-  }
-  if (player[1].id == SUBZERO && !player[1].sprite)
-  {
-    player[1].sprite = SPR_addSprite(&spr_subzero, 168, 104, TILE_ATTR(PAL3, FALSE, FALSE, TRUE));
-    PAL_setPalette(PAL3, spr_subzero.palette->data, DMA);
-    SPR_setAnim(player[1].sprite, 0);
-    SPR_setDepth(player[1].sprite, SPR_MIN_DEPTH);
-  }
-  else if (player[1].id != SUBZERO && player[1].sprite)
-  {
-    SPR_releaseSprite(player[1].sprite);
-    player[1].sprite = NULL;
-  }
-
-  // Mostra os IDs dos personagens
-  // char stri[64];
-  // sprintf(stri, "p1: %d", player[0].id);
-  // VDP_drawText(stri, 1, 1);
-  // sprintf(stri, "p2: %d", player[1].id);
-  // VDP_drawText(stri, 1, 2);
 }
 
 // TODO: ver o que fazer quando ambos selecionam ao mesmo tempo
@@ -319,6 +312,8 @@ void revealBackground()
  */
 void updateSelector(Player *player, int ind)
 {
+  int prevId = player->id; // guarda personagem anterior
+
   switch (player->id)
   {
   case KANO:
@@ -382,6 +377,7 @@ void updateSelector(Player *player, int ind)
     break;
 
   case SONYA:
+
     if (player->key_JOY_LEFT_status == 1)
     {
       playCursor();
@@ -397,6 +393,7 @@ void updateSelector(Player *player, int ind)
     break;
 
   case SCORPION:
+
     if (player->key_JOY_LEFT_status == 1)
     {
       playCursor();
@@ -412,6 +409,7 @@ void updateSelector(Player *player, int ind)
     break;
 
   case LIU_KANG:
+
     if (player->key_JOY_RIGHT_status == 1)
     {
       playCursor();
@@ -427,6 +425,7 @@ void updateSelector(Player *player, int ind)
     break;
 
   case RAIDEN:
+
     if (player->key_JOY_RIGHT_status == 1)
     {
       playCursor();
@@ -444,6 +443,35 @@ void updateSelector(Player *player, int ind)
   default:
     break;
   }
+
+  // Se o ID mudou, troca o sprite exibido
+  if (player->id != prevId)
+  {
+    changePlayerSprite(player, ind == 1);
+  }
+}
+
+void changePlayerSprite(Player *player, int isPlayer2)
+{
+  const SpriteDefinition *newSprite = CHAR_SPRITES[player->id];
+  const u16 *newPal = newSprite->palette->data;
+  u16 pal = isPlayer2 ? PAL3 : PAL2;
+  bool flip = isPlayer2 ? TRUE : FALSE;
+  s16 posX = isPlayer2 ? PLAYER_2_POS_X : PLAYER_1_POS_X;
+  s16 posY = isPlayer2 ? PLAYER_2_POS_Y : PLAYER_1_POS_Y;
+  // Remove o gráfico atual para evitar lixo de VRAM
+  SPR_releaseSprite(player->sprite);
+
+  // player-> sprite = NULL;
+  // Cria novo sprite com o gráfico e paleta corretos
+  player->sprite = SPR_addSprite(newSprite, posX, posY,
+                                 TILE_ATTR(pal, FALSE, FALSE, flip));
+
+  PAL_setPalette(pal, newPal, DMA);
+
+  // SPR_setHFlip(player->sprite, flip);
+  // SPR_setPosition(player->sprite, posX, posY);
+  SPR_setAnim(player->sprite, 0);
 }
 
 void initPlayer()
@@ -460,11 +488,23 @@ void initPlayer()
   player[0].state = PARADO;
   player[0].paleta = PAL2;
   player[0].direcao = 1;
+  player[0].x = PLAYER_1_POS_X;
+  player[0].y = PLAYER_1_POS_Y;
+  player[0].sprite = SPR_addSprite(CHAR_SPRITES[KANO], player[0].x, player[0].y, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+  PAL_setPalette(PAL2, CHAR_SPRITES[KANO]->palette->data, DMA);
+  SPR_setAnim(player[0].sprite, 0);
+  SPR_setDepth(player[0].sprite, SPR_MIN_DEPTH);
 
   player[1].id = SUBZERO;
   player[1].state = PARADO;
   player[1].paleta = PAL3;
   player[1].direcao = -1;
+  player[1].x = PLAYER_2_POS_X;
+  player[1].y = PLAYER_2_POS_Y;
+  player[1].sprite = SPR_addSprite(CHAR_SPRITES[SUBZERO], player[1].x, player[1].y, TILE_ATTR(PAL3, FALSE, FALSE, TRUE));
+  PAL_setPalette(PAL3, CHAR_SPRITES[SUBZERO]->palette->data, DMA);
+  SPR_setAnim(player[1].sprite, 0);
+  SPR_setDepth(player[1].sprite, SPR_MIN_DEPTH);
 
   memset(player[0].key_JOY_countdown, 0, sizeof(player[0].key_JOY_countdown));
   memset(player[1].key_JOY_countdown, 0, sizeof(player[1].key_JOY_countdown));

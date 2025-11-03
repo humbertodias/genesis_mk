@@ -57,7 +57,7 @@ typedef struct
 {
   u8 id;
   Sprite *sprite;
-  int paleta;
+  u16 paleta;
   s16 x;      // posição X do jogador
   s16 y;      // posição Y do jogador
   u8 w;       // Largura do Sprite
