@@ -3,7 +3,7 @@ SPRITE  spPressStart   "sprite/txt/press_start.png"       16 2 BEST 6
 
 # Character Selection Sprites
 #SPRITE  spr_subzero    "sprite/subzero.png"              20 20 NONE 6
-SPRITE spr_jcage       "sprite/kano_stand.png"             16 15 NONE 6
+SPRITE spr_jcage       "sprite/jc_stand.png"               16 15 NONE 6
 SPRITE spr_kano        "sprite/kano_stand.png"             16 15 NONE 6
 SPRITE spr_rayden      "sprite/kano_stand.png"             16 15 NONE 6
 SPRITE spr_subzero     "sprite/subzero.png"                16 15 NONE 6
