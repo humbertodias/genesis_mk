@@ -1,4 +1,5 @@
 #include "input_system.h"
+#include "game_vars.h"
 
 void newInputSystem()
 {

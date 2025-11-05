@@ -1,21 +1,18 @@
 #include <genesis.h>
 
+#include "game_vars.h"
+#include "fighters.h"
 #include "estruturas.h"
 #include "cenarios.h"
 #include "input_system.h"
 #include "gfx.h"
+#include "sprites.h"
 
 #define DEBUG FALSE
 
 // -- DECLARACAO DE VARIAVEIS -- //
-u8 gRoom;         // Sala atual
-u32 gFrames;      // Frame Counter
-u16 gInd_tileset; // Variable used to load background data
-u16 gBG_Width;    // Largura do Cenario, em pixels
-u16 gBG_Height;
-u16 gDistancia;   // Distancia entre os Players
-u8 gAlturaDoPiso; // Altura do Piso
-s16 gScrollValue; // Scrolling de Cenario
+u8 gRoom; // Sala atual
+u16 gDistancia; // Distancia entre os Players
 bool gPodeMover = TRUE;
 // u16 palette[64];
 s16 gMeioDaTela = 0;     // MEio da Câmera em X
@@ -27,9 +24,20 @@ s16 camPosXanterior = 0; // Posicao da Camera no frame Anterior
 s16 scrollOffset = 0;
 s16 scrollValues[48];
 
-GraphicElement GE[25];
+// GraphicElement GE[25];
 
-Player player[2];
+// Player player[2];
+
+typedef void (*PlayerStateFunc)(int, u16);
+
+const PlayerStateFunc PLAYER_STATE_FUNCS[7] = {
+    playerState_Johnny,
+    playerState_Kano,
+    playerState_Rayden,
+    playerState_LiuKang,
+    playerState_SubZero,
+    playerState_Scorpion,
+    playerState_Sonya};
 
 void resetGraphicElements();
 void CLEAR_VDP();
@@ -159,128 +167,134 @@ void playerState(int numPlayer, u16 State)
   player[numPlayer].animFrameTotal = 1;
   player[numPlayer].state = State;
 
-  if (player[numPlayer].id == SUBZERO)
+  if (PLAYER_STATE_FUNCS[player[numPlayer].id])
   {
-    switch (State)
-    {
-    case PARADO:
-      player[numPlayer].y = gAlturaDoPiso;
-      player[numPlayer].w = 16 * 8;
-      player[numPlayer].h = 15 * 8;
-      player[numPlayer].dataAnim[1] = 5;
-      player[numPlayer].dataAnim[2] = 5;
-      player[numPlayer].dataAnim[3] = 5;
-      player[numPlayer].dataAnim[4] = 5;
-      player[numPlayer].dataAnim[5] = 5;
-      player[numPlayer].dataAnim[6] = 5;
-      player[numPlayer].dataAnim[7] = 5;
-      player[numPlayer].dataAnim[8] = 5;
-      player[numPlayer].dataAnim[9] = 5;
-      player[numPlayer].dataAnim[10] = 5;
-      player[numPlayer].dataAnim[11] = 5;
-      player[numPlayer].dataAnim[12] = 5;
-      player[numPlayer].animFrameTotal = 12;
-      player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_subzero, player[numPlayer].x - player[numPlayer].axisX,
-                                                     player[numPlayer].y - player[numPlayer].axisY,
-                                                     TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
-                                                     SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
-      break;
-
-    default:
-      break;
-    }
-    // // Flipa o sprite
-    // SPR_setHFlip(player[numPlayer].sprite, (player[numPlayer].direcao == 1) ? FALSE : TRUE);
-
-    // SPR_setAnimAndFrame(player[numPlayer].sprite, 0, player[numPlayer].animFrame - 1);
-    // player[numPlayer].frameTimeTotal = player[numPlayer].dataAnim[1];
-
-    // if (player[numPlayer].sprite)
-    // {
-    //   // FUNCAO_DEPTH
-    // }
-    // // FUNCAO_SPR_POSITION
-    // // ajusta posicao do sprite
-    // if (player[1].direcao == 1)
-    // {
-    //   SPR_setPosition(player[1].sprite,
-    //                   player[1].x - (player[1].w - player[1].axisX) - camPosX,
-    //                   player[1].y - player[1].axisY);
-    // }
-    // if (player[1].direcao == -1)
-    // {
-    //   SPR_setPosition(player[1].sprite,
-    //                   player[1].x - player[1].axisX - camPosX,
-    //                   player[1].y - player[1].axisY);
-    // }
-    // if (player[2].direcao == 1)
-    // {
-    //   SPR_setPosition(player[2].sprite,
-    //                   player[2].x - (player[2].w - player[2].axisX) - camPosX,
-    //                   player[2].y - player[2].axisY);
-    // }
-    // if (player[2].direcao == -1)
-    // {
-    //   SPR_setPosition(player[2].sprite,
-    //                   player[2].x - player[2].axisX - camPosX,
-    //                   player[2].y - player[2].axisY);
-    // }
+    PLAYER_STATE_FUNCS[player[numPlayer].id](numPlayer, State);
   }
 
-  if (player[numPlayer].id == KANO)
-  {
-    switch (State)
+  /*
+    if (player[numPlayer].id == SUBZERO)
     {
-    case PARADO:
-      player[numPlayer].y = gAlturaDoPiso;
-      player[numPlayer].w = 16 * 8;
-      player[numPlayer].h = 15 * 8;
-      player[numPlayer].dataAnim[1] = 5;
-      player[numPlayer].dataAnim[2] = 5;
-      player[numPlayer].dataAnim[3] = 5;
-      player[numPlayer].dataAnim[4] = 5;
-      player[numPlayer].dataAnim[5] = 5;
-      player[numPlayer].dataAnim[6] = 5;
-      player[numPlayer].dataAnim[7] = 5;
-      player[numPlayer].animFrameTotal = 7;
-      player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_kano, player[numPlayer].x - player[numPlayer].axisX,
-                                                     player[numPlayer].y - player[numPlayer].axisY,
-                                                     TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
-                                                     SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
-      break;
+      switch (State)
+      {
+      case PARADO:
+        player[numPlayer].y = gAlturaDoPiso;
+        player[numPlayer].w = 16 * 8;
+        player[numPlayer].h = 15 * 8;
+        player[numPlayer].dataAnim[1] = 5;
+        player[numPlayer].dataAnim[2] = 5;
+        player[numPlayer].dataAnim[3] = 5;
+        player[numPlayer].dataAnim[4] = 5;
+        player[numPlayer].dataAnim[5] = 5;
+        player[numPlayer].dataAnim[6] = 5;
+        player[numPlayer].dataAnim[7] = 5;
+        player[numPlayer].dataAnim[8] = 5;
+        player[numPlayer].dataAnim[9] = 5;
+        player[numPlayer].dataAnim[10] = 5;
+        player[numPlayer].dataAnim[11] = 5;
+        player[numPlayer].dataAnim[12] = 5;
+        player[numPlayer].animFrameTotal = 12;
+        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_subzero, player[numPlayer].x - player[numPlayer].axisX,
+                                                       player[numPlayer].y - player[numPlayer].axisY,
+                                                       TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
+                                                       SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
+        break;
 
-    default:
-      break;
+      default:
+        break;
+      }
+      // // Flipa o sprite
+      // SPR_setHFlip(player[numPlayer].sprite, (player[numPlayer].direcao == 1) ? FALSE : TRUE);
+
+      // SPR_setAnimAndFrame(player[numPlayer].sprite, 0, player[numPlayer].animFrame - 1);
+      // player[numPlayer].frameTimeTotal = player[numPlayer].dataAnim[1];
+
+      // if (player[numPlayer].sprite)
+      // {
+      //   // FUNCAO_DEPTH
+      // }
+      // // FUNCAO_SPR_POSITION
+      // // ajusta posicao do sprite
+      // if (player[1].direcao == 1)
+      // {
+      //   SPR_setPosition(player[1].sprite,
+      //                   player[1].x - (player[1].w - player[1].axisX) - camPosX,
+      //                   player[1].y - player[1].axisY);
+      // }
+      // if (player[1].direcao == -1)
+      // {
+      //   SPR_setPosition(player[1].sprite,
+      //                   player[1].x - player[1].axisX - camPosX,
+      //                   player[1].y - player[1].axisY);
+      // }
+      // if (player[2].direcao == 1)
+      // {
+      //   SPR_setPosition(player[2].sprite,
+      //                   player[2].x - (player[2].w - player[2].axisX) - camPosX,
+      //                   player[2].y - player[2].axisY);
+      // }
+      // if (player[2].direcao == -1)
+      // {
+      //   SPR_setPosition(player[2].sprite,
+      //                   player[2].x - player[2].axisX - camPosX,
+      //                   player[2].y - player[2].axisY);
+      // }
     }
-  }
 
-  if(player[numPlayer].id == JOHNNY_CAGE)
-  {
-    switch (State)
+    if (player[numPlayer].id == KANO)
     {
-    case PARADO:
-      player[numPlayer].y = gAlturaDoPiso;
-      player[numPlayer].w = 16 * 8;
-      player[numPlayer].h = 15 * 8;
-      player[numPlayer].dataAnim[1] = 5;
-      player[numPlayer].dataAnim[2] = 5;
-      player[numPlayer].dataAnim[3] = 5;
-      player[numPlayer].dataAnim[4] = 5;
-      player[numPlayer].dataAnim[5] = 5;
-      player[numPlayer].dataAnim[6] = 5;
-      player[numPlayer].dataAnim[7] = 5;
-      player[numPlayer].animFrameTotal = 7;
-      player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_jcage, player[numPlayer].x - player[numPlayer].axisX,
-                                                     player[numPlayer].y - player[numPlayer].axisY,
-                                                     TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
-                                                     SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
-      break;
+      switch (State)
+      {
+      case PARADO:
+        player[numPlayer].y = gAlturaDoPiso;
+        player[numPlayer].w = 16 * 8;
+        player[numPlayer].h = 15 * 8;
+        player[numPlayer].dataAnim[1] = 5;
+        player[numPlayer].dataAnim[2] = 5;
+        player[numPlayer].dataAnim[3] = 5;
+        player[numPlayer].dataAnim[4] = 5;
+        player[numPlayer].dataAnim[5] = 5;
+        player[numPlayer].dataAnim[6] = 5;
+        player[numPlayer].dataAnim[7] = 5;
+        player[numPlayer].animFrameTotal = 7;
+        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_kano, player[numPlayer].x - player[numPlayer].axisX,
+                                                       player[numPlayer].y - player[numPlayer].axisY,
+                                                       TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
+                                                       SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
+        break;
 
-    default:
-      break;
+      default:
+        break;
+      }
     }
-  }
 
+    if(player[numPlayer].id == JOHNNY_CAGE)
+    {
+      switch (State)
+      {
+      case PARADO:
+        player[numPlayer].y = gAlturaDoPiso;
+        player[numPlayer].w = 16 * 8;
+        player[numPlayer].h = 15 * 8;
+        player[numPlayer].dataAnim[1] = 5;
+        player[numPlayer].dataAnim[2] = 5;
+        player[numPlayer].dataAnim[3] = 5;
+        player[numPlayer].dataAnim[4] = 5;
+        player[numPlayer].dataAnim[5] = 5;
+        player[numPlayer].dataAnim[6] = 5;
+        player[numPlayer].dataAnim[7] = 5;
+        player[numPlayer].animFrameTotal = 7;
+        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_jcage, player[numPlayer].x - player[numPlayer].axisX,
+                                                       player[numPlayer].y - player[numPlayer].axisY,
+                                                       TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
+                                                       SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
+        break;
+
+      default:
+        break;
+      }
+    }
+  */
   // Flipa o sprite
   SPR_setHFlip(player[numPlayer].sprite, (player[numPlayer].direcao == 1) ? FALSE : TRUE);
 

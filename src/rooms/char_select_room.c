@@ -1,6 +1,12 @@
+#include <genesis.h>
+
 #include "char_select_room.h"
+#include "input_system.h"
 #include "stages.h"
 #include "sprites.h"
+#include "sound.h"
+#include "game_vars.h"
+#include "fighters.h"
 
 #define TILEMAP_WIDTH 40
 #define TILEMAP_HEIGHT 28
@@ -21,6 +27,7 @@ void playCursor();
 void initPlayer();
 void freeScrollLine();
 void changePlayerSprite(Player *player, int isPlayer2);
+void changePlayerSprite2(Player *player, int isPlayer2);
 
 // TODO: talvez mover para a main.c para possibilidades de uso em outras telas.
 s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
@@ -447,10 +454,42 @@ void updateSelector(Player *player, int ind)
   // Se o ID mudou, troca o sprite exibido
   if (player->id != prevId)
   {
-    changePlayerSprite(player, ind == 1);
+    changePlayerSprite2(player, ind == 1);
   }
 }
+typedef void (*PlayerStateFunc)(int, u16);
 
+const PlayerStateFunc PLAYER_STATE_FUNCS2[7] = {
+    playerState_Johnny,
+    playerState_Kano,
+    playerState_Rayden,
+    playerState_LiuKang,
+    playerState_SubZero,
+    playerState_Scorpion,
+    playerState_Sonya};
+
+void changePlayerSprite2(Player *player, int isPlayer2)
+{
+  player->paleta = isPlayer2 ? PAL3 : PAL2;
+  player->x = isPlayer2 ? PLAYER_2_POS_X : PLAYER_1_POS_X;
+  player->y = isPlayer2 ? PLAYER_2_POS_Y : PLAYER_1_POS_Y;
+
+  if (PLAYER_STATE_FUNCS2[player->id])
+  {
+    SPR_releaseSprite(player->sprite);
+    PLAYER_STATE_FUNCS2[player->id](player->direcao == 1 ? 0 : 1, PARADO);
+  }
+  if(player->direcao == 1){
+    PAL_setPalette(PAL2, player->sprite->definition->palette->data, DMA);
+  } else {
+    PAL_setPalette(PAL3, player->sprite->definition->palette->data, DMA);
+  }
+  
+  SPR_setHFlip(player->sprite, (player->direcao == 1) ? FALSE : TRUE);
+  SPR_setAnim(player->sprite, 0);
+}
+
+// TODO: tentar usar o novo sistema de carregamento de estados de personagem
 void changePlayerSprite(Player *player, int isPlayer2)
 {
   const SpriteDefinition *newSprite = CHAR_SPRITES[player->id];
@@ -483,7 +522,7 @@ void initPlayer()
   //   player[ind].key_JOY_countdown[6] = 0;
   //   player[ind].key_JOY_countdown[8] = 0;
   // }
-
+  gAlturaDoPiso = PLAYER_1_POS_Y;
   player[0].id = KANO;
   player[0].state = PARADO;
   player[0].paleta = PAL2;

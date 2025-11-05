@@ -1,6 +1,7 @@
 #include <genesis.h>
 #include "palace_gates_room.h"
 #include "stages.h"
+#include "game_vars.h"
 
 #define PALACE_GATES_W 928
 #define PALACE_GATES_H 232

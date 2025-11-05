@@ -57,7 +57,7 @@ typedef struct
 {
   u8 id;
   Sprite *sprite;
-  u16 paleta;
+  int paleta; // PAL0, PAL1, PAL2, etc.
   s16 x;      // posição X do jogador
   s16 y;      // posição Y do jogador
   u8 w;       // Largura do Sprite
@@ -97,6 +97,6 @@ typedef struct
   u8 key_JOY_status[12];
 } Player;
 
-extern Player player[2];
+// extern Player player[2];
 
 #endif

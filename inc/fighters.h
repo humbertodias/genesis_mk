@@ -1,0 +1,14 @@
+#ifndef FIGHTERS_H
+#define FIGHTERS_H
+
+#include <genesis.h>
+
+void playerState_Kano(int numPlayer, u16 State);
+void playerState_SubZero(int numPlayer, u16 State);
+void playerState_Johnny(int numPlayer, u16 State);
+void playerState_Rayden(int numPlayer, u16 State);
+void playerState_LiuKang(int numPlayer, u16 State);
+void playerState_Scorpion(int numPlayer, u16 State);
+void playerState_Sonya(int numPlayer, u16 State);
+
+#endif // FIGHTERS_H
