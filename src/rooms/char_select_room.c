@@ -480,9 +480,19 @@ void changePlayerSprite2(Player *player, int isPlayer2)
     PLAYER_STATE_FUNCS2[player->id](player->direcao == 1 ? 0 : 1, PARADO);
   }
   if(player->direcao == 1){
-    PAL_setPalette(PAL2, player->sprite->definition->palette->data, DMA);
+    if(player->id != SONYA){
+
+      PAL_setPalette(PAL2, player->sprite->definition->palette->data, DMA);
+    } else {
+      PAL_setPalette(PAL2, sonya_p1_pal.data, DMA);
+    }
   } else {
-    PAL_setPalette(PAL3, player->sprite->definition->palette->data, DMA);
+    if(player->id != SONYA){
+
+      PAL_setPalette(PAL3, player->sprite->definition->palette->data, DMA);
+    } else {
+      PAL_setPalette(PAL3, sonya_p2_pal.data, DMA);
+    }
   }
   
   SPR_setHFlip(player->sprite, (player->direcao == 1) ? FALSE : TRUE);
