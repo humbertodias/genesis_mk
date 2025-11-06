@@ -10,6 +10,8 @@ Material de estudo para desenvolvimento de um jogo de luta para o Mega Drive usa
 
 -- SDGK via docker [docker-sgdk](https://gitlab.com/doragasu/docker-sgdk)
 
+-- Scripts para o Aseprite [sgdk-aseprite-scripts](https://github.com/retrodevbr/sgdk-aseprite-scripts)
+
 ## Build
 
 ```shell
