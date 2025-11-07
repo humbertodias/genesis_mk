@@ -5,7 +5,7 @@
 
 void playerState_Sonya(int numPlayer, u16 State)
 {
-     switch (State)
+    switch (State)
     {
     case PARADO:
         player[numPlayer].y = gAlturaDoPiso;
