@@ -4,13 +4,13 @@ GID := $(shell id -g)
 DOCKER_IMAGE := registry.gitlab.com/doragasu/docker-sgdk:v$(SGDK_VERSION)
 UNAME_S := $(shell uname -s)
 RETROARCH ?= $(shell which retroarch 2>/dev/null)
-RETROARCH_CORE_NAME := genesis_plus_gx
+CORE := genesis_plus_gx
 
 ifeq ($(UNAME_S),Darwin)
     RETROARCH := /Applications/RetroArch.app/Contents/MacOS/RetroArch
-    RETROARCH_CORE := $(shell find "$${HOME}/Library/Application Support/RetroArch/cores" -type f -name "$(RETROARCH_CORE_NAME)_libretro.dylib" 2>/dev/null | head -n1)
+    RETROARCH_CORE := $(shell find "$${HOME}/Library/Application Support/RetroArch/cores" -type f -name "$(CORE)_libretro.dylib" 2>/dev/null | head -n1)
 else
-    RETROARCH_CORE := $(shell find "$${HOME}/.config/retroarch/cores" -type f -name "$(RETROARCH_CORE_NAME)_libretro.so" 2>/dev/null | head -n1)
+    RETROARCH_CORE := $(shell find "$${HOME}/.config/retroarch/cores" -type f -name "$(CORE)_libretro.so" 2>/dev/null | head -n1)
 endif
 
 .PHONY: compile
@@ -27,4 +27,4 @@ format:
 	clang-format -i src/main.c
 
 run:
-	"${RETROARCH}" -L "${RETROARCH_CORE}" out/rom.bin
+	"${RETROARCH}" -L "${CORE}" out/rom.bin
