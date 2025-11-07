@@ -18,7 +18,8 @@ void playerState_LiuKang(int numPlayer, u16 State)
         player[numPlayer].dataAnim[5] = 5;
         player[numPlayer].dataAnim[6] = 5;
         player[numPlayer].dataAnim[7] = 5;
-        player[numPlayer].animFrameTotal = 7;
+        player[numPlayer].dataAnim[8] = 5;
+        player[numPlayer].animFrameTotal = 8;
         player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_liu_kang, player[numPlayer].x - player[numPlayer].axisX,
                                                        player[numPlayer].y - player[numPlayer].axisY,
                                                        TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),

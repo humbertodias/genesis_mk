@@ -11,8 +11,8 @@ SPRITE spr_kano        "sprite/kano_stand.png"             16 15 NONE 6
 SPRITE spr_rayden      "sprite/kano_stand.png"             16 15 NONE 6
 SPRITE spr_subzero     "sprite/subzero.png"                16 15 NONE 6
 SPRITE spr_scorpion    "sprite/kano_stand.png"             16 15 NONE 6
-SPRITE spr_sonya       "sprite/sonya_stand.png"             16 15 NONE 6
-SPRITE spr_liu_kang    "sprite/kano_stand.png"             16 15 NONE 6
+SPRITE spr_sonya       "sprite/sonya_stand.png"            16 15 NONE 6
+SPRITE spr_liu_kang    "sprite/liu_kang_stand.png"         16 15 NONE 6
 # Bio Screen Animation
 SPRITE jc_bio          "stages/bio/johnny_cage_bio.png"     12 9 BEST 6
 SPRITE kano_bio        "stages/bio/kano_bio.png"            12 9 BEST 6 
