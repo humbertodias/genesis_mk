@@ -1,6 +1,14 @@
-#include "intro_demo_room.h"
+#include <genesis.h>
 
+#include "intro_demo_room.h"
+#include "typewriter_printer.h"
+#include "estruturas.h"
+#include "stages.h"
+#include "gfx.h"
+#include "sprites.h"
+#include "sound.h"
 #include "bio_textlines.h"
+#include "game_vars.h"
 
 Sprite *bioAnimation;
 Sprite *headName;

@@ -1,10 +1,15 @@
+#include <genesis.h>
+
 #include "press_start_room.h"
+#include "stages.h"
+#include "sprites.h"
+#include "game_vars.h"
 
 // Variáveis Locais
 s16 vecTilesScreen[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 s16 vecAceleracao[20] = {2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2};
 
-Sprite* pressStart;
+Sprite *pressStart;
 
 void clearVDP1()
 {
