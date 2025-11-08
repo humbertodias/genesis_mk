@@ -7,6 +7,7 @@
 #include "sound.h"
 #include "game_vars.h"
 #include "fighters.h"
+#include "anima_system.h"
 
 #define TILEMAP_WIDTH 40
 #define TILEMAP_HEIGHT 28
@@ -89,14 +90,15 @@ void processSelecaoPersonagens()
     SYS_enableInts();
   }
 
-  if (scrollLine == NULL)
-  { // TESTE
+  if (scrollLine == NULL) // se o scrollLine já tiver terminado...
+  {
     for (int ind = 0; ind < 2; ind++)
     {
       updateSelector(&player[ind], ind);
 
       playerSelected(ind);
     }
+    //anima();
 
     // Mostra os IDs dos personagens
     // char stri[64];
@@ -457,46 +459,51 @@ void updateSelector(Player *player, int ind)
     changePlayerSprite2(player, ind == 1);
   }
 }
-typedef void (*PlayerStateFunc)(int, u16);
 
-const PlayerStateFunc PLAYER_STATE_FUNCS2[7] = {
-    playerState_Johnny,
-    playerState_Kano,
-    playerState_Rayden,
-    playerState_LiuKang,
-    playerState_SubZero,
-    playerState_Scorpion,
-    playerState_Sonya};
+// typedef void (*PlayerStateFunc)(int, u16);
+
+// const PlayerStateFunc PLAYER_STATE_FUNCS2[7] = {
+//     playerState_Johnny,
+//     playerState_Kano,
+//     playerState_Rayden,
+//     playerState_LiuKang,
+//     playerState_SubZero,
+//     playerState_Scorpion,
+//     playerState_Sonya};
 
 void changePlayerSprite2(Player *player, int isPlayer2)
 {
-  player->paleta = isPlayer2 ? PAL3 : PAL2;
-  player->x = isPlayer2 ? PLAYER_2_POS_X : PLAYER_1_POS_X;
-  player->y = isPlayer2 ? PLAYER_2_POS_Y : PLAYER_1_POS_Y;
+  // player->paleta = isPlayer2 ? PAL3 : PAL2;
+  // player->x = isPlayer2 ? PLAYER_2_POS_X : PLAYER_1_POS_X;
+  // player->y = isPlayer2 ? PLAYER_2_POS_Y : PLAYER_1_POS_Y;
 
-  if (PLAYER_STATE_FUNCS2[player->id])
-  {
-    SPR_releaseSprite(player->sprite);
-    PLAYER_STATE_FUNCS2[player->id](player->direcao == 1 ? 0 : 1, PARADO);
-  }
-  if(player->direcao == 1){
-    if(player->id != SONYA){
-
-      PAL_setPalette(PAL2, player->sprite->definition->palette->data, DMA);
-    } else {
-      PAL_setPalette(PAL2, sonya_p1_pal.data, DMA);
-    }
-  } else {
-    if(player->id != SONYA){
-
-      PAL_setPalette(PAL3, player->sprite->definition->palette->data, DMA);
-    } else {
-      PAL_setPalette(PAL3, sonya_p2_pal.data, DMA);
-    }
-  }
+  //playerState(isPlayer2 ? 1:0, PARADO);
   
-  SPR_setHFlip(player->sprite, (player->direcao == 1) ? FALSE : TRUE);
-  SPR_setAnim(player->sprite, 0);
+  // if (PLAYER_STATE_FUNCS2[player->id])
+  // {
+  //   SPR_releaseSprite(player->sprite);
+  //   PLAYER_STATE_FUNCS2[player->id](player->direcao == 1 ? 0 : 1, PARADO);
+  // }
+  // if (player->direcao == 1)
+  // {
+  //   if (player->id != SONYA && player->id != KANO)
+  //   {
+
+  //     PAL_setPalette(PAL2, player->sprite->definition->palette->data, DMA);
+  //   }
+  // }
+  // else
+  // {
+  //   if (player->id != SONYA && player->id != KANO)
+  //   {
+
+  //     PAL_setPalette(PAL3, player->sprite->definition->palette->data, DMA);
+  //   }
+  // }
+
+  // SPR_setDepth(player->sprite, SPR_MIN_DEPTH);
+  // SPR_setHFlip(player->sprite, (player->direcao == 1) ? FALSE : TRUE);
+  // SPR_setAnim(player->sprite, 0);
 }
 
 // TODO: tentar usar o novo sistema de carregamento de estados de personagem
@@ -539,10 +546,10 @@ void initPlayer()
   player[0].direcao = 1;
   player[0].x = PLAYER_1_POS_X;
   player[0].y = PLAYER_1_POS_Y;
-  player[0].sprite = SPR_addSprite(CHAR_SPRITES[KANO], player[0].x, player[0].y, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
-  PAL_setPalette(PAL2, CHAR_SPRITES[KANO]->palette->data, DMA);
-  SPR_setAnim(player[0].sprite, 0);
-  SPR_setDepth(player[0].sprite, SPR_MIN_DEPTH);
+  // player[0].sprite = SPR_addSprite(CHAR_SPRITES[KANO], player[0].x, player[0].y, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+  // PAL_setPalette(PAL2, CHAR_SPRITES[KANO]->palette->data, DMA);
+  // SPR_setAnim(player[0].sprite, 0);
+  // SPR_setDepth(player[0].sprite, SPR_MIN_DEPTH);
 
   player[1].id = SUBZERO;
   player[1].state = PARADO;
@@ -550,10 +557,13 @@ void initPlayer()
   player[1].direcao = -1;
   player[1].x = PLAYER_2_POS_X;
   player[1].y = PLAYER_2_POS_Y;
-  player[1].sprite = SPR_addSprite(CHAR_SPRITES[SUBZERO], player[1].x, player[1].y, TILE_ATTR(PAL3, FALSE, FALSE, TRUE));
-  PAL_setPalette(PAL3, CHAR_SPRITES[SUBZERO]->palette->data, DMA);
-  SPR_setAnim(player[1].sprite, 0);
-  SPR_setDepth(player[1].sprite, SPR_MIN_DEPTH);
+  // player[1].sprite = SPR_addSprite(CHAR_SPRITES[SUBZERO], player[1].x, player[1].y, TILE_ATTR(PAL3, FALSE, FALSE, TRUE));
+  // PAL_setPalette(PAL3, CHAR_SPRITES[SUBZERO]->palette->data, DMA);
+  // SPR_setAnim(player[1].sprite, 0);
+  // SPR_setDepth(player[1].sprite, SPR_MIN_DEPTH);
+
+  playerState(0, PARADO);
+  playerState(1, PARADO);
 
   memset(player[0].key_JOY_countdown, 0, sizeof(player[0].key_JOY_countdown));
   memset(player[1].key_JOY_countdown, 0, sizeof(player[1].key_JOY_countdown));
