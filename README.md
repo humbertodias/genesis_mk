@@ -12,6 +12,8 @@ Material de estudo para desenvolvimento de um jogo de luta para o Mega Drive usa
 
 - Scripts para o Aseprite [sgdk-aseprite-scripts](https://github.com/retrodevbr/sgdk-aseprite-scripts)
 
+- Images em [spriters-resource](https://www.spriters-resource.com/arcade/mortalkombat/)
+
 ## Build
 
 ```shell
@@ -21,6 +23,7 @@ make SGDK_VERSION=2.11 compile
 Rom em `out/rom.bin`
 
 ## Retroarch
+
 ```shell
 make run
 ```
