@@ -28,4 +28,11 @@ void playerState_Kano(int numPlayer, u16 State)
     default:
         break;
     }
+
+    if(player[numPlayer].direcao == 1)
+    {
+        PAL_setPalette(PAL2, kano_p1_pal.data, DMA);
+    } else {
+        PAL_setPalette(PAL3, kano_p2_pal.data, DMA);
+    }
 }

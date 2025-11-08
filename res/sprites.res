@@ -3,12 +3,14 @@ SPRITE  spPressStart   "sprite/txt/press_start.png"       16 2 BEST 6
 
 PALETTE sonya_p1_pal       "sprite/sonya_p1_paleta_mega.pal"
 PALETTE sonya_p2_pal       "sprite/sonya_p2_paleta_mega.pal"
+PALETTE kano_p1_pal        "sprite/kano_paleta_p1.pal"
+PALETTE kano_p2_pal        "sprite/kano_paleta_p2.pal"
 
 # Character Selection Sprites
 #SPRITE  spr_subzero    "sprite/subzero.png"              20 20 NONE 6
 SPRITE spr_jcage       "sprite/jc_stand.png"               16 15 NONE 6
 SPRITE spr_kano        "sprite/kano_stand.png"             16 15 NONE 6
-SPRITE spr_rayden      "sprite/kano_stand.png"             16 15 NONE 6
+SPRITE spr_rayden      "sprite/rayden_stand.png"             16 15 NONE 6
 SPRITE spr_subzero     "sprite/subzero.png"                16 15 NONE 6
 SPRITE spr_scorpion    "sprite/kano_stand.png"             16 15 NONE 6
 SPRITE spr_sonya       "sprite/sonya_stand.png"            16 15 NONE 6

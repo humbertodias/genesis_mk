@@ -33,4 +33,11 @@ void playerState_SubZero(int numPlayer, u16 State)
     default:
         break;
     }
+
+    if(player[numPlayer].direcao == 1)
+    {
+        PAL_setPalette(PAL2, spr_subzero.palette->data, DMA);
+    } else {
+        PAL_setPalette(PAL3, spr_subzero.palette->data, DMA);
+    }
 }
