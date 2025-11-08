@@ -3,7 +3,7 @@
 #include "estruturas.h"
 #include "game_vars.h"
 
-void playerState_Rayden(int numPlayer, u16 State)
+void playerState_Raiden(int numPlayer, u16 State)
 {
      switch (State)
     {
@@ -19,7 +19,7 @@ void playerState_Rayden(int numPlayer, u16 State)
         player[numPlayer].dataAnim[6] = 5;
         player[numPlayer].dataAnim[7] = 5;
         player[numPlayer].animFrameTotal = 7;
-        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_rayden, player[numPlayer].x - player[numPlayer].axisX,
+        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_raiden, player[numPlayer].x - player[numPlayer].axisX,
                                                        player[numPlayer].y - player[numPlayer].axisY,
                                                        TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
                                                        SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);

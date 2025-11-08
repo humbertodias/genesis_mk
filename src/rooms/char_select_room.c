@@ -33,7 +33,7 @@ void changePlayerSprite2(Player *player, int isPlayer2);
 s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
 // CAGE      20, 44
 // KANO      76, 44
-// RAYDEN    76, 108
+// RAIDEN    76, 108
 // LIU KANG 132, 108
 // SUBZERO  188, 44
 // SCORPION 188, 108
@@ -45,7 +45,7 @@ static const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
 const SpriteDefinition *CHAR_SPRITES[7] = {
     &spr_jcage,    // JOHNNY_CAGE
     &spr_kano,     // KANO
-    &spr_rayden,   // RAIDEN
+    &spr_raiden,   // RAIDEN
     &spr_liu_kang, // LIU_KANG
     &spr_subzero,  // SUBZERO
     &spr_scorpion, // SCORPION
@@ -462,7 +462,7 @@ typedef void (*PlayerStateFunc)(int, u16);
 const PlayerStateFunc PLAYER_STATE_FUNCS2[7] = {
     playerState_Johnny,
     playerState_Kano,
-    playerState_Rayden,
+    playerState_Raiden,
     playerState_LiuKang,
     playerState_SubZero,
     playerState_Scorpion,

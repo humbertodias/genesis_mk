@@ -33,7 +33,7 @@ typedef void (*PlayerStateFunc)(int, u16);
 const PlayerStateFunc PLAYER_STATE_FUNCS[7] = {
     playerState_Johnny,
     playerState_Kano,
-    playerState_Rayden,
+    playerState_Raiden,
     playerState_LiuKang,
     playerState_SubZero,
     playerState_Scorpion,
