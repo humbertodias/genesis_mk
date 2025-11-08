@@ -227,17 +227,17 @@ void playerState(int numPlayer, u16 State)
       //                   player[1].x - player[1].axisX - camPosX,
       //                   player[1].y - player[1].axisY);
       // }
-      // if (player[2].direcao == 1)
+      // if (player[0].direcao == 1)
       // {
-      //   SPR_setPosition(player[2].sprite,
-      //                   player[2].x - (player[2].w - player[2].axisX) - camPosX,
-      //                   player[2].y - player[2].axisY);
+      //   SPR_setPosition(player[0].sprite,
+      //                   player[0].x - (player[0].w - player[0].axisX) - camPosX,
+      //                   player[0].y - player[0].axisY);
       // }
-      // if (player[2].direcao == -1)
+      // if (player[0].direcao == -1)
       // {
-      //   SPR_setPosition(player[2].sprite,
-      //                   player[2].x - player[2].axisX - camPosX,
-      //                   player[2].y - player[2].axisY);
+      //   SPR_setPosition(player[0].sprite,
+      //                   player[0].x - player[0].axisX - camPosX,
+      //                   player[0].y - player[0].axisY);
       // }
     }
 
@@ -319,17 +319,17 @@ void playerState(int numPlayer, u16 State)
                     player[1].x - player[1].axisX - camPosX,
                     player[1].y - player[1].axisY);
   }
-  if (player[2].direcao == 1)
+  if (player[0].direcao == 1)
   {
-    SPR_setPosition(player[2].sprite,
-                    player[2].x - (player[2].w - player[2].axisX) - camPosX,
-                    player[2].y - player[2].axisY);
+    SPR_setPosition(player[0].sprite,
+                    player[0].x - (player[0].w - player[0].axisX) - camPosX,
+                    player[0].y - player[0].axisY);
   }
-  if (player[2].direcao == -1)
+  if (player[0].direcao == -1)
   {
-    SPR_setPosition(player[2].sprite,
-                    player[2].x - player[2].axisX - camPosX,
-                    player[2].y - player[2].axisY);
+    SPR_setPosition(player[0].sprite,
+                    player[0].x - player[0].axisX - camPosX,
+                    player[0].y - player[0].axisY);
   }
 }
 
