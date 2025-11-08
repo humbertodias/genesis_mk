@@ -22,7 +22,7 @@ void playerState_Raiden(int numPlayer, u16 State)
         player[numPlayer].dataAnim[9] =  6;
         player[numPlayer].dataAnim[10] =  6;
         player[numPlayer].animFrameTotal = 10;
-        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_rayden, player[numPlayer].x - player[numPlayer].axisX,
+        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_raiden, player[numPlayer].x - player[numPlayer].axisX,
                                                        player[numPlayer].y - player[numPlayer].axisY,
                                                        TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
                                                        SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
@@ -34,8 +34,8 @@ void playerState_Raiden(int numPlayer, u16 State)
 
     if(player[numPlayer].direcao == 1)
     {
-        PAL_setPalette(PAL2, spr_rayden.palette->data, DMA);
+        PAL_setPalette(PAL2, spr_raiden.palette->data, DMA);
     } else {
-        PAL_setPalette(PAL3, spr_rayden.palette->data, DMA);
+        PAL_setPalette(PAL3, spr_raiden.palette->data, DMA);
     }
 }
