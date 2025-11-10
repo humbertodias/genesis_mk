@@ -97,6 +97,4 @@ typedef struct
   u8 key_JOY_status[12];
 } Player;
 
-// extern Player player[2];
-
 #endif
