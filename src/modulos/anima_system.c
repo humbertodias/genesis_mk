@@ -8,7 +8,7 @@ typedef void (*PlayerStateFunc)(int, u16);
 const PlayerStateFunc PLAYER_STATE_FUNCS[7] = {
     playerState_Johnny,
     playerState_Kano,
-    playerState_Rayden,
+    playerState_Raiden,
     playerState_LiuKang,
     playerState_SubZero,
     playerState_Scorpion,
@@ -47,87 +47,42 @@ void anima()
     gASG_system = FALSE;
 
     // jogadores 1 e 2
-    for(int ind = 0; ind < 2; ind++)
+    for (int ind = 0; ind < 2; ind++)
     {
-    player[ind].frameTimeAtual++;
+        player[ind].frameTimeAtual++;
 
-    if (player[ind].frameTimeAtual > player[ind].frameTimeTotal && gASG_system == FALSE)
-    {
-        player[ind].animFrame++;
-
-        if (player[ind].animFrame > player[ind].animFrameTotal)
+        if (player[ind].frameTimeAtual > player[ind].frameTimeTotal && gASG_system == FALSE)
         {
-            gASG_system = TRUE;
+            player[ind].animFrame++;
 
-            if (player[ind].state == PARADO)
+            if (player[ind].animFrame > player[ind].animFrameTotal)
             {
-                playerState(ind, PARADO);
+                gASG_system = TRUE;
+
+                if (player[ind].state == PARADO)
+                {
+                    playerState(ind, PARADO);
+                }
+            }
+            player[ind].frameTimeAtual = 1;
+            player[ind].frameTimeTotal = player[ind].dataAnim[player[ind].animFrame];
+
+            if (player[ind].sprite)
+            {
+                u16 totalReal = player[ind].sprite->animation->numFrame;
+
+                if (player[ind].animFrame - 1 < totalReal)
+                {
+                    SPR_setAnimAndFrame(player[ind].sprite, 0, player[ind].animFrame - 1);
+                }
             }
         }
-        player[ind].frameTimeAtual = 1;
-        player[ind].frameTimeTotal = player[ind].dataAnim[player[ind].animFrame];
-
-        if (player[ind].sprite)
+        else if (player[ind].frameTimeAtual > player[ind].frameTimeTotal && gASG_system == TRUE)
         {
-            u16 totalReal = player[ind].sprite->animation->numFrame;
-
-            if (player[ind].animFrame - 1 < totalReal)
+            if (player[ind].frameTimeAtual > 1)
             {
-                SPR_setAnimAndFrame(player[ind].sprite, 0, player[ind].animFrame - 1);
-            }
-        }
-    }
-    else if (player[ind].frameTimeAtual > player[ind].frameTimeTotal && gASG_system == TRUE)
-    {
-        if (player[ind].frameTimeAtual > 1)
-        {
-            player[ind].frameTimeAtual--;
-        }
-    }
-    }
-}
-
-void anima2(int ind)
-{
-    gASG_system = FALSE;
-
-    // jogadores 1 e 2
-    // for(int ind = 0; ind < 2; ind++)
-    // {
-    player[ind].frameTimeAtual++;
-
-    if (player[ind].frameTimeAtual > player[ind].frameTimeTotal && gASG_system == FALSE)
-    {
-        player[ind].animFrame++;
-
-        if (player[ind].animFrame > player[ind].animFrameTotal)
-        {
-            gASG_system = TRUE;
-
-            if (player[ind].state == PARADO)
-            {
-                playerState(ind, PARADO);
-            }
-        }
-        player[ind].frameTimeAtual = 1;
-        player[ind].frameTimeTotal = player[ind].dataAnim[player[ind].animFrame];
-
-        if (player[ind].sprite)
-        {
-            u16 totalReal = player[ind].sprite->animation->numFrame;
-
-            if (player[ind].animFrame - 1 < totalReal)
-            {
-                SPR_setAnimAndFrame(player[ind].sprite, 0, player[ind].animFrame - 1);
+                player[ind].frameTimeAtual--;
             }
         }
     }
-    else if (player[ind].frameTimeAtual > player[ind].frameTimeTotal && gASG_system == TRUE)
-    {
-        if (player[ind].frameTimeAtual > 1)
-        {
-            player[ind].frameTimeAtual--;
-        }
-    }
-    // }
 }

@@ -12,7 +12,6 @@
 #define DEBUG FALSE
 
 // -- DECLARACAO DE VARIAVEIS -- //
-u8 gRoom; // Sala atual
 u16 gDistancia; // Distancia entre os Players
 bool gPodeMover = TRUE;
 // u16 palette[64];
@@ -25,17 +24,6 @@ s16 camPosXanterior = 0; // Posicao da Camera no frame Anterior
 s16 scrollOffset = 0;
 s16 scrollValues[48];
 
-// typedef void (*PlayerStateFunc)(int, u16);
-
-// const PlayerStateFunc PLAYER_STATE_FUNCS[7] = {
-//     playerState_Johnny,
-//     playerState_Kano,
-//     playerState_Rayden,
-//     playerState_LiuKang,
-//     playerState_SubZero,
-//     playerState_Scorpion,
-//     playerState_Sonya};
-
 void resetGraphicElements();
 void CLEAR_VDP();
 void playerState2(int Player, u16 State);
@@ -45,6 +33,7 @@ int main(bool hardReset)
   SPR_init();
   VDP_setScreenWidth320();
   VDP_setScreenHeight224();
+  // VDP_setHilightShadow(TRUE);
 
   gRoom = SELECAO_PERSONAGENS;
   gFrames = 0;
@@ -77,7 +66,6 @@ int main(bool hardReset)
     if (SELECAO_PERSONAGENS == gRoom)
     {
       processSelecaoPersonagens();
-      anima();
     }
 
     if (PALACE_GATES == gRoom)
@@ -122,7 +110,7 @@ int main(bool hardReset)
     }
 
     // -- FINALIZAÇÕES -- //
-
+    //VDP_showFPS(1, 1, 1);
     SPR_update();          // Atualização dos sprites na tela
     SYS_doVBlankProcess(); // Sincroniza com o VBlank
   }
