@@ -16,7 +16,11 @@ Sprite *headName;
 void loadBrainAtWorkScreen();
 void loadMidwayTitleMKScreen();
 void loadGoroLivesScreen();
-void loadBioScreen();
+// void loadBioScreen();
+void loadBioScreen(const SpriteDefinition *bio_sprite,
+                   const SpriteDefinition *name_sprite,
+                   const u8 *voice_data, const u16 voice_data_size,
+                   const TextLine *bio_lines, const u16 bio_num_lines);
 
 void clearVDP()
 {
@@ -36,10 +40,92 @@ void processIntro()
 
     loadGoroLivesScreen();
 
-    if (gFrames == 1200)
+    if (gFrames == 1300)
     {
         VDP_waitVSync();
-        loadBioScreen();
+        // loadBioScreen();
+        switch (player[0].id) // preguiça de criar uma variável só pra isso
+        {
+        case JOHNNY_CAGE:
+            loadBioScreen(
+                &jc_bio,                                                               // sprite bio animado
+                &jc_name,                                                              // sprite nome
+                loc_jc, sizeof(loc_jc) / sizeof(loc_jc[0]),                            // voz PCM
+                johnnyCageLines, sizeof(johnnyCageLines) / sizeof(johnnyCageLines[0])) // texto
+                ;
+            player[0].id = KANO;
+            break;
+        case KANO:
+            loadBioScreen(
+                &kano_bio,                                           // sprite bio animado
+                &kano_name,                                          // sprite nome
+                loc_kano, sizeof(loc_kano) / sizeof(loc_kano[0]),    // voz PCM
+                kanoLines, sizeof(kanoLines) / sizeof(kanoLines[0])) // texto
+                ;
+            player[0].id = RAIDEN;
+            break;
+        case RAIDEN:
+            loadBioScreen(
+                &raiden_bio,                                               // sprite bio animado
+                &raiden_name,                                              // sprite nome
+                loc_raiden, sizeof(loc_raiden) / sizeof(loc_raiden[0]),    // voz PCM
+                raidenLines, sizeof(raidenLines) / sizeof(raidenLines[0])) // texto
+                ;
+            player[0].id = LIU_KANG;
+            break;
+        case LIU_KANG:
+            loadBioScreen(
+                &liu_kang_bio,                                                // sprite bio animado
+                &liukang_name,                                                // sprite nome
+                loc_liu_kang, sizeof(loc_liu_kang) / sizeof(loc_liu_kang[0]), // voz PCM
+                liuKangLines, sizeof(liuKangLines) / sizeof(liuKangLines[0])) // texto
+                ;
+            player[0].id = SUBZERO;
+            break;
+        case SUBZERO:
+            loadBioScreen(
+                &subzero_bio,                                                 // sprite bio animado
+                &subzero_name,                                                // sprite nome
+                loc_suzero, sizeof(loc_suzero) / sizeof(loc_suzero[0]),       // voz PCM
+                subzeroLines, sizeof(subzeroLines) / sizeof(subzeroLines[0])) // texto
+                ;
+            player[0].id = SCORPION;
+            break;
+        case SCORPION:
+            loadBioScreen(
+                &scorpion_bio,                                                   // sprite bio animado
+                &scorpion_name,                                                  // sprite nome
+                loc_scorpion, sizeof(loc_scorpion) / sizeof(loc_scorpion[0]),    // voz PCM
+                scorpionLines, sizeof(scorpionLines) / sizeof(scorpionLines[0])) // texto
+                ;
+            player[0].id = SONYA;
+            break;
+        case SONYA:
+            loadBioScreen(
+                &sonya_bio,                                             // sprite bio animado
+                &sonya_name,                                            // sprite nome
+                loc_sonya, sizeof(loc_sonya) / sizeof(loc_sonya[0]),    // voz PCM
+                sonyaLines, sizeof(sonyaLines) / sizeof(sonyaLines[0])) // texto
+                ;
+            player[0].id = JOHNNY_CAGE;
+            break;
+        default:
+            break;
+        }
+    }
+
+    if (gFrames > 2100)
+    {
+        XGM2_stop();
+        PAL_fadeOut(0, 15, 5, FALSE);
+        PAL_fadeOut(16, 30, 5, FALSE);
+        clearVDP();
+        VDP_clearPlane(BG_A, TRUE);
+        VDP_clearPlane(BG_B, TRUE);
+        VDP_setBackgroundColor(0);
+        SPR_releaseSprite(bioAnimation);
+        SPR_releaseSprite(headName);
+        gFrames = 0;
     }
 }
 
@@ -86,7 +172,7 @@ void loadGoroLivesScreen()
         }
     }
 
-    if (gFrames == 1180)
+    if (gFrames == 1280)
     {
         for (u16 volume = 15; volume > 0; volume--)
         {
@@ -161,7 +247,11 @@ void loadMidwayTitleMKScreen()
 }
 
 // TODO: Parametrizar esta função
-void loadBioScreen()
+void loadBioScreen(const SpriteDefinition *bio_sprite,
+                   const SpriteDefinition *name_sprite,
+                   const u8 *voice_data, const u16 voice_data_size,
+                   const TextLine *bio_lines, const u16 bio_num_lines)
+// void loadBioScreen()
 {
     // plano de fundo
     VDP_loadTileSet(bio_b.tileset, gInd_tileset, DMA);
@@ -169,25 +259,25 @@ void loadBioScreen()
     PAL_setPalette(PAL0, bio_b.palette->data, DMA);
     gInd_tileset += bio_b.tileset->numTile;
 
-    bioAnimation = SPR_addSprite(&scorpion_bio, 112, 48, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-    PAL_setPalette(PAL1, scorpion_bio.palette->data, DMA);
+    bioAnimation = SPR_addSprite(bio_sprite, 112, 48, TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+    PAL_setPalette(PAL1, bio_sprite->palette->data, DMA);
     SPR_setAnimationLoop(bioAnimation, FALSE);
     // SPR_setAnim(bioAnimation, 0);
     SPR_setDepth(bioAnimation, 0);
 
-    u16 size_name = (VDP_getScreenWidth() / 2) - (scorpion_name.w / 2);
+    u16 size_name = (VDP_getScreenWidth() / 2) - (name_sprite->w / 2);
 
     // nome do personagem
-    headName = SPR_addSprite(&scorpion_name, size_name, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
-    PAL_setPalette(PAL2, scorpion_name.palette->data, DMA);
+    headName = SPR_addSprite(name_sprite, size_name, 16, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+    PAL_setPalette(PAL2, name_sprite->palette->data, DMA);
 
     VDP_setTextPlane(BG_B);
     VDP_loadFontData(font_a.tiles, font_a.numTile, CPU);
     PAL_setPalette(PAL3, font_a_pal.data, DMA);
     VDP_setTextPalette(PAL3);
 
-    XGM2_playPCM(loc_jc, sizeof(loc_jc), SOUND_PCM_CH2);
-    typewriterWriteAllLines(scorpionLines, sizeof(scorpionLines) / sizeof(scorpionLines[0]), BG_B, PAL3);
+    XGM2_playPCM(voice_data, voice_data_size, SOUND_PCM_CH2);
+    typewriterWriteAllLines(bio_lines, bio_num_lines, BG_B, PAL3);
 
     XGM2_play(mus_the_beginning);
 }

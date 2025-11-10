@@ -7,29 +7,29 @@
 #include "sound.h"
 #include "game_vars.h"
 #include "fighters.h"
+#include "anima_system.h"
 
 #define TILEMAP_WIDTH 40
 #define TILEMAP_HEIGHT 28
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 224
 #define LINE_HEIGHT 2 // Altura da linha em pixels
-#define PLAYER_1_POS_X 24
+#define PLAYER_1_POS_X 10
 #define PLAYER_1_POS_Y 104
-#define PLAYER_2_POS_X 168
+#define PLAYER_2_POS_X 182
 #define PLAYER_2_POS_Y 104
 
-void drawBackground();
-void initScrollLine();
-void revealBackground();
-void updateSelector(Player *player, int ind);
+void updateSelector(int ind);
 void playerSelected(int ind);
-void playCursor();
+void initScrollLine();
+void drawBackground();
+void revealBackground();
 void initPlayer();
+void initSelectorSprite();
+void playCursor();
+void playMusic();
 void freeScrollLine();
-void changePlayerSprite(Player *player, int isPlayer2);
-void changePlayerSprite2(Player *player, int isPlayer2);
 
-// TODO: talvez mover para a main.c para possibilidades de uso em outras telas.
 s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
 // CAGE      20, 44
 // KANO      76, 44
@@ -40,17 +40,6 @@ s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
 // SONYA    244, 44
 static const u8 OPTIONS_X[7] = {20, 76, 76, 132, 188, 188, 244};
 static const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
-
-// Mapeamento dos sprites e paletas de cada personagem
-const SpriteDefinition *CHAR_SPRITES[7] = {
-    &spr_jcage,    // JOHNNY_CAGE
-    &spr_kano,     // KANO
-    &spr_raiden,   // RAIDEN
-    &spr_liu_kang, // LIU_KANG
-    &spr_subzero,  // SUBZERO
-    &spr_scorpion, // SCORPION
-    &spr_sonya     // SONYA
-};
 
 void processSelecaoPersonagens()
 {
@@ -63,8 +52,11 @@ void processSelecaoPersonagens()
     initScrollLine();
     drawBackground();
   }
+
   if (gFrames == 30)
+  {
     XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH2, 0, FALSE, 0);
+  }
 
   if (gFrames == 40)
   {
@@ -74,28 +66,38 @@ void processSelecaoPersonagens()
 
     initPlayer();
 
-    // indice 0 e 1 do GE serão usados para carregar o gráfico do seletor
-    GE[0].sprite = SPR_addSprite(&player_seletor,
-                                 OPTIONS_X[KANO], OPTIONS_Y[KANO],
-                                 TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-    SPR_setDepth(GE[0].sprite, 1);
+    initSelectorSprite();
 
-    GE[1].sprite = SPR_addSprite(&player_seletor,
-                                 OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO],
-                                 TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-    SPR_setAnim(GE[1].sprite, 1);
-    SPR_setDepth(GE[1].sprite, 2);
+    SPR_update();
 
     SYS_enableInts();
   }
 
-  if (scrollLine == NULL)
-  { // TESTE
-    for (int ind = 0; ind < 2; ind++)
+  if (scrollLine == NULL) // se o scrollLine já tiver terminado...
+  {
+    for (int ind = 0; ind < 2; ind++) // para cada jogador
     {
-      updateSelector(&player[ind], ind);
-
+      updateSelector(ind);
+      // Verifica se o jogador selecionou um personagem
       playerSelected(ind);
+
+      //TODO: funfa mas tem algo estranho, REVISAR
+      if (GE[ind + 2].sprite)
+      {
+        //   if (GE[ind].sprite->visibility == HIDDEN)
+        //     return;
+
+        selectorBlinkTimer[ind]++;
+
+        if (selectorBlinkTimer[ind] % 5 == 0)
+          SPR_nextFrame(GE[ind + 2].sprite);
+
+        if (selectorBlinkTimer[ind] > 30)
+        {
+          // SPR_setVisibility(GE[ind].sprite, HIDDEN);
+          SPR_setAnimationLoop(GE[ind + 2].sprite, FALSE);
+        }
+      }
     }
 
     // Mostra os IDs dos personagens
@@ -107,46 +109,265 @@ void processSelecaoPersonagens()
   }
 }
 
+/**
+ * @brief Atualiza a posição do cursor de seleção de acordo com o ID
+ *
+ * @param ind indice usado pelo GraphicElements
+ */
+void updateSelector(int ind)
+{
+  //TODO: talvez deixar fora da função 
+  if (GE[ind].sprite->visibility == HIDDEN) // se o seletor estiver invisível não permitir mover o cursor.
+    return;
+
+  int prevId = player[ind].id; // guarda personagem anterior
+
+  switch (player[ind].id)
+  {
+  case KANO:
+
+    if (player[ind].key_JOY_LEFT_status == 1) // se apertar para esquerda, seleciona CAGE
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[JOHNNY_CAGE], OPTIONS_Y[JOHNNY_CAGE]);
+      player[ind].id = JOHNNY_CAGE;
+    }
+    else if (player[ind].key_JOY_RIGHT_status == 1) // se apertar para direita, Subzero
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
+      player[ind].id = SUBZERO;
+    }
+    else if (player[ind].key_JOY_DOWN_status == 1) // se apertar para baixo, Raiden
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[RAIDEN], OPTIONS_Y[RAIDEN]);
+      player[ind].id = RAIDEN;
+    }
+    break;
+
+  case JOHNNY_CAGE:
+
+    if (player[ind].key_JOY_RIGHT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
+      player[ind].id = KANO;
+    }
+    else if (player[ind].key_JOY_LEFT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]);
+      player[ind].id = SONYA;
+    }
+    break;
+
+  case SUBZERO:
+
+    if (player[ind].key_JOY_LEFT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
+      player[ind].id = KANO;
+    }
+    else if (player[ind].key_JOY_RIGHT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]);
+      player[ind].id = SONYA;
+    }
+    else if (player[ind].key_JOY_DOWN_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SCORPION], OPTIONS_Y[SCORPION]);
+      player[ind].id = SCORPION;
+    }
+    break;
+
+  case SONYA:
+
+    if (player[ind].key_JOY_LEFT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
+      player[ind].id = SUBZERO;
+    }
+    else if (player[ind].key_JOY_RIGHT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[JOHNNY_CAGE], OPTIONS_Y[JOHNNY_CAGE]);
+      player[ind].id = JOHNNY_CAGE;
+    }
+    break;
+
+  case SCORPION:
+
+    if (player[ind].key_JOY_LEFT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[LIU_KANG], OPTIONS_Y[LIU_KANG]);
+      player[ind].id = LIU_KANG;
+    }
+    else if (player[ind].key_JOY_UP_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
+      player[ind].id = SUBZERO;
+    }
+    break;
+
+  case LIU_KANG:
+
+    if (player[ind].key_JOY_RIGHT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SCORPION], OPTIONS_Y[SCORPION]);
+      player[ind].id = SCORPION;
+    }
+    else if (player[ind].key_JOY_LEFT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[RAIDEN], OPTIONS_Y[RAIDEN]);
+      player[ind].id = RAIDEN;
+    }
+    break;
+
+  case RAIDEN:
+
+    if (player[ind].key_JOY_RIGHT_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[LIU_KANG], OPTIONS_Y[LIU_KANG]);
+      player[ind].id = LIU_KANG;
+    }
+    else if (player[ind].key_JOY_UP_status == 1)
+    {
+      playCursor();
+      SPR_setPosition(GE[ind].sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
+      player[ind].id = KANO;
+    }
+    break;
+
+  default:
+    break;
+  }
+
+  // se o ID mudou, troca o sprite do personagem
+  if (prevId != player[ind].id)
+  {
+    playerState(ind, PARADO);
+  }
+}
+
 // TODO: ver o que fazer quando ambos selecionam ao mesmo tempo
 // Verifica se o jogador selecionou um personagem e toca o áudio correspondente
 void playerSelected(int ind)
 {
+  if (GE[ind].sprite->visibility == HIDDEN) // se o seletor estiver invisível não permitir mover o cursor.
+    return;
+
   if (player[ind].key_JOY_START_status > 0)
   {
     switch (player[ind].id)
     {
     case JOHNNY_CAGE:
       XGM2_playPCMEx(loc_jc, sizeof(loc_jc), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[JOHNNY_CAGE] + 4, OPTIONS_Y[JOHNNY_CAGE] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, JOHNNY_CAGE);
       break;
+
     case KANO:
       XGM2_playPCMEx(loc_kano, sizeof(loc_kano), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[KANO] + 4, OPTIONS_Y[KANO] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, KANO);
       break;
+
     case SUBZERO:
       XGM2_playPCMEx(loc_suzero, sizeof(loc_suzero), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[SUBZERO] + 4, OPTIONS_Y[SUBZERO] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, SUBZERO);
       break;
+
     case SONYA:
       XGM2_playPCMEx(loc_sonya, sizeof(loc_sonya), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[SONYA] + 4, OPTIONS_Y[SONYA] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, SONYA);
       break;
+
     case RAIDEN:
       XGM2_playPCMEx(loc_raiden, sizeof(loc_raiden), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[RAIDEN] + 4, OPTIONS_Y[RAIDEN] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, RAIDEN);
       break;
+
     case LIU_KANG:
       XGM2_playPCMEx(loc_liu_kang, sizeof(loc_liu_kang), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[LIU_KANG] + 4, OPTIONS_Y[LIU_KANG] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, LIU_KANG);
       break;
+
     case SCORPION:
       XGM2_playPCMEx(loc_scorpion, sizeof(loc_scorpion), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[SCORPION] + 4, OPTIONS_Y[SCORPION] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, SCORPION);
       break;
 
     default:
       break;
     }
+    SPR_setDepth(GE[ind + 2].sprite, 2);
+    GE[ind].sprite->visibility = HIDDEN;
   }
 }
 
-void playMusic()
+/**
+ * @brief move a tela para fora da parte visível a esquerda
+ * para iniciar o efeito de Persiana.
+ */
+void initScrollLine()
 {
-  XGM2_setFMVolume(50);
-  XGM2_play(mus_select_player);
+  // Aloca dinamicamente memória
+  scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
+  if (!scrollLine) // Verifica se a alocação foi bem-sucedida
+  {
+    // Falha na alocação
+    return;
+  }
+
+  for (int x = 0; x < SCREEN_HEIGHT; x++)
+  {
+    scrollLine[x] = -SCREEN_WIDTH; // inicia as linhas com 320px
+  }
+  VDP_setHorizontalScrollLine(BG_A, 0, scrollLine, SCREEN_HEIGHT, DMA);
+  VDP_setHorizontalScrollLine(BG_B, 0, scrollLine, SCREEN_HEIGHT, DMA);
 }
 
 /**
@@ -174,28 +395,6 @@ void drawBackground()
                    TILEMAP_WIDTH, TILEMAP_HEIGHT, DMA);
   PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
   gInd_tileset += stage_char_select_b.tileset->numTile;
-}
-
-/**
- * @brief move a tela para fora da parte visível a esquerda
- * para iniciar o efeito de Persiana.
- */
-void initScrollLine()
-{
-  // Aloca dinamicamente memória
-  scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
-  if (!scrollLine) // Verifica se a alocação foi bem-sucedida
-  {
-    // Falha na alocação
-    return;
-  }
-
-  for (int x = 0; x < SCREEN_HEIGHT; x++)
-  {
-    scrollLine[x] = -SCREEN_WIDTH; // inicia as linhas com 320px
-  }
-  VDP_setHorizontalScrollLine(BG_A, 0, scrollLine, SCREEN_HEIGHT, DMA);
-  VDP_setHorizontalScrollLine(BG_B, 0, scrollLine, SCREEN_HEIGHT, DMA);
 }
 
 /**
@@ -311,218 +510,6 @@ void revealBackground()
   freeScrollLine();
 }
 
-/**
- * @brief Atualiza a posição do cursor de seleção de acordo com o ID
- *
- * @param player
- * @param ind indice usado pelo GraphicElements
- */
-void updateSelector(Player *player, int ind)
-{
-  int prevId = player->id; // guarda personagem anterior
-
-  switch (player->id)
-  {
-  case KANO:
-
-    if (player->key_JOY_LEFT_status == 1) // se apertar para esquerda, seleciona CAGE
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[JOHNNY_CAGE], OPTIONS_Y[JOHNNY_CAGE]);
-      player->id = JOHNNY_CAGE;
-    }
-    else if (player->key_JOY_RIGHT_status == 1) // se apertar para direita, Subzero
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
-      player->id = SUBZERO;
-    }
-    else if (player->key_JOY_DOWN_status == 1) // se apertar para baixo, Raiden
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[RAIDEN], OPTIONS_Y[RAIDEN]);
-      player->id = RAIDEN;
-    }
-    break;
-
-  case JOHNNY_CAGE:
-
-    if (player->key_JOY_RIGHT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
-      player->id = KANO;
-    }
-    else if (player->key_JOY_LEFT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]);
-      player->id = SONYA;
-    }
-    break;
-
-  case SUBZERO:
-
-    if (player->key_JOY_LEFT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
-      player->id = KANO;
-    }
-    else if (player->key_JOY_RIGHT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]);
-      player->id = SONYA;
-    }
-    else if (player->key_JOY_DOWN_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SCORPION], OPTIONS_Y[SCORPION]);
-      player->id = SCORPION;
-    }
-    break;
-
-  case SONYA:
-
-    if (player->key_JOY_LEFT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
-      player->id = SUBZERO;
-    }
-    else if (player->key_JOY_RIGHT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[JOHNNY_CAGE], OPTIONS_Y[JOHNNY_CAGE]);
-      player->id = JOHNNY_CAGE;
-    }
-    break;
-
-  case SCORPION:
-
-    if (player->key_JOY_LEFT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[LIU_KANG], OPTIONS_Y[LIU_KANG]);
-      player->id = LIU_KANG;
-    }
-    else if (player->key_JOY_UP_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]);
-      player->id = SUBZERO;
-    }
-    break;
-
-  case LIU_KANG:
-
-    if (player->key_JOY_RIGHT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[SCORPION], OPTIONS_Y[SCORPION]);
-      player->id = SCORPION;
-    }
-    else if (player->key_JOY_LEFT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[RAIDEN], OPTIONS_Y[RAIDEN]);
-      player->id = RAIDEN;
-    }
-    break;
-
-  case RAIDEN:
-
-    if (player->key_JOY_RIGHT_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[LIU_KANG], OPTIONS_Y[LIU_KANG]);
-      player->id = LIU_KANG;
-    }
-    else if (player->key_JOY_UP_status == 1)
-    {
-      playCursor();
-      SPR_setPosition(GE[ind].sprite, OPTIONS_X[KANO], OPTIONS_Y[KANO]);
-      player->id = KANO;
-    }
-    break;
-
-  default:
-    break;
-  }
-
-  // Se o ID mudou, troca o sprite exibido
-  if (player->id != prevId)
-  {
-    changePlayerSprite2(player, ind == 1);
-  }
-}
-typedef void (*PlayerStateFunc)(int, u16);
-
-const PlayerStateFunc PLAYER_STATE_FUNCS2[7] = {
-    playerState_Johnny,
-    playerState_Kano,
-    playerState_Raiden,
-    playerState_LiuKang,
-    playerState_SubZero,
-    playerState_Scorpion,
-    playerState_Sonya};
-
-void changePlayerSprite2(Player *player, int isPlayer2)
-{
-  player->paleta = isPlayer2 ? PAL3 : PAL2;
-  player->x = isPlayer2 ? PLAYER_2_POS_X : PLAYER_1_POS_X;
-  player->y = isPlayer2 ? PLAYER_2_POS_Y : PLAYER_1_POS_Y;
-
-  if (PLAYER_STATE_FUNCS2[player->id])
-  {
-    SPR_releaseSprite(player->sprite);
-    PLAYER_STATE_FUNCS2[player->id](player->direcao == 1 ? 0 : 1, PARADO);
-  }
-  if(player->direcao == 1){
-    if(player->id != SONYA){
-
-      PAL_setPalette(PAL2, player->sprite->definition->palette->data, DMA);
-    } else {
-      PAL_setPalette(PAL2, sonya_p1_pal.data, DMA);
-    }
-  } else {
-    if(player->id != SONYA){
-
-      PAL_setPalette(PAL3, player->sprite->definition->palette->data, DMA);
-    } else {
-      PAL_setPalette(PAL3, sonya_p2_pal.data, DMA);
-    }
-  }
-  
-  SPR_setHFlip(player->sprite, (player->direcao == 1) ? FALSE : TRUE);
-  SPR_setAnim(player->sprite, 0);
-}
-
-// TODO: tentar usar o novo sistema de carregamento de estados de personagem
-void changePlayerSprite(Player *player, int isPlayer2)
-{
-  const SpriteDefinition *newSprite = CHAR_SPRITES[player->id];
-  const u16 *newPal = newSprite->palette->data;
-  u16 pal = isPlayer2 ? PAL3 : PAL2;
-  bool flip = isPlayer2 ? TRUE : FALSE;
-  s16 posX = isPlayer2 ? PLAYER_2_POS_X : PLAYER_1_POS_X;
-  s16 posY = isPlayer2 ? PLAYER_2_POS_Y : PLAYER_1_POS_Y;
-  // Remove o gráfico atual para evitar lixo de VRAM
-  SPR_releaseSprite(player->sprite);
-
-  // player-> sprite = NULL;
-  // Cria novo sprite com o gráfico e paleta corretos
-  player->sprite = SPR_addSprite(newSprite, posX, posY,
-                                 TILE_ATTR(pal, FALSE, FALSE, flip));
-
-  PAL_setPalette(pal, newPal, DMA);
-
-  // SPR_setHFlip(player->sprite, flip);
-  // SPR_setPosition(player->sprite, posX, posY);
-  SPR_setAnim(player->sprite, 0);
-}
-
 void initPlayer()
 {
   // for (int ind = 0; ind < 2; ind++)
@@ -539,10 +526,6 @@ void initPlayer()
   player[0].direcao = 1;
   player[0].x = PLAYER_1_POS_X;
   player[0].y = PLAYER_1_POS_Y;
-  player[0].sprite = SPR_addSprite(CHAR_SPRITES[KANO], player[0].x, player[0].y, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
-  PAL_setPalette(PAL2, CHAR_SPRITES[KANO]->palette->data, DMA);
-  SPR_setAnim(player[0].sprite, 0);
-  SPR_setDepth(player[0].sprite, SPR_MIN_DEPTH);
 
   player[1].id = SUBZERO;
   player[1].state = PARADO;
@@ -550,10 +533,9 @@ void initPlayer()
   player[1].direcao = -1;
   player[1].x = PLAYER_2_POS_X;
   player[1].y = PLAYER_2_POS_Y;
-  player[1].sprite = SPR_addSprite(CHAR_SPRITES[SUBZERO], player[1].x, player[1].y, TILE_ATTR(PAL3, FALSE, FALSE, TRUE));
-  PAL_setPalette(PAL3, CHAR_SPRITES[SUBZERO]->palette->data, DMA);
-  SPR_setAnim(player[1].sprite, 0);
-  SPR_setDepth(player[1].sprite, SPR_MIN_DEPTH);
+
+  playerState(0, PARADO);
+  playerState(1, PARADO);
 
   memset(player[0].key_JOY_countdown, 0, sizeof(player[0].key_JOY_countdown));
   memset(player[1].key_JOY_countdown, 0, sizeof(player[1].key_JOY_countdown));
@@ -569,11 +551,33 @@ void initPlayer()
   // player[1].key_JOY_countdown[8] = 0;
 }
 
+void initSelectorSprite()
+{
+  // indice 0 e 1 do GE serão usados para carregar o gráfico do seletor
+  GE[0].sprite = SPR_addSprite(&player_seletor,
+                               OPTIONS_X[KANO], OPTIONS_Y[KANO],
+                               TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+  SPR_setAnim(GE[0].sprite, 0); // animação P1
+  SPR_setDepth(GE[0].sprite, SPR_MIN_DEPTH);
+
+  GE[1].sprite = SPR_addSprite(&player_seletor,
+                               OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO],
+                               TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
+  SPR_setAnim(GE[1].sprite, 1); // animação P2
+  SPR_setDepth(GE[1].sprite, 1);
+}
+
 /**
  * @brief Executa o áudio do cursor */
 void playCursor()
 {
   XGM2_playPCMEx(snd_cursor, sizeof(snd_cursor), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+}
+
+void playMusic()
+{
+  XGM2_setFMVolume(50);
+  XGM2_play(mus_select_player);
 }
 
 void freeScrollLine()

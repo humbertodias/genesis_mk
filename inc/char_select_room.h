@@ -3,6 +3,4 @@
 
 void processSelecaoPersonagens();
 
-void playMusic();
-
 #endif

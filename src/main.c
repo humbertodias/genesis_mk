@@ -7,11 +7,11 @@
 #include "input_system.h"
 #include "gfx.h"
 #include "sprites.h"
+#include "anima_system.h"
 
 #define DEBUG FALSE
 
 // -- DECLARACAO DE VARIAVEIS -- //
-u8 gRoom; // Sala atual
 u16 gDistancia; // Distancia entre os Players
 bool gPodeMover = TRUE;
 // u16 palette[64];
@@ -24,34 +24,21 @@ s16 camPosXanterior = 0; // Posicao da Camera no frame Anterior
 s16 scrollOffset = 0;
 s16 scrollValues[48];
 
-// GraphicElement GE[25];
-
-// Player player[2];
-
-typedef void (*PlayerStateFunc)(int, u16);
-
-const PlayerStateFunc PLAYER_STATE_FUNCS[7] = {
-    playerState_Johnny,
-    playerState_Kano,
-    playerState_Raiden,
-    playerState_LiuKang,
-    playerState_SubZero,
-    playerState_Scorpion,
-    playerState_Sonya};
-
 void resetGraphicElements();
 void CLEAR_VDP();
-void playerState(int Player, u16 State);
+void playerState2(int Player, u16 State);
 
 int main(bool hardReset)
 {
   SPR_init();
   VDP_setScreenWidth320();
   VDP_setScreenHeight224();
+  // VDP_setHilightShadow(TRUE);
 
-  gRoom = SELECAO_PERSONAGENS;
+  gRoom = TELA_DEMO_INTRO;
   gFrames = 0;
   gInd_tileset = 0;
+  player[0].id = JOHNNY_CAGE;
 
   if (!hardReset)
   {
@@ -124,7 +111,7 @@ int main(bool hardReset)
     }
 
     // -- FINALIZAÇÕES -- //
-
+    //VDP_showFPS(1, 1, 1);
     SPR_update();          // Atualização dos sprites na tela
     SYS_doVBlankProcess(); // Sincroniza com o VBlank
   }
@@ -153,8 +140,8 @@ void CLEAR_VDP()
   gInd_tileset = 0;
 }
 
-void playerState(int numPlayer, u16 State)
-{
+void playerState2(int numPlayer, u16 State)
+{/*
   if (player[numPlayer].sprite)
   {
     SPR_releaseSprite(player[numPlayer].sprite);
@@ -172,129 +159,6 @@ void playerState(int numPlayer, u16 State)
     PLAYER_STATE_FUNCS[player[numPlayer].id](numPlayer, State);
   }
 
-  /*
-    if (player[numPlayer].id == SUBZERO)
-    {
-      switch (State)
-      {
-      case PARADO:
-        player[numPlayer].y = gAlturaDoPiso;
-        player[numPlayer].w = 16 * 8;
-        player[numPlayer].h = 15 * 8;
-        player[numPlayer].dataAnim[1] = 5;
-        player[numPlayer].dataAnim[2] = 5;
-        player[numPlayer].dataAnim[3] = 5;
-        player[numPlayer].dataAnim[4] = 5;
-        player[numPlayer].dataAnim[5] = 5;
-        player[numPlayer].dataAnim[6] = 5;
-        player[numPlayer].dataAnim[7] = 5;
-        player[numPlayer].dataAnim[8] = 5;
-        player[numPlayer].dataAnim[9] = 5;
-        player[numPlayer].dataAnim[10] = 5;
-        player[numPlayer].dataAnim[11] = 5;
-        player[numPlayer].dataAnim[12] = 5;
-        player[numPlayer].animFrameTotal = 12;
-        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_subzero, player[numPlayer].x - player[numPlayer].axisX,
-                                                       player[numPlayer].y - player[numPlayer].axisY,
-                                                       TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
-                                                       SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
-        break;
-
-      default:
-        break;
-      }
-      // // Flipa o sprite
-      // SPR_setHFlip(player[numPlayer].sprite, (player[numPlayer].direcao == 1) ? FALSE : TRUE);
-
-      // SPR_setAnimAndFrame(player[numPlayer].sprite, 0, player[numPlayer].animFrame - 1);
-      // player[numPlayer].frameTimeTotal = player[numPlayer].dataAnim[1];
-
-      // if (player[numPlayer].sprite)
-      // {
-      //   // FUNCAO_DEPTH
-      // }
-      // // FUNCAO_SPR_POSITION
-      // // ajusta posicao do sprite
-      // if (player[1].direcao == 1)
-      // {
-      //   SPR_setPosition(player[1].sprite,
-      //                   player[1].x - (player[1].w - player[1].axisX) - camPosX,
-      //                   player[1].y - player[1].axisY);
-      // }
-      // if (player[1].direcao == -1)
-      // {
-      //   SPR_setPosition(player[1].sprite,
-      //                   player[1].x - player[1].axisX - camPosX,
-      //                   player[1].y - player[1].axisY);
-      // }
-      // if (player[0].direcao == 1)
-      // {
-      //   SPR_setPosition(player[0].sprite,
-      //                   player[0].x - (player[0].w - player[0].axisX) - camPosX,
-      //                   player[0].y - player[0].axisY);
-      // }
-      // if (player[0].direcao == -1)
-      // {
-      //   SPR_setPosition(player[0].sprite,
-      //                   player[0].x - player[0].axisX - camPosX,
-      //                   player[0].y - player[0].axisY);
-      // }
-    }
-
-    if (player[numPlayer].id == KANO)
-    {
-      switch (State)
-      {
-      case PARADO:
-        player[numPlayer].y = gAlturaDoPiso;
-        player[numPlayer].w = 16 * 8;
-        player[numPlayer].h = 15 * 8;
-        player[numPlayer].dataAnim[1] = 5;
-        player[numPlayer].dataAnim[2] = 5;
-        player[numPlayer].dataAnim[3] = 5;
-        player[numPlayer].dataAnim[4] = 5;
-        player[numPlayer].dataAnim[5] = 5;
-        player[numPlayer].dataAnim[6] = 5;
-        player[numPlayer].dataAnim[7] = 5;
-        player[numPlayer].animFrameTotal = 7;
-        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_kano, player[numPlayer].x - player[numPlayer].axisX,
-                                                       player[numPlayer].y - player[numPlayer].axisY,
-                                                       TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
-                                                       SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
-        break;
-
-      default:
-        break;
-      }
-    }
-
-    if(player[numPlayer].id == JOHNNY_CAGE)
-    {
-      switch (State)
-      {
-      case PARADO:
-        player[numPlayer].y = gAlturaDoPiso;
-        player[numPlayer].w = 16 * 8;
-        player[numPlayer].h = 15 * 8;
-        player[numPlayer].dataAnim[1] = 5;
-        player[numPlayer].dataAnim[2] = 5;
-        player[numPlayer].dataAnim[3] = 5;
-        player[numPlayer].dataAnim[4] = 5;
-        player[numPlayer].dataAnim[5] = 5;
-        player[numPlayer].dataAnim[6] = 5;
-        player[numPlayer].dataAnim[7] = 5;
-        player[numPlayer].animFrameTotal = 7;
-        player[numPlayer].sprite = SPR_addSpriteExSafe(&spr_jcage, player[numPlayer].x - player[numPlayer].axisX,
-                                                       player[numPlayer].y - player[numPlayer].axisY,
-                                                       TILE_ATTR(player[numPlayer].paleta, FALSE, FALSE, FALSE),
-                                                       SPR_FLAG_DISABLE_DELAYED_FRAME_UPDATE | SPR_FLAG_AUTO_VISIBILITY | SPR_FLAG_AUTO_VRAM_ALLOC | SPR_FLAG_AUTO_TILE_UPLOAD);
-        break;
-
-      default:
-        break;
-      }
-    }
-  */
   // Flipa o sprite
   SPR_setHFlip(player[numPlayer].sprite, (player[numPlayer].direcao == 1) ? FALSE : TRUE);
 
@@ -307,30 +171,19 @@ void playerState(int numPlayer, u16 State)
   }
   // FUNCAO_SPR_POSITION
   // ajusta posicao do sprite
-  if (player[1].direcao == 1)
+  if (player[numPlayer].direcao == 1)
   {
-    SPR_setPosition(player[1].sprite,
-                    player[1].x - (player[1].w - player[1].axisX) - camPosX,
-                    player[1].y - player[1].axisY);
+    SPR_setPosition(player[numPlayer].sprite,
+                    player[numPlayer].x - (player[numPlayer].w - player[numPlayer].axisX) - camPosX,
+                    player[numPlayer].y - player[numPlayer].axisY);
   }
-  if (player[1].direcao == -1)
+  if (player[numPlayer].direcao == -1)
   {
-    SPR_setPosition(player[1].sprite,
-                    player[1].x - player[1].axisX - camPosX,
-                    player[1].y - player[1].axisY);
+    SPR_setPosition(player[numPlayer].sprite,
+                    player[numPlayer].x - player[numPlayer].axisX - camPosX,
+                    player[numPlayer].y - player[numPlayer].axisY);
   }
-  if (player[0].direcao == 1)
-  {
-    SPR_setPosition(player[0].sprite,
-                    player[0].x - (player[0].w - player[0].axisX) - camPosX,
-                    player[0].y - player[0].axisY);
-  }
-  if (player[0].direcao == -1)
-  {
-    SPR_setPosition(player[0].sprite,
-                    player[0].x - player[0].axisX - camPosX,
-                    player[0].y - player[0].axisY);
-  }
+                    */
 }
 
 void resetGraphicElements()
