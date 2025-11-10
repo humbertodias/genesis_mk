@@ -19,16 +19,16 @@
 #define PLAYER_2_POS_X 182
 #define PLAYER_2_POS_Y 104
 
-void drawBackground();
-void initScrollLine();
-void revealBackground();
 void updateSelector(int ind);
 void playerSelected(int ind);
-void playMusic();
-void playCursor();
+void initScrollLine();
+void drawBackground();
+void revealBackground();
 void initPlayer();
-void freeScrollLine();
 void initSelectorSprite();
+void playCursor();
+void playMusic();
+void freeScrollLine();
 
 s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
 // CAGE      20, 44
@@ -107,265 +107,6 @@ void processSelecaoPersonagens()
     // sprintf(stri, "p2: %d", player[1].id);
     // VDP_drawText(stri, 1, 2);
   }
-}
-
-
-
-// TODO: ver o que fazer quando ambos selecionam ao mesmo tempo
-// Verifica se o jogador selecionou um personagem e toca o áudio correspondente
-void playerSelected(int ind)
-{
-  if (GE[ind].sprite->visibility == HIDDEN) // se o seletor estiver invisível não permitir mover o cursor.
-    return;
-
-  if (player[ind].key_JOY_START_status > 0)
-  {
-    switch (player[ind].id)
-    {
-    case JOHNNY_CAGE:
-      XGM2_playPCMEx(loc_jc, sizeof(loc_jc), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[JOHNNY_CAGE] + 4, OPTIONS_Y[JOHNNY_CAGE] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, JOHNNY_CAGE);
-      break;
-
-    case KANO:
-      XGM2_playPCMEx(loc_kano, sizeof(loc_kano), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[KANO] + 4, OPTIONS_Y[KANO] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, KANO);
-      break;
-
-    case SUBZERO:
-      XGM2_playPCMEx(loc_suzero, sizeof(loc_suzero), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[SUBZERO] + 4, OPTIONS_Y[SUBZERO] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, SUBZERO);
-      break;
-
-    case SONYA:
-      XGM2_playPCMEx(loc_sonya, sizeof(loc_sonya), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[SONYA] + 4, OPTIONS_Y[SONYA] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, SONYA);
-      break;
-
-    case RAIDEN:
-      XGM2_playPCMEx(loc_raiden, sizeof(loc_raiden), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[RAIDEN] + 4, OPTIONS_Y[RAIDEN] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, RAIDEN);
-      break;
-
-    case LIU_KANG:
-      XGM2_playPCMEx(loc_liu_kang, sizeof(loc_liu_kang), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[LIU_KANG] + 4, OPTIONS_Y[LIU_KANG] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, LIU_KANG);
-      break;
-
-    case SCORPION:
-      XGM2_playPCMEx(loc_scorpion, sizeof(loc_scorpion), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[SCORPION] + 4, OPTIONS_Y[SCORPION] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, SCORPION);
-      break;
-
-    default:
-      break;
-    }
-    SPR_setDepth(GE[ind + 2].sprite, 2);
-    GE[ind].sprite->visibility = HIDDEN;
-  }
-}
-
-void playMusic()
-{
-  XGM2_setFMVolume(50);
-  XGM2_play(mus_select_player);
-}
-
-/**
- * @brief Carrega as informações dos backgrounds
- */
-void drawBackground()
-{
-  gInd_tileset = 1;
-  // BACKGROUND A
-  VDP_loadTileSet(stage_char_select_a.tileset, gInd_tileset, DMA);
-  VDP_setTileMapEx(BG_A, stage_char_select_a.tilemap,
-                   TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset),
-                   0, 0,
-                   0, 0,
-                   TILEMAP_WIDTH, TILEMAP_HEIGHT, DMA);
-  PAL_setPalette(PAL0, char_select_a_pal.data, DMA);
-  gInd_tileset += stage_char_select_a.tileset->numTile;
-
-  // BACKGROUND B
-  VDP_loadTileSet(stage_char_select_b.tileset, gInd_tileset, DMA);
-  VDP_setTileMapEx(BG_B, stage_char_select_b.tilemap,
-                   TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, gInd_tileset),
-                   0, 0,
-                   0, 0,
-                   TILEMAP_WIDTH, TILEMAP_HEIGHT, DMA);
-  PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
-  gInd_tileset += stage_char_select_b.tileset->numTile;
-}
-
-/**
- * @brief move a tela para fora da parte visível a esquerda
- * para iniciar o efeito de Persiana.
- */
-void initScrollLine()
-{
-  // Aloca dinamicamente memória
-  scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
-  if (!scrollLine) // Verifica se a alocação foi bem-sucedida
-  {
-    // Falha na alocação
-    return;
-  }
-
-  for (int x = 0; x < SCREEN_HEIGHT; x++)
-  {
-    scrollLine[x] = -SCREEN_WIDTH; // inicia as linhas com 320px
-  }
-  VDP_setHorizontalScrollLine(BG_A, 0, scrollLine, SCREEN_HEIGHT, DMA);
-  VDP_setHorizontalScrollLine(BG_B, 0, scrollLine, SCREEN_HEIGHT, DMA);
-}
-
-/**
- * @brief Revela a tela fazendo o efeito de persiana.
- */
-void revealBackground()
-{
-  struct VenetianBlindsEffect
-  {
-    u16 startLine;   // linha onde começa o efeito
-    u16 nextLine;    // linha onde deve começar o próximo efeito
-    u16 endLine;     // linha onde termina o efeito
-    u16 currentLine; // linha atual da iteração
-  };
-
-  struct VenetianBlindsEffect persiana[7] = {
-      {0, 13, 31, 0},
-      {32, 43, 63, 0},
-      {64, 73, 95, 0},
-      {96, 105, 127, 0},
-      {128, 137, 159, 0},
-      {160, 167, 191, 0},
-      {192, 0, 223, 0},
-  };
-
-  for (int y = 0; y < SCREEN_HEIGHT / 2; y += 1)
-  {
-    // 0
-    if (y >= persiana[0].startLine && y <= persiana[0].endLine)
-    {
-      persiana[0].currentLine = y;
-      scrollLine[persiana[0].currentLine] = 0;
-      scrollLine[persiana[0].currentLine + 1] = 0;
-      VDP_setHorizontalScrollLine(BG_A, y, &scrollLine[persiana[0].currentLine], LINE_HEIGHT, DMA);
-      VDP_setHorizontalScrollLine(BG_B, y, &scrollLine[persiana[0].currentLine], LINE_HEIGHT, DMA);
-    }
-    // 1
-    if (y >= persiana[0].nextLine && persiana[1].currentLine <= persiana[1].endLine)
-    {
-      if (persiana[0].nextLine == y)
-        persiana[1].currentLine = persiana[1].startLine;
-      else
-        persiana[1].currentLine += 1;
-      scrollLine[persiana[1].currentLine] = 0;
-      scrollLine[persiana[1].currentLine + 1] = 0;
-      VDP_setHorizontalScrollLine(BG_A, persiana[1].currentLine, &scrollLine[persiana[1].currentLine], LINE_HEIGHT, DMA);
-      VDP_setHorizontalScrollLine(BG_B, persiana[1].currentLine, &scrollLine[persiana[1].currentLine], LINE_HEIGHT, DMA);
-    }
-    // 2
-    if (persiana[1].currentLine >= persiana[1].nextLine && persiana[2].currentLine <= persiana[2].endLine)
-    {
-      if (persiana[1].nextLine == persiana[1].currentLine)
-        persiana[2].currentLine = persiana[2].startLine;
-      else
-        persiana[2].currentLine += 1;
-      scrollLine[persiana[2].currentLine] = 0;
-      scrollLine[persiana[2].currentLine + 1] = 0;
-      VDP_setHorizontalScrollLine(BG_A, persiana[2].currentLine, &scrollLine[persiana[2].currentLine], LINE_HEIGHT, DMA);
-      VDP_setHorizontalScrollLine(BG_B, persiana[2].currentLine, &scrollLine[persiana[2].currentLine], LINE_HEIGHT, DMA);
-    }
-    // 3
-    if (persiana[2].currentLine >= persiana[2].nextLine && persiana[3].currentLine <= persiana[3].endLine)
-    {
-      if (persiana[2].nextLine == persiana[2].currentLine)
-        persiana[3].currentLine = persiana[3].startLine;
-      else
-        persiana[3].currentLine += 1;
-      scrollLine[persiana[3].currentLine] = 0;
-      scrollLine[persiana[3].currentLine + 1] = 0;
-      VDP_setHorizontalScrollLine(BG_A, persiana[3].currentLine, &scrollLine[persiana[3].currentLine], LINE_HEIGHT, DMA);
-      VDP_setHorizontalScrollLine(BG_B, persiana[3].currentLine, &scrollLine[persiana[3].currentLine], LINE_HEIGHT, DMA);
-    }
-    // 4
-    if (persiana[3].currentLine >= persiana[3].nextLine && persiana[4].currentLine <= persiana[4].endLine)
-    {
-      if (persiana[3].nextLine == persiana[3].currentLine)
-        persiana[4].currentLine = persiana[4].startLine;
-      else
-        persiana[4].currentLine += 1;
-      scrollLine[persiana[4].currentLine] = 0;
-      scrollLine[persiana[4].currentLine + 1] = 0;
-      VDP_setHorizontalScrollLine(BG_A, persiana[4].currentLine, &scrollLine[persiana[4].currentLine], LINE_HEIGHT, DMA);
-      VDP_setHorizontalScrollLine(BG_B, persiana[4].currentLine, &scrollLine[persiana[4].currentLine], LINE_HEIGHT, DMA);
-    }
-    // 5
-    if (persiana[4].currentLine >= persiana[4].nextLine && persiana[5].currentLine <= persiana[5].endLine)
-    {
-      if (persiana[4].nextLine == persiana[4].currentLine)
-        persiana[5].currentLine = persiana[5].startLine;
-      else
-        persiana[5].currentLine += 1;
-      scrollLine[persiana[5].currentLine] = 0;
-      scrollLine[persiana[5].currentLine + 1] = 0;
-      VDP_setHorizontalScrollLine(BG_A, persiana[5].currentLine, &scrollLine[persiana[5].currentLine], LINE_HEIGHT, DMA);
-      VDP_setHorizontalScrollLine(BG_B, persiana[5].currentLine, &scrollLine[persiana[5].currentLine], LINE_HEIGHT, DMA);
-    }
-    // 6
-    if (persiana[5].currentLine >= persiana[5].nextLine && persiana[6].currentLine <= persiana[6].endLine)
-    {
-      if (persiana[5].nextLine == persiana[5].currentLine)
-        persiana[6].currentLine = persiana[6].startLine;
-      else
-        persiana[6].currentLine += 1;
-      scrollLine[persiana[6].currentLine] = 0;
-      scrollLine[persiana[6].currentLine + 1] = 0;
-      VDP_setHorizontalScrollLine(BG_A, persiana[6].currentLine, &scrollLine[persiana[6].currentLine], LINE_HEIGHT, DMA);
-      VDP_setHorizontalScrollLine(BG_B, persiana[6].currentLine, &scrollLine[persiana[6].currentLine], LINE_HEIGHT, DMA);
-    }
-
-    SYS_doVBlankProcess();
-  }
-
-  freeScrollLine();
 }
 
 /**
@@ -518,6 +259,257 @@ void updateSelector(int ind)
   }
 }
 
+// TODO: ver o que fazer quando ambos selecionam ao mesmo tempo
+// Verifica se o jogador selecionou um personagem e toca o áudio correspondente
+void playerSelected(int ind)
+{
+  if (GE[ind].sprite->visibility == HIDDEN) // se o seletor estiver invisível não permitir mover o cursor.
+    return;
+
+  if (player[ind].key_JOY_START_status > 0)
+  {
+    switch (player[ind].id)
+    {
+    case JOHNNY_CAGE:
+      XGM2_playPCMEx(loc_jc, sizeof(loc_jc), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[JOHNNY_CAGE] + 4, OPTIONS_Y[JOHNNY_CAGE] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, JOHNNY_CAGE);
+      break;
+
+    case KANO:
+      XGM2_playPCMEx(loc_kano, sizeof(loc_kano), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[KANO] + 4, OPTIONS_Y[KANO] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, KANO);
+      break;
+
+    case SUBZERO:
+      XGM2_playPCMEx(loc_suzero, sizeof(loc_suzero), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[SUBZERO] + 4, OPTIONS_Y[SUBZERO] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, SUBZERO);
+      break;
+
+    case SONYA:
+      XGM2_playPCMEx(loc_sonya, sizeof(loc_sonya), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[SONYA] + 4, OPTIONS_Y[SONYA] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, SONYA);
+      break;
+
+    case RAIDEN:
+      XGM2_playPCMEx(loc_raiden, sizeof(loc_raiden), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[RAIDEN] + 4, OPTIONS_Y[RAIDEN] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, RAIDEN);
+      break;
+
+    case LIU_KANG:
+      XGM2_playPCMEx(loc_liu_kang, sizeof(loc_liu_kang), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[LIU_KANG] + 4, OPTIONS_Y[LIU_KANG] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, LIU_KANG);
+      break;
+
+    case SCORPION:
+      XGM2_playPCMEx(loc_scorpion, sizeof(loc_scorpion), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+
+      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
+                                         OPTIONS_X[SCORPION] + 4, OPTIONS_Y[SCORPION] + 4,
+                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+
+      SPR_setAnim(GE[ind + 2].sprite, SCORPION);
+      break;
+
+    default:
+      break;
+    }
+    SPR_setDepth(GE[ind + 2].sprite, 2);
+    GE[ind].sprite->visibility = HIDDEN;
+  }
+}
+
+/**
+ * @brief move a tela para fora da parte visível a esquerda
+ * para iniciar o efeito de Persiana.
+ */
+void initScrollLine()
+{
+  // Aloca dinamicamente memória
+  scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
+  if (!scrollLine) // Verifica se a alocação foi bem-sucedida
+  {
+    // Falha na alocação
+    return;
+  }
+
+  for (int x = 0; x < SCREEN_HEIGHT; x++)
+  {
+    scrollLine[x] = -SCREEN_WIDTH; // inicia as linhas com 320px
+  }
+  VDP_setHorizontalScrollLine(BG_A, 0, scrollLine, SCREEN_HEIGHT, DMA);
+  VDP_setHorizontalScrollLine(BG_B, 0, scrollLine, SCREEN_HEIGHT, DMA);
+}
+
+/**
+ * @brief Carrega as informações dos backgrounds
+ */
+void drawBackground()
+{
+  gInd_tileset = 1;
+  // BACKGROUND A
+  VDP_loadTileSet(stage_char_select_a.tileset, gInd_tileset, DMA);
+  VDP_setTileMapEx(BG_A, stage_char_select_a.tilemap,
+                   TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset),
+                   0, 0,
+                   0, 0,
+                   TILEMAP_WIDTH, TILEMAP_HEIGHT, DMA);
+  PAL_setPalette(PAL0, char_select_a_pal.data, DMA);
+  gInd_tileset += stage_char_select_a.tileset->numTile;
+
+  // BACKGROUND B
+  VDP_loadTileSet(stage_char_select_b.tileset, gInd_tileset, DMA);
+  VDP_setTileMapEx(BG_B, stage_char_select_b.tilemap,
+                   TILE_ATTR_FULL(PAL1, FALSE, FALSE, FALSE, gInd_tileset),
+                   0, 0,
+                   0, 0,
+                   TILEMAP_WIDTH, TILEMAP_HEIGHT, DMA);
+  PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
+  gInd_tileset += stage_char_select_b.tileset->numTile;
+}
+
+/**
+ * @brief Revela a tela fazendo o efeito de persiana.
+ */
+void revealBackground()
+{
+  struct VenetianBlindsEffect
+  {
+    u16 startLine;   // linha onde começa o efeito
+    u16 nextLine;    // linha onde deve começar o próximo efeito
+    u16 endLine;     // linha onde termina o efeito
+    u16 currentLine; // linha atual da iteração
+  };
+
+  struct VenetianBlindsEffect persiana[7] = {
+      {0, 13, 31, 0},
+      {32, 43, 63, 0},
+      {64, 73, 95, 0},
+      {96, 105, 127, 0},
+      {128, 137, 159, 0},
+      {160, 167, 191, 0},
+      {192, 0, 223, 0},
+  };
+
+  for (int y = 0; y < SCREEN_HEIGHT / 2; y += 1)
+  {
+    // 0
+    if (y >= persiana[0].startLine && y <= persiana[0].endLine)
+    {
+      persiana[0].currentLine = y;
+      scrollLine[persiana[0].currentLine] = 0;
+      scrollLine[persiana[0].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, y, &scrollLine[persiana[0].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, y, &scrollLine[persiana[0].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 1
+    if (y >= persiana[0].nextLine && persiana[1].currentLine <= persiana[1].endLine)
+    {
+      if (persiana[0].nextLine == y)
+        persiana[1].currentLine = persiana[1].startLine;
+      else
+        persiana[1].currentLine += 1;
+      scrollLine[persiana[1].currentLine] = 0;
+      scrollLine[persiana[1].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[1].currentLine, &scrollLine[persiana[1].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[1].currentLine, &scrollLine[persiana[1].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 2
+    if (persiana[1].currentLine >= persiana[1].nextLine && persiana[2].currentLine <= persiana[2].endLine)
+    {
+      if (persiana[1].nextLine == persiana[1].currentLine)
+        persiana[2].currentLine = persiana[2].startLine;
+      else
+        persiana[2].currentLine += 1;
+      scrollLine[persiana[2].currentLine] = 0;
+      scrollLine[persiana[2].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[2].currentLine, &scrollLine[persiana[2].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[2].currentLine, &scrollLine[persiana[2].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 3
+    if (persiana[2].currentLine >= persiana[2].nextLine && persiana[3].currentLine <= persiana[3].endLine)
+    {
+      if (persiana[2].nextLine == persiana[2].currentLine)
+        persiana[3].currentLine = persiana[3].startLine;
+      else
+        persiana[3].currentLine += 1;
+      scrollLine[persiana[3].currentLine] = 0;
+      scrollLine[persiana[3].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[3].currentLine, &scrollLine[persiana[3].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[3].currentLine, &scrollLine[persiana[3].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 4
+    if (persiana[3].currentLine >= persiana[3].nextLine && persiana[4].currentLine <= persiana[4].endLine)
+    {
+      if (persiana[3].nextLine == persiana[3].currentLine)
+        persiana[4].currentLine = persiana[4].startLine;
+      else
+        persiana[4].currentLine += 1;
+      scrollLine[persiana[4].currentLine] = 0;
+      scrollLine[persiana[4].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[4].currentLine, &scrollLine[persiana[4].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[4].currentLine, &scrollLine[persiana[4].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 5
+    if (persiana[4].currentLine >= persiana[4].nextLine && persiana[5].currentLine <= persiana[5].endLine)
+    {
+      if (persiana[4].nextLine == persiana[4].currentLine)
+        persiana[5].currentLine = persiana[5].startLine;
+      else
+        persiana[5].currentLine += 1;
+      scrollLine[persiana[5].currentLine] = 0;
+      scrollLine[persiana[5].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[5].currentLine, &scrollLine[persiana[5].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[5].currentLine, &scrollLine[persiana[5].currentLine], LINE_HEIGHT, DMA);
+    }
+    // 6
+    if (persiana[5].currentLine >= persiana[5].nextLine && persiana[6].currentLine <= persiana[6].endLine)
+    {
+      if (persiana[5].nextLine == persiana[5].currentLine)
+        persiana[6].currentLine = persiana[6].startLine;
+      else
+        persiana[6].currentLine += 1;
+      scrollLine[persiana[6].currentLine] = 0;
+      scrollLine[persiana[6].currentLine + 1] = 0;
+      VDP_setHorizontalScrollLine(BG_A, persiana[6].currentLine, &scrollLine[persiana[6].currentLine], LINE_HEIGHT, DMA);
+      VDP_setHorizontalScrollLine(BG_B, persiana[6].currentLine, &scrollLine[persiana[6].currentLine], LINE_HEIGHT, DMA);
+    }
+
+    SYS_doVBlankProcess();
+  }
+
+  freeScrollLine();
+}
+
 void initPlayer()
 {
   // for (int ind = 0; ind < 2; ind++)
@@ -580,6 +572,12 @@ void initSelectorSprite()
 void playCursor()
 {
   XGM2_playPCMEx(snd_cursor, sizeof(snd_cursor), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
+}
+
+void playMusic()
+{
+  XGM2_setFMVolume(50);
+  XGM2_play(mus_select_player);
 }
 
 void freeScrollLine()
