@@ -35,9 +35,10 @@ int main(bool hardReset)
   VDP_setScreenHeight224();
   // VDP_setHilightShadow(TRUE);
 
-  gRoom = SELECAO_PERSONAGENS;
+  gRoom = TELA_DEMO_INTRO;
   gFrames = 0;
   gInd_tileset = 0;
+  player[0].id = JOHNNY_CAGE;
 
   if (!hardReset)
   {

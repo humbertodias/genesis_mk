@@ -31,6 +31,6 @@ SPRITE kano_name       "sprite/txt/kano_name.png"          4 2 BEST 0
 SPRITE raiden_name     "sprite/txt/raiden_name.png"        6 2 BEST 0
 SPRITE subzero_name    "sprite/txt/subzero_name.png"       8 2 BEST 0
 SPRITE scorpion_name   "sprite/txt/scorpion_name.png"      8 2 BEST 0
-SPRITE sonia_name      "sprite/txt/sonia_name.png"        11 2 BEST 0
+SPRITE sonya_name      "sprite/txt/sonya_name.png"        11 2 BEST 0
 SPRITE liukang_name    "sprite/txt/liukang_name.png"       8 2 BEST 0
   
