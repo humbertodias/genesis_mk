@@ -15,8 +15,7 @@ Rom em `out/rom.bin`
 ```shell
 make run
 ```
-
-<img width="991" height="716" alt="image" src="https://github.com/user-attachments/assets/e3422501-ab20-4272-8ae9-9c4759a1b9a1" />
+<img width="991" height="716" alt="Screenshot 2025-11-11 at 7 16 49 PM" src="https://github.com/user-attachments/assets/ae236c10-8045-408b-a9aa-fa5e5d37d2a5" />
 
 ### References
 
