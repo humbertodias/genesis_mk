@@ -2,10 +2,7 @@
 #define INTRO_DEMO_ROOM_H
 
 #include <genesis.h>
-#include "sprites.h"
-#include "sound.h"
 #include "estruturas.h"
-#include "bio_textlines.h"
 
 typedef struct
 {

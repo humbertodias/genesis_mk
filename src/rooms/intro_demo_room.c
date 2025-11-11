@@ -1,7 +1,10 @@
 #include <genesis.h>
 
 #include "intro_demo_room.h"
+#include "input_system.h"
 #include "typewriter_printer.h"
+#include "sprites.h"
+#include "sound.h"
 #include "stages.h"
 #include "gfx.h"
 #include "bio_textlines.h"
@@ -11,11 +14,10 @@ void loadBrainAtWorkScreen();
 void loadMidwayTitleMKScreen();
 void loadGoroLivesScreen();
 void loadBioScreen(const BioData *data);
-void clearVDP();
+void saida();
 void softClearPlane();
 
-// FIX: o +1 corrige o não exibir a ultima linha de cada biografia
-//      isso provavelmente ocorre por causa do sizeof usado para contar as linhas
+// FIX: hardcoded o tamanho dos vetores da bio
 static const BioData fighterBios[] = {
     {&jc_bio, &jc_name, loc_jc, sizeof(loc_jc), johnnyCageLines, 8},
     {&kano_bio, &kano_name, loc_kano, sizeof(loc_kano), kanoLines, 8},
@@ -25,14 +27,17 @@ static const BioData fighterBios[] = {
     {&scorpion_bio, &scorpion_name, loc_scorpion, sizeof(loc_scorpion), scorpionLines, 7},
     {&sonya_bio, &sonya_name, loc_sonya, sizeof(loc_sonya), sonyaLines, 7}};
 
-void clearVDP()
+void saida()
 {
-    VDP_waitVSync(); // Espera o frame terminar
-    SYS_disableInts();
-    VDP_resetScreen();         // Reseta BG_A, BG_B, sprites, scrolls, etc
-    VDP_setBackgroundColor(0); // Define preto
-    gInd_tileset = TILE_USER_INDEX;
-    SYS_enableInts();
+    SPR_clear();
+    PAL_fadeOut(0, 15, 5, FALSE);
+    PAL_fadeOut(16, 30, 5, FALSE);
+    PAL_setColors(0, palette_black, 64, DMA);
+    XGM2_stop();
+    SND_PCM4_stopPlay(SOUND_PCM_CH1);
+    gFrames = 0;
+    gRoom = TELA_START;
+    softClearPlane();
 }
 
 void softClearPlane()
@@ -48,60 +53,78 @@ void softClearPlane()
 
 void processIntro()
 {
-    loadBrainAtWorkScreen();
+    bool sair = FALSE;
 
-    loadMidwayTitleMKScreen();
-
-    loadGoroLivesScreen();
-
-    if (gFrames == 1300)
+    while (!sair)
     {
-        VDP_waitVSync();
+        newInputSystem();
+        gFrames++;
 
-        switch (player[0].id) // preguiça de criar uma variável só pra isso
+        loadBrainAtWorkScreen();
+
+        loadMidwayTitleMKScreen();
+
+        loadGoroLivesScreen();
+
+        if (gFrames == 1300)
         {
-        case JOHNNY_CAGE:
-            loadBioScreen(&fighterBios[player[0].id]);
-            player[0].id = KANO;
-            break;
-        case KANO:
-            loadBioScreen(&fighterBios[player[0].id]);
-            player[0].id = RAIDEN;
-            break;
-        case RAIDEN:
-            loadBioScreen(&fighterBios[player[0].id]);
-            player[0].id = LIU_KANG;
-            break;
-        case LIU_KANG:
-            loadBioScreen(&fighterBios[player[0].id]);
-            player[0].id = SUBZERO;
-            break;
-        case SUBZERO:
-            loadBioScreen(&fighterBios[player[0].id]);
-            player[0].id = SCORPION;
-            break;
-        case SCORPION:
-            loadBioScreen(&fighterBios[player[0].id]);
-            player[0].id = SONYA;
-            break;
-        case SONYA:
-            loadBioScreen(&fighterBios[player[0].id]);
-            player[0].id = JOHNNY_CAGE;
-            break;
-        default:
-            break;
-        }
-    }
+            VDP_waitVSync();
 
-    if (gFrames > 2100)
-    {
-        PAL_fadeOut(0, 15, 5, FALSE);
-        PAL_fadeOut(16, 30, 5, FALSE);
-        SPR_reset();
-        XGM2_stop();
-        softClearPlane();
-        gFrames = 0;
+            switch (player[0].id) // preguiça de criar uma variável só pra isso
+            {
+            case JOHNNY_CAGE:
+                loadBioScreen(&fighterBios[player[0].id]);
+                player[0].id = KANO;
+                break;
+            case KANO:
+                loadBioScreen(&fighterBios[player[0].id]);
+                player[0].id = RAIDEN;
+                break;
+            case RAIDEN:
+                loadBioScreen(&fighterBios[player[0].id]);
+                player[0].id = LIU_KANG;
+                break;
+            case LIU_KANG:
+                loadBioScreen(&fighterBios[player[0].id]);
+                player[0].id = SUBZERO;
+                break;
+            case SUBZERO:
+                loadBioScreen(&fighterBios[player[0].id]);
+                player[0].id = SCORPION;
+                break;
+            case SCORPION:
+                loadBioScreen(&fighterBios[player[0].id]);
+                player[0].id = SONYA;
+                break;
+            case SONYA:
+                loadBioScreen(&fighterBios[player[0].id]);
+                player[0].id = JOHNNY_CAGE;
+                break;
+            default:
+                break;
+            }
+        }
+
+        if (gFrames > 2100)
+        {
+            PAL_fadeOut(0, 15, 5, FALSE);
+            PAL_fadeOut(16, 30, 5, FALSE);
+            SPR_reset();
+            XGM2_stop();
+            softClearPlane();
+            gFrames = 0;
+        }
+
+        // start só funciona a partir da tela título do MK ...
+        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && gFrames > 380)
+        {
+            sair = TRUE;
+        }
+
+        SPR_update(); // Atualização dos sprites na tela
+        SYS_doVBlankProcess();
     }
+    saida();
 }
 
 // TELA BRAIN AT WORK
@@ -109,6 +132,7 @@ void loadBrainAtWorkScreen()
 {
     if (gFrames == 1)
     {
+        SYS_disableInts();
         VDP_loadTileSet(baw_a.tileset, gInd_tileset, DMA);
         VDP_setTileMapEx(BG_A, baw_a.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 28, DMA_QUEUE);
         PAL_setPalette(PAL0, baw_a.palette->data, DMA);
@@ -212,8 +236,7 @@ void loadGoroLivesScreen()
 
     if (gFrames == 1280)
     {
-        // PAL_setColors(0, palette_black, 64, DMA);
-
+        PAL_setColors(0, palette_black, 64, DMA);
         SND_PCM4_stopPlay(SOUND_PCM_CH1);
     }
 }
@@ -221,6 +244,8 @@ void loadGoroLivesScreen()
 void loadBioScreen(const BioData *data)
 {
     softClearPlane();
+    PAL_fadeOut(0, 15, 5, FALSE);
+    PAL_fadeOut(16, 30, 5, FALSE);
 
     VDP_loadTileSet(bio_b.tileset, gInd_tileset, DMA);
     VDP_setTileMapEx(BG_A, bio_b.tilemap, TILE_ATTR_FULL(PAL0, FALSE, FALSE, FALSE, gInd_tileset),

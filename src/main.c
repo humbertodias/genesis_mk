@@ -44,7 +44,7 @@ int main(bool hardReset)
 
   while (TRUE)
   {
-    gFrames++;
+    // gFrames++;
 
     newInputSystem();
 
