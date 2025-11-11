@@ -1,3 +1,5 @@
+![GitHub all releases](https://img.shields.io/github/downloads/demodehavaianas/genesis_mk/total)
+
 ## Mortal Kombat Plus
 
 Material de estudo para desenvolvimento de um jogo de luta para o Mega Drive usando a SGDK me baseando no jogo Mortal Kombat
