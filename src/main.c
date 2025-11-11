@@ -14,19 +14,14 @@
 // -- DECLARACAO DE VARIAVEIS -- //
 u16 gDistancia; // Distancia entre os Players
 bool gPodeMover = TRUE;
-// u16 palette[64];
 s16 gMeioDaTela = 0;     // MEio da Câmera em X
 s16 camPosX = 0;         // Posicao da Camera
 s16 camPosXanterior = 0; // Posicao da Camera no frame Anterior
-// Map *level_map;
-// Sprite *spr_p1; // Sprite de personagem no icone ativo
-// Sprite *spr_p2; // Sprite de personagem no icone ativo
 s16 scrollOffset = 0;
 s16 scrollValues[48];
 
 void resetGraphicElements();
 void CLEAR_VDP();
-void playerState2(int Player, u16 State);
 
 int main(bool hardReset)
 {
@@ -111,7 +106,7 @@ int main(bool hardReset)
     }
 
     // -- FINALIZAÇÕES -- //
-    //VDP_showFPS(1, 1, 1);
+    // VDP_showFPS(1, 1, 1);
     SPR_update();          // Atualização dos sprites na tela
     SYS_doVBlankProcess(); // Sincroniza com o VBlank
   }
@@ -138,52 +133,6 @@ void CLEAR_VDP()
   // PAL_setColors(0, palette_black, 64, DMA);
   SYS_enableInts();
   gInd_tileset = 0;
-}
-
-void playerState2(int numPlayer, u16 State)
-{/*
-  if (player[numPlayer].sprite)
-  {
-    SPR_releaseSprite(player[numPlayer].sprite);
-    player[numPlayer].sprite = NULL;
-  }
-
-  player[numPlayer].animFrame = 1;
-  player[numPlayer].frameTimeAtual = 1;
-  player[numPlayer].dataAnim[1] = 1;
-  player[numPlayer].animFrameTotal = 1;
-  player[numPlayer].state = State;
-
-  if (PLAYER_STATE_FUNCS[player[numPlayer].id])
-  {
-    PLAYER_STATE_FUNCS[player[numPlayer].id](numPlayer, State);
-  }
-
-  // Flipa o sprite
-  SPR_setHFlip(player[numPlayer].sprite, (player[numPlayer].direcao == 1) ? FALSE : TRUE);
-
-  SPR_setAnimAndFrame(player[numPlayer].sprite, 0, player[numPlayer].animFrame - 1);
-  player[numPlayer].frameTimeTotal = player[numPlayer].dataAnim[1];
-
-  if (player[numPlayer].sprite)
-  {
-    // FUNCAO_DEPTH
-  }
-  // FUNCAO_SPR_POSITION
-  // ajusta posicao do sprite
-  if (player[numPlayer].direcao == 1)
-  {
-    SPR_setPosition(player[numPlayer].sprite,
-                    player[numPlayer].x - (player[numPlayer].w - player[numPlayer].axisX) - camPosX,
-                    player[numPlayer].y - player[numPlayer].axisY);
-  }
-  if (player[numPlayer].direcao == -1)
-  {
-    SPR_setPosition(player[numPlayer].sprite,
-                    player[numPlayer].x - player[numPlayer].axisX - camPosX,
-                    player[numPlayer].y - player[numPlayer].axisY);
-  }
-                    */
 }
 
 void resetGraphicElements()
