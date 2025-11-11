@@ -17,13 +17,13 @@ void softClearPlane();
 // FIX: o +1 corrige o não exibir a ultima linha de cada biografia
 //      isso provavelmente ocorre por causa do sizeof usado para contar as linhas
 static const BioData fighterBios[] = {
-    {&jc_bio, &jc_name, loc_jc, sizeof(loc_jc), johnnyCageLines, sizeof(johnnyCageLines[0]) + 1},
-    {&kano_bio, &kano_name, loc_kano, sizeof(loc_kano), kanoLines, sizeof(kanoLines[0]) + 1},
-    {&raiden_bio, &raiden_name, loc_raiden, sizeof(loc_raiden), raidenLines, sizeof(raidenLines[0]) + 1},
-    {&liu_kang_bio, &liukang_name, loc_liu_kang, sizeof(loc_liu_kang), liuKangLines, sizeof(liuKangLines[0]) + 1},
-    {&subzero_bio, &subzero_name, loc_suzero, sizeof(loc_suzero), subzeroLines, sizeof(subzeroLines[0]) + 1},
-    {&scorpion_bio, &scorpion_name, loc_scorpion, sizeof(loc_scorpion), scorpionLines, sizeof(scorpionLines[0]) + 1},
-    {&sonya_bio, &sonya_name, loc_sonya, sizeof(loc_sonya), sonyaLines, sizeof(sonyaLines[0]) + 1}};
+    {&jc_bio, &jc_name, loc_jc, sizeof(loc_jc), johnnyCageLines, 8},
+    {&kano_bio, &kano_name, loc_kano, sizeof(loc_kano), kanoLines, 8},
+    {&raiden_bio, &raiden_name, loc_raiden, sizeof(loc_raiden), raidenLines, 6},
+    {&liu_kang_bio, &liukang_name, loc_liu_kang, sizeof(loc_liu_kang), liuKangLines, 6},
+    {&subzero_bio, &subzero_name, loc_suzero, sizeof(loc_suzero), subzeroLines, 6},
+    {&scorpion_bio, &scorpion_name, loc_scorpion, sizeof(loc_scorpion), scorpionLines, 7},
+    {&sonya_bio, &sonya_name, loc_sonya, sizeof(loc_sonya), sonyaLines, 7}};
 
 void clearVDP()
 {
@@ -173,7 +173,6 @@ void loadGoroLivesScreen()
 {
     if (gFrames == 700)
     {
-        // clearVDP();
         softClearPlane();
 
         SND_PCM4_stopPlay(SOUND_PCM_CH1);
@@ -189,7 +188,6 @@ void loadGoroLivesScreen()
     // TELA GORO E HISTORIA
     if (gFrames == 855)
     {
-        // clearVDP();
         softClearPlane();
 
         PAL_setColors(0, palette_black, 64, DMA);

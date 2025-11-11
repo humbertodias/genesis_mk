@@ -1,27 +1,27 @@
 #include "bio_textlines.h"
 
-const TextLine johnnyCageLines[] = {
-    {"UM SUPERASTRO DAS ARTES MARCIAIS", 4, 17},
-    {"TREINADO POR GRANDES MESTRES DE", 5, 18},
-    {"TODO O MUNDO. CAGE USA SEUS", 5, 19},
-    {"TALENTOS NAS TELAS DE CINEMA, ELE", 3, 20},
-    {"E' O ATUAL CAMPEAO DE BILHETERIA E", 4, 21},
-    {"ESTRELA DE FILMES COMO PUNHO DO", 3, 22},
-    {"DRAGAO E PUNHO DO DRAGAO II, BEM", 3, 23},
-    {"COMO O PREMIADO VIOLENCIA SUBITA", 4, 24},
-};
-
 // const TextLine johnnyCageLines[] = {
-//     {"A MARTIAL ARTS SUPERSTAR TRAINED BY", 3, 17},
-//     {"GREAT MASTERS FROM AROUND THE WORLD.", 2, 18},
-//     {"CAGE USES HIS TALENTS ON", 7, 19},
-//     {"THE BIG SCREEN,", 10, 20},
-//     {"HE IS THE CURRENT BOX-OFFICE CHAMP", 3, 21},
-//     {"AND STAR OF SUCH MOVIES AS DRAGON", 3, 22},
-//     {"FIST AND DRAGON FIST II AS WELL", 4, 23},
-//     {"AS THE AWARD", 13, 24},
-//     {"WINNING SUDDEN VIOLENCE.", 7, 25},
+//     {"UM SUPERASTRO DAS ARTES MARCIAIS", 4, 17},
+//     {"TREINADO POR GRANDES MESTRES DE", 5, 18},
+//     {"TODO O MUNDO. CAGE USA SEUS", 5, 19},
+//     {"TALENTOS NAS TELAS DE CINEMA, ELE", 3, 20},
+//     {"E' O ATUAL CAMPEAO DE BILHETERIA E", 4, 21},
+//     {"ESTRELA DE FILMES COMO PUNHO DO", 3, 22},
+//     {"DRAGAO E PUNHO DO DRAGAO II, BEM", 3, 23},
+//     {"COMO O PREMIADO VIOLENCIA SUBITA", 4, 24},
 // };
+
+const TextLine johnnyCageLines[] = {
+    {"A MARTIAL ARTS SUPERSTAR TRAINED BY", 3, 17},
+    {"GREAT MASTERS FROM AROUND THE WORLD.", 2, 18},
+    {"CAGE USES HIS TALENTS ON", 7, 19},
+    {"THE BIG SCREEN,", 10, 20},
+    {"HE IS THE CURRENT BOX-OFFICE CHAMP", 3, 21},
+    {"AND STAR OF SUCH MOVIES AS DRAGON", 3, 22},
+    {"FIST AND DRAGON FIST II AS WELL", 4, 23},
+    {"AS THE AWARD", 13, 24},
+    {"WINNING SUDDEN VIOLENCE.", 7, 25},
+};
 
 const TextLine kanoLines[] = {
     {"A MERCENARY, THUG, EXTORTIONIST", 4, 17},
@@ -33,6 +33,17 @@ const TextLine kanoLines[] = {
     {"THROUGHOUT ALL OF CRIME'S", 6, 23},
     {"INNER CIRCLES.", 12, 24},
 };
+
+// const TextLine kanoLines[] = {
+//     {"MERCENARIO, BANDIDO, EXTORSIONISTA,", 3, 17},
+//     {"LADRAO. KANO VIVE UMA VIDA DE", 4, 18},
+//     {"CRIMES E INJUSTICA. ELE E' UM", 5, 19},
+//     {"DEVOTADO MEMBRO DO DRAGAO NEGRO,", 6, 20},
+//     {"UM GRUPO PERIGOSO DE ASSASSINOS", 5, 21},
+//     {"lOUCOS, TEMIDOS E RESPEITADOS", 7, 22},
+//     {"POR TODOS OS CIRCULOS", 9, 23},
+//     {"INTERNOS DO CRIME.", 12, 24},
+// };
 
 const TextLine liuKangLines[] = {
     {"ONCE A MEMBER OF THE SUPER SECRET", 3, 18},
@@ -70,6 +81,16 @@ const TextLine raidenLines[] = {
     {"HIMSELF AND TOOK THE FORM OF A", 5, 22},
     {"HUMAN TO COMPETE IN THE TOURNAMENT", 3, 23},
 };
+
+// const TextLine raidenLines[] = {
+//     {"O NOME RAIDEN E' NA VERDADE O DE", 4, 18},
+//     {"UMA DEIDADE CONHECIDA COMO", 6, 19},
+//     {"DEUS DO TROVAO.", 11, 20},
+//     {"HA' RUMORES DE QUE ELE RECEBEU UM", 3, 21},
+//     {"CONVITE PESSOAL DO PROPRIO", 6, 22},
+//     {"SHANG TSUNG E ASSUMIU A FORMA", 5, 23},
+//     {"HUMANA PARA COMPETIR NO TORNEIO", 4, 24},
+// };
 
 const TextLine sonyaLines[] = {
     {"SONYA IS A MEMBER OF A TOP U.S.", 5, 18},
