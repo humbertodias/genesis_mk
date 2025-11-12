@@ -1,3 +1,5 @@
+[![CI](https://github.com/demodehavaianas/genesis_mk/actions/workflows/ci.yml/badge.svg)](https://github.com/demodehavaianas/genesis_mk/actions/workflows/ci.yml)
+[![CD](https://github.com/demodehavaianas/genesis_mk/actions/workflows/cd.yml/badge.svg)](https://github.com/demodehavaianas/genesis_mk/actions/workflows/cd.yml)
 ![GitHub all releases](https://img.shields.io/github/downloads/demodehavaianas/genesis_mk/total)
 
 ## Mortal Kombat Plus

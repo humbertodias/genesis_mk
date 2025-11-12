@@ -1,0 +1,40 @@
+name: CD
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+# required for upload
+permissions:
+  contents: write
+
+jobs:
+
+  Linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: sudo apt update -y && sudo apt install -y zip make
+
+      - name: Compile
+        run: make compile
+
+      - name: Package
+        run: make zip
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            *.zip
