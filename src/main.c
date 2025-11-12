@@ -50,7 +50,6 @@ int main(bool hardReset)
 
     if (TELA_DEMO_INTRO == gRoom)
     {
-      // enquanto não pressionar start...
       processIntro();
     }
 

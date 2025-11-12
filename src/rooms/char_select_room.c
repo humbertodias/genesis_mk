@@ -43,11 +43,12 @@ static const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
 
 void processSelecaoPersonagens()
 {
+  gFrames++;
   if (gFrames == 1)
   {
+    SYS_disableInts();
     VDP_setPlaneSize(128, 64, TRUE);
     VDP_setScrollingMode(HSCROLL_LINE, VSCROLL_PLANE);
-    SYS_disableInts();
 
     initScrollLine();
     drawBackground();
@@ -81,7 +82,7 @@ void processSelecaoPersonagens()
       // Verifica se o jogador selecionou um personagem
       playerSelected(ind);
 
-      //TODO: funfa mas tem algo estranho, REVISAR
+      // TODO: funfa mas tem algo estranho, REVISAR
       if (GE[ind + 2].sprite)
       {
         //   if (GE[ind].sprite->visibility == HIDDEN)
@@ -116,7 +117,7 @@ void processSelecaoPersonagens()
  */
 void updateSelector(int ind)
 {
-  //TODO: talvez deixar fora da função 
+  // TODO: talvez deixar fora da função
   if (GE[ind].sprite->visibility == HIDDEN) // se o seletor estiver invisível não permitir mover o cursor.
     return;
 
@@ -375,7 +376,7 @@ void initScrollLine()
  */
 void drawBackground()
 {
-  gInd_tileset = 1;
+  // gInd_tileset = 1;
   // BACKGROUND A
   VDP_loadTileSet(stage_char_select_a.tileset, gInd_tileset, DMA);
   VDP_setTileMapEx(BG_A, stage_char_select_a.tilemap,
