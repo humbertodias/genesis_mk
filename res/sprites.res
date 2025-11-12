@@ -9,11 +9,11 @@ PALETTE kano_p1_pal    "sprite/kano_paleta_p1.pal"
 PALETTE kano_p2_pal    "sprite/kano_paleta_p2.pal"
 
 # Character Selection Sprites
-#SPRITE  spr_subzero    "sprite/subzero.png"              20 20 NONE 6
+#SPRITE  spr_subzero    "sprite/subzero_stand.png"              20 20 NONE 6
 SPRITE spr_jcage       "sprite/jc_stand.png"               16 15 NONE 6
 SPRITE spr_kano        "sprite/kano_stand.png"             16 15 NONE 6
 SPRITE spr_raiden      "sprite/raiden_stand.png"           16 15 NONE 6
-SPRITE spr_subzero     "sprite/subzero.png"                16 15 NONE 6
+SPRITE spr_subzero     "sprite/subzero_stand.png"          16 15 NONE 6
 SPRITE spr_scorpion    "sprite/scorpion_stand.png"         16 15 NONE 6
 SPRITE spr_sonya       "sprite/sonya_stand.png"            16 15 NONE 6
 SPRITE spr_liu_kang    "sprite/liu_kang_stand.png"         16 15 NONE 6
