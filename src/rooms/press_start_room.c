@@ -34,6 +34,7 @@ void clearVDP1()
 
 void processPressStart()
 {
+    gFrames++;
     if (gFrames == 1)
     {
         clearVDP1();

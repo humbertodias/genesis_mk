@@ -1,87 +1,23 @@
 #ifndef _BIO_TEXTLINES_H_
 #define _BIO_TEXTLINES_H_
 
+#include <genesis.h>
 #include "estruturas.h"
 
-const TextLine johnnyCageLines[] = {
-    {"A MARTIAL ARTS SUPERSTAR TRAINED BY", 3, 17},
-    {"GREAT MASTERS FROM AROUND THE WORLD.", 2, 18},
-    {"CAGE USES HIS TALENTS ON", 7, 19},
-    {"THE BIG SCREEN,", 10, 20},
-    {"HE IS THE CURRENT BOX-OFFICE CHAMP", 3, 21},
-    {"AND STAR OF SUCH MOVIES AS DRAGON", 3, 22},
-    {"FIST AND DRAGON FIST II AS WELL", 4, 23},
-    {"AS THE AWARD", 13, 24},
-    {"WINNING SUDDEN VIOLENCE.", 7, 25},
-};
+extern const TextLine johnnyCageLines[];
 
-const TextLine kanoLines[] = {
-    {"A MERCENARY, THUG, EXTORTIONIST", 4, 17},
-    {"THIEF - KANO LIVES A LIFE OF CRIME", 3, 18},
-    {"AND INJUSTICE. HE IS A DEVOTED", 5, 19},
-    {"MEMBER OF THE BLACK DRAGON,", 7, 20},
-    {"A DANGEROUS GROUP OF CUT-THROAT", 5, 21},
-    {"MADMEN FEARED AND RESPECTED", 7, 22},
-    {"THROUGHOUT ALL OF CRIME'S", 6, 23},
-    {"INNER CIRCLES.", 12, 24},
-};
+extern const TextLine kanoLines[];
 
-const TextLine liuKangLines[] = {
-    {"ONCE A MEMBER OF THE SUPER SECRET", 3, 18},
-    {"WHITE LOTUS SOCIETY, LIU KANG LEFT", 3, 19},
-    {"THE ORGANIZATION IN ORDER TO", 5, 20},
-    {"REPRESENT SHAOLIN TEMPLES IN THE", 3, 21},
-    {"TOURNAMENT, KANG IS STRONG IN HIS", 3, 22},
-    {"BELIEFS AND DESPISES SHANG TSUNG", 3, 23},
-};
+extern const TextLine liuKangLines[];
 
-const TextLine scorpionLines[] = {
-    {"LIKE SUB-ZERO, SCORPION'S TRUE", 5, 18},
-    {"NAME AND ORIGIN ARE NOT KNOWN", 5, 19},
-    {"HE HAS SHOWN FROM TIME TO TIME", 5, 20},
-    {"DISTRUST AND HATRED TOWARDS", 7, 21},
-    {"SUB-ZERO. BETWEEN NINJAS, THIS", 5, 22},
-    {"IS USUALLY A SIGN OF", 11, 23},
-    {"OPPOSING CLANS", 13, 24},
-};
+extern const TextLine scorpionLines[];
 
-const TextLine subzeroLines[] = {
-    {"THE ACTUAL NAME OR IDENTITY OF", 5, 18},
-    {"THIS WARRIOR IS UNKNOWN. HOWEVER", 4, 19},
-    {"BASED ON THE MARKINGS OF HIS", 5, 20},
-    {"UNIFORM, IT IS BELIEVED HE BELONGS", 3, 21},
-    {"TO THE LIN KUEI, A LEGENDARY", 5, 22},
-    {"CLAN OF CHINESE NINJA.", 10, 23},
-};
+extern const TextLine subzeroLines[];
 
-const TextLine raidenLines[] = {
-    {"THE NAME RAIDEN IS ACTUALLY THAT OF", 3, 18},
-    {"A DEITY KNOWN AS THE THUNDER GOD.", 4, 19},
-    {"IT IS RUMORED HE RECEIVED A", 7, 20},
-    {"PERSONAL INVITATION BY SHANG TSUNG", 3, 21},
-    {"HIMSELF AND TOOK THE FORM OF A", 5, 22},
-    {"HUMAN TO COMPETE IN THE TOURNAMENT", 3, 23},
-};
+extern const TextLine raidenLines[];
 
-const TextLine sonyaLines[] = {
-    {"SONYA IS A MEMBER OF A TOP U.S.", 5, 18},
-    {"SPECIAL FORCES UNIT, HER TEAM WAS", 4, 19},
-    {"HOT ON THE TRAIL OF KANO'S BLACK", 5, 20},
-    {"DRAGON ORGANIZATION. THEY", 8, 21},
-    {"FOLLOWED THEM TO AN UNCHARTED", 6, 22},
-    {"ISLAND WHERE THEY WERE AMBUSHED", 5, 23},
-    {"BY SHANG TSUNG'S PERSONAL ARMY.", 5, 24},
-};
+extern const TextLine sonyaLines[];
 
-const TextLine goroLines[] = {
-    {"A 2.000 YEAR OLD HALF HUMAN DRAGON", 3, 7},
-    {"GORO REMAINS UNDERFEATED FOR THE PAST", 2, 9},
-    {"500 YEARS. HE WON THE TITLE OF GRAND", 2, 11},
-    {"CHAMPION BY DEFEATING KUNG LAO, A", 3, 13},
-    {"SHAOLIN FIGHTING MONK. IT WAS DURING", 2, 15},
-    {"THIS PERIOD THAT TOURNAMENT FELL", 2, 17},
-    {"INTO SHANG TSUNG'S HANDS AND WAS", 4, 19},
-    {"CORRUPTED", 15, 21},
-};
+extern const TextLine goroLines[];
 
 #endif
