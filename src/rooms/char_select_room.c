@@ -43,7 +43,6 @@ const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
 void processSelecaoPersonagens()
 {
   bool sair = FALSE;
-  s16 *scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
   u8 selectorBlinkTimer[2] = {0, 0};
 
   char stri[64];
@@ -59,20 +58,22 @@ void processSelecaoPersonagens()
       SYS_disableInts();
       VDP_setPlaneSize(128, 64, TRUE);
       VDP_setScrollingMode(HSCROLL_LINE, VSCROLL_PLANE);
+    }
+
+    if (gFrames == 20)
+    {
+      s16 *scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
+
+      XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH2, 0, FALSE, 0);
 
       initScrollLine(scrollLine);
       drawBackground();
-    }
 
-    if (gFrames == 30)
-    {
-      XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH2, 0, FALSE, 0);
+      revealBackground(scrollLine);
     }
 
     if (gFrames == 40)
     {
-      revealBackground(scrollLine);
-
       playMusic();
 
       initPlayer();
@@ -80,7 +81,11 @@ void processSelecaoPersonagens()
       initSelectorSprite();
 
       // SPR_update();
+      VDP_waitVSync();
+    }
 
+    if (gFrames == 50)
+    {
       SYS_enableInts();
     }
 
@@ -95,15 +100,27 @@ void processSelecaoPersonagens()
       // TODO: funfa mas tem algo estranho, REVISAR
       if (GE[ind + 2].sprite)
       {
+        // para piscar novamente caso selecionem o mesmo personagem
+        // FIXIT: bug quando o player 2 seleciona primeiro (????)
+        if ((player[ind].selecionado && player[ind + 1].selecionado))
+        {
+          if (player[ind].id == player[ind + 1].id)
+            GE[ind + 2].sprite->visibility = VISIBLE;
+        }
+
         selectorBlinkTimer[ind]++;
 
         if (selectorBlinkTimer[ind] % 5 == 0)
+        {
           SPR_nextFrame(GE[ind + 2].sprite);
+        }
 
         if (selectorBlinkTimer[ind] > 30)
         {
           // SPR_setVisibility(GE[ind].sprite, HIDDEN);
           SPR_setAnimationLoop(GE[ind + 2].sprite, FALSE);
+          // selectorBlinkTimer[0] = 0;
+          // selectorBlinkTimer[1] = 0;
         }
       }
     }
@@ -290,7 +307,6 @@ void playerSelected(int ind)
       GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
                                          OPTIONS_X[JOHNNY_CAGE] + 4, OPTIONS_Y[JOHNNY_CAGE] + 4,
                                          TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
       SPR_setAnim(GE[ind + 2].sprite, JOHNNY_CAGE);
       break;
 
@@ -359,6 +375,7 @@ void playerSelected(int ind)
     }
     SPR_setDepth(GE[ind + 2].sprite, 2);
     GE[ind].sprite->visibility = HIDDEN;
+    player[ind].selecionado = TRUE;
   }
 }
 
