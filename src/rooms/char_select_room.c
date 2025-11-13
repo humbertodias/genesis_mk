@@ -21,16 +21,15 @@
 
 void updateSelector(int ind);
 void playerSelected(int ind);
-void initScrollLine();
+void initScrollLine(s16 *scrollLine);
 void drawBackground();
-void revealBackground();
+void revealBackground(s16 *scrollLine);
 void initPlayer();
 void initSelectorSprite();
 void playCursor();
 void playMusic();
-void freeScrollLine();
+void freeScrollLine(s16 *scrollLine);
 
-s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
 // CAGE      20, 44
 // KANO      76, 44
 // RAIDEN    76, 108
@@ -38,44 +37,55 @@ s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
 // SUBZERO  188, 44
 // SCORPION 188, 108
 // SONYA    244, 44
-static const u8 OPTIONS_X[7] = {20, 76, 76, 132, 188, 188, 244};
-static const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
+const u8 OPTIONS_X[7] = {20, 76, 76, 132, 188, 188, 244};
+const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
 
 void processSelecaoPersonagens()
 {
-  gFrames++;
-  if (gFrames == 1)
+  bool sair = FALSE;
+  s16 *scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
+  u8 selectorBlinkTimer[2] = {0, 0};
+
+  char stri[64];
+
+  while (!sair)
   {
-    SYS_disableInts();
-    VDP_setPlaneSize(128, 64, TRUE);
-    VDP_setScrollingMode(HSCROLL_LINE, VSCROLL_PLANE);
+    newInputSystem();
 
-    initScrollLine();
-    drawBackground();
-  }
+    gFrames++;
 
-  if (gFrames == 30)
-  {
-    XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH2, 0, FALSE, 0);
-  }
+    if (gFrames == 1)
+    {
+      SYS_disableInts();
+      VDP_setPlaneSize(128, 64, TRUE);
+      VDP_setScrollingMode(HSCROLL_LINE, VSCROLL_PLANE);
 
-  if (gFrames == 40)
-  {
-    revealBackground();
+      initScrollLine(scrollLine);
+      drawBackground();
+    }
 
-    playMusic();
+    if (gFrames == 30)
+    {
+      XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH2, 0, FALSE, 0);
+    }
 
-    initPlayer();
+    if (gFrames == 40)
+    {
+      revealBackground(scrollLine);
 
-    initSelectorSprite();
+      playMusic();
 
-    SPR_update();
+      initPlayer();
 
-    SYS_enableInts();
-  }
+      initSelectorSprite();
 
-  if (scrollLine == NULL) // se o scrollLine já tiver terminado...
-  {
+      // SPR_update();
+
+      SYS_enableInts();
+    }
+
+    // if (scrollLine == NULL) // se o scrollLine já tiver terminado...
+    // {
     for (int ind = 0; ind < 2; ind++) // para cada jogador
     {
       updateSelector(ind);
@@ -85,9 +95,6 @@ void processSelecaoPersonagens()
       // TODO: funfa mas tem algo estranho, REVISAR
       if (GE[ind + 2].sprite)
       {
-        //   if (GE[ind].sprite->visibility == HIDDEN)
-        //     return;
-
         selectorBlinkTimer[ind]++;
 
         if (selectorBlinkTimer[ind] % 5 == 0)
@@ -102,11 +109,17 @@ void processSelecaoPersonagens()
     }
 
     // Mostra os IDs dos personagens
-    // char stri[64];
-    // sprintf(stri, "p1: %d", player[0].id);
-    // VDP_drawText(stri, 1, 1);
-    // sprintf(stri, "p2: %d", player[1].id);
-    // VDP_drawText(stri, 1, 2);
+    if (debugEnabled)
+    {
+      // char stri[64];
+      sprintf(stri, "p1: %d", player[0].id);
+      VDP_drawText(stri, 1, 1);
+      sprintf(stri, "p2: %d", player[1].id);
+      VDP_drawText(stri, 1, 2);
+    }
+
+    SPR_update();
+    SYS_doVBlankProcess();
   }
 }
 
@@ -353,10 +366,10 @@ void playerSelected(int ind)
  * @brief move a tela para fora da parte visível a esquerda
  * para iniciar o efeito de Persiana.
  */
-void initScrollLine()
+void initScrollLine(s16 *scrollLine)
 {
   // Aloca dinamicamente memória
-  scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
+  // scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
   if (!scrollLine) // Verifica se a alocação foi bem-sucedida
   {
     // Falha na alocação
@@ -401,7 +414,7 @@ void drawBackground()
 /**
  * @brief Revela a tela fazendo o efeito de persiana.
  */
-void revealBackground()
+void revealBackground(s16 *scrollLine)
 {
   struct VenetianBlindsEffect
   {
@@ -508,7 +521,7 @@ void revealBackground()
     SYS_doVBlankProcess();
   }
 
-  freeScrollLine();
+  freeScrollLine(scrollLine);
 }
 
 void initPlayer()
@@ -581,7 +594,7 @@ void playMusic()
   XGM2_play(mus_select_player);
 }
 
-void freeScrollLine()
+void freeScrollLine(s16 *scrollLine)
 {
   if (scrollLine)
   {

@@ -9,8 +9,6 @@
 #include "sprites.h"
 #include "anima_system.h"
 
-#define DEBUG FALSE
-
 // -- DECLARACAO DE VARIAVEIS -- //
 u16 gDistancia; // Distancia entre os Players
 bool gPodeMover = TRUE;
@@ -30,6 +28,7 @@ int main(bool hardReset)
   VDP_setScreenHeight224();
   // VDP_setHilightShadow(TRUE);
 
+  debugEnabled = FALSE;
   gRoom = TELA_DEMO_INTRO;
   gFrames = 0;
   gInd_tileset = 0;
@@ -46,7 +45,7 @@ int main(bool hardReset)
   {
     // gFrames++;
 
-    newInputSystem();
+    // newInputSystem();
 
     if (TELA_DEMO_INTRO == gRoom)
     {
@@ -95,7 +94,7 @@ int main(bool hardReset)
     }
 
     // -- DEBUG -- //
-    if (DEBUG)
+    if (debugEnabled)
     {
       char str[64];
       sprintf(str, "tiles nos BGs: %d", gInd_tileset);

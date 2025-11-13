@@ -45,6 +45,7 @@ void processPressStart()
         if (gFrames == 5)
         {
             VDP_setPlaneSize(64, 64, TRUE);
+            VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_COLUMN);
 
             VDP_loadTileSet(screen_opt_a.tileset, gInd_tileset, DMA);
             VDP_setTileMapEx(BG_A, screen_opt_a.tilemap,
@@ -57,11 +58,9 @@ void processPressStart()
                              TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 64, CPU);
             PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
             gInd_tileset += screen_opt_b.tileset->numTile;
-
-            VDP_setScrollingMode(HSCROLL_PLANE, VSCROLL_COLUMN);
         }
 
-        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && gFrames > 50)
+        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && gFrames > 30)
         {
             sair = TRUE;
         }
@@ -78,7 +77,7 @@ void processPressStart()
         vecTilesScreen[18] -= ACELERACAO;
         vecTilesScreen[19] -= ACELERACAO;
 
-        if (vecTilesScreen[0] == -512)
+        if (vecTilesScreen[0] == -512) //evitar que estore contador
         {
             vecTilesScreen[0] = 0;
             vecTilesScreen[1] = 0;
@@ -92,7 +91,8 @@ void processPressStart()
         // VDP_drawText(stri, 7, 1);
         VDP_setVerticalScrollTile(BG_A, 0, vecTilesScreen, 20, CPU);
         VDP_setVerticalScrollTile(BG_B, 0, vecTilesScreen, 20, CPU);
-        // SPR_update();
+
+        SPR_update();
         SYS_doVBlankProcess();
     }
 
