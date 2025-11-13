@@ -9,15 +9,15 @@ PALETTE kano_p1_pal    "sprite/kano_paleta_p1.pal"
 PALETTE kano_p2_pal    "sprite/kano_paleta_p2.pal"
 
 # Character Selection Sprites
-#SPRITE  spr_subzero    "sprite/subzero_stand.png"              20 20 NONE 6
-SPRITE spr_jcage       "sprite/jc_stand.png"               16 15 NONE 6
-SPRITE spr_kano        "sprite/kano_stand.png"             16 15 NONE 6
-SPRITE spr_raiden      "sprite/raiden_stand.png"           16 15 NONE 6
-SPRITE spr_subzero     "sprite/subzero_stand.png"          16 15 NONE 6
-SPRITE spr_scorpion    "sprite/scorpion_stand.png"         16 15 NONE 6
-SPRITE spr_sonya       "sprite/sonya_stand.png"            16 15 NONE 6
-SPRITE spr_liu_kang    "sprite/liu_kang_stand.png"         16 15 NONE 6
-SPRITE spr_reptile     "sprite/reptile_stand.png"          16 15 NONE 6
+#SPRITE  spr_subzero    "sprite/subzero_stance.png"              20 20 NONE 6
+SPRITE spr_jcage       "sprite/jc_stance.png"               16 15 NONE 6
+SPRITE spr_kano        "sprite/kano_stance.png"             16 15 NONE 6
+SPRITE spr_raiden      "sprite/raiden_stance.png"           16 15 NONE 6
+SPRITE spr_subzero     "sprite/subzero_stance.png"          16 15 NONE 6
+SPRITE spr_scorpion    "sprite/scorpion_stance.png"         16 15 NONE 6
+SPRITE spr_sonya       "sprite/sonya_stance.png"            16 15 NONE 6
+SPRITE spr_liu_kang    "sprite/liu_kang_stance.png"         16 15 NONE 6
+SPRITE spr_reptile     "sprite/reptile_stance.png"          16 15 NONE 6
 # Bio Screen Animation
 SPRITE jc_bio          "stages/bio/johnny_cage_bio.png"     12 9 BEST 6
 SPRITE kano_bio        "stages/bio/kano_bio.png"            12 9 BEST 6 
