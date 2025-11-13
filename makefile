@@ -29,3 +29,9 @@ run:
 	
 zip:
 	zip -9 -j mk-plus-$(TAG_NAME).zip out/rom.bin
+
+doxygen:
+	docker run --rm -v "${PWD}":/workdir -w /workdir nakatt/doxygen
+
+doxygen/serve:
+	docker run -d -p 8080:80 --name doxygen-server --rm -v "${PWD}"/docs/html:/usr/share/nginx/html:ro nginx

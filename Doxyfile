@@ -1,0 +1,73 @@
+# Doxyfile 1.9.8
+
+#--------------------------------------------------------------------------- 
+# Project related configuration options
+#--------------------------------------------------------------------------- 
+
+PROJECT_NAME           = "Mortal Kombat Plus"
+PROJECT_BRIEF          = "Documentação gerada automaticamente com Doxygen"
+OUTPUT_DIRECTORY       = docs
+CREATE_SUBDIRS         = NO
+OUTPUT_LANGUAGE        = Brazilian
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+
+#--------------------------------------------------------------------------- 
+# Configuration options related to the input files
+#--------------------------------------------------------------------------- 
+
+INPUT                  = src in
+FILE_PATTERNS          = *.cpp *.c *.h
+RECURSIVE              = YES
+EXCLUDE                = 
+EXCLUDE_PATTERNS       = 
+EXCLUDE_SYMBOLS        = 
+
+#--------------------------------------------------------------------------- 
+# Configuration options related to the HTML output
+#--------------------------------------------------------------------------- 
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_GAMMA  = 80
+
+#--------------------------------------------------------------------------- 
+# Configuration options related to LaTeX output (PDF)
+#--------------------------------------------------------------------------- 
+
+GENERATE_LATEX         = NO
+
+#--------------------------------------------------------------------------- 
+# Configuration options related to class diagrams
+#--------------------------------------------------------------------------- 
+
+HAVE_DOT               = YES
+DOT_IMAGE_FORMAT       = png
+CLASS_DIAGRAMS         = YES
+COLLABORATION_GRAPH    = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_PATH               = 
+DOTFILE_DIRS           = 
+DOT_GRAPH_MAX_NODES    = 50
+
+#--------------------------------------------------------------------------- 
+# Configuration options related to warnings
+#--------------------------------------------------------------------------- 
+
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+
+#--------------------------------------------------------------------------- 
+# Configuration options related to source browsing
+#--------------------------------------------------------------------------- 
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+STRIP_CODE_COMMENTS    = NO
