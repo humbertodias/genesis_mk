@@ -35,3 +35,4 @@ doxygen:
 
 doxygen/serve:
 	docker run -d -p 8080:80 --name doxygen-server --rm -v "${PWD}"/docs/html:/usr/share/nginx/html:ro nginx
+	echo "Doxygen documentation server running at http://localhost:8080"
