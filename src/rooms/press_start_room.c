@@ -34,7 +34,9 @@ void clearVDP1()
 
 void processPressStart()
 {
+    u8 mainMenuOpt = 0;
     bool sair = FALSE;
+    gPodeMover = TRUE;
     // char stri[64];
     while (!sair)
     {
@@ -58,18 +60,34 @@ void processPressStart()
                              TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 64, CPU);
             PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
             gInd_tileset += screen_opt_b.tileset->numTile;
+            
+            if(GE[0].sprite){
+                SPR_releaseSprite(GE[0].sprite);
+                GE[0].sprite = NULL;
+            }
+            GE[0].sprite = SPR_addSprite(&spMainMenu, 96, 80, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+            PAL_setPalette(PAL0, spMainMenu.palette->data, DMA);
+            SPR_setAnim(GE[0].sprite, mainMenuOpt);
         }
 
-        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && gFrames > 30)
+        if ((player[0].key_JOY_DOWN_status == 1 || player[1].key_JOY_DOWN_status == 1) && mainMenuOpt == 0)
+        {
+            mainMenuOpt = 1;
+            SPR_setAnim(GE[0].sprite, mainMenuOpt);
+        }
+
+        if ((player[0].key_JOY_UP_status == 1 || player[1].key_JOY_UP_status == 1) && mainMenuOpt == 1)
+        {
+            mainMenuOpt = 0;
+            SPR_setAnim(GE[0].sprite, mainMenuOpt);
+        }
+
+        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && 
+            (gFrames > 30 && mainMenuOpt == 0))
         {
             sair = TRUE;
         }
 
-        // TODO: testar performance
-        // for (int i = 0; i < 20; i++)
-        // {
-        //     vecTilesScreen[i] -= vecAceleracao[i];
-        // }
         vecTilesScreen[0] -= ACELERACAO;
         vecTilesScreen[1] -= ACELERACAO;
         vecTilesScreen[2] -= ACELERACAO;
@@ -87,8 +105,6 @@ void processPressStart()
             vecTilesScreen[19] = 0;
         }
 
-        // sprintf(stri, "p1: %d", vecTilesScreen[0]);
-        // VDP_drawText(stri, 7, 1);
         VDP_setVerticalScrollTile(BG_A, 0, vecTilesScreen, 20, CPU);
         VDP_setVerticalScrollTile(BG_B, 0, vecTilesScreen, 20, CPU);
 
