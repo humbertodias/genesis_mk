@@ -10,5 +10,6 @@ void playerState_Raiden(int numPlayer, u16 State);
 void playerState_LiuKang(int numPlayer, u16 State);
 void playerState_Scorpion(int numPlayer, u16 State);
 void playerState_Sonya(int numPlayer, u16 State);
+void playerState_Reptile(int numPlayer, u16 State);
 
 #endif // FIGHTERS_H

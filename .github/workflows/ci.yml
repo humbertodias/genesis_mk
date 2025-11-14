@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+# required for upload
+permissions:
+  contents: write
+
+jobs:
+
+  Linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: sudo apt update -y && sudo apt install -y make
+
+      - name: Compile
+        run: make compile
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: mk-plus
+          path: out/rom.bin      

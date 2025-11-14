@@ -10,3 +10,6 @@ res/gfx.h
 res/sound.h
 res/sprites.h
 res/stages.h
+.DS_Store
+*.zip
+docs/html/
