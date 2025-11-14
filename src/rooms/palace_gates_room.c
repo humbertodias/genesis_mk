@@ -9,8 +9,8 @@
 void initPalaceGatesRoom(void)
 {
     // carrego as informações do cenário.
-    // if (gFrames == 1)
-    // {
+    if (gFrames == 1)
+    {
         // defino o tamanho do meu cenário para rolagem
         gBG_Width = PALACE_GATES_W;
         gBG_Height = PALACE_GATES_H;
@@ -34,5 +34,5 @@ void initPalaceGatesRoom(void)
                          0, startY / 8, 0, 0, 64, 29, DMA);
         PAL_setPalette(PAL1, pg_bgb.palette->data, DMA);
         gInd_tileset += pg_bgb.tileset->numTile;
-    // }
+    }
 }

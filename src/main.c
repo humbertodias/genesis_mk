@@ -30,7 +30,7 @@ int main(bool hardReset)
   VDP_setScreenHeight224();
   // VDP_setHilightShadow(TRUE);
 
-  gRoom = TELA_DEMO_INTRO;
+  gRoom = PALACE_GATES;
   gFrames = 0;
   gInd_tileset = 0;
   player[0].id = JOHNNY_CAGE;
@@ -44,7 +44,7 @@ int main(bool hardReset)
 
   while (TRUE)
   {
-    // gFrames++;
+    gFrames++;
 
     newInputSystem();
 
@@ -74,11 +74,11 @@ int main(bool hardReset)
       player[0].sprite = SPR_addSprite(&spr_subzero, 24, 96, TILE_ATTR(PAL2, 0, FALSE, FALSE));
       PAL_setPalette(PAL2, spr_subzero.palette->data, DMA);
 
-      player[1].sprite = SPR_addSprite(&spr_subzero, 168, 96, TILE_ATTR(PAL3, 0, FALSE, TRUE));
-      PAL_setPalette(PAL3, spr_subzero.palette->data, DMA);
+      player[1].sprite = SPR_addSprite(&spr_reptile, 168, 96, TILE_ATTR(PAL3, 0, FALSE, TRUE));
+      PAL_setPalette(PAL3, spr_reptile.palette->data, DMA);
 
       player[0].id = SUBZERO;
-      player[1].id = SUBZERO;
+      player[1].id = REPTILE;
       player[0].state = PARADO;
       player[1].state = PARADO;
       player[0].paleta = PAL2;
