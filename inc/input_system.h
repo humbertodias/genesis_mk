@@ -4,6 +4,6 @@
 #include <genesis.h>
 #include "estruturas.h"
 
-void newInputSystem();
+void inputSystem();
 
 #endif

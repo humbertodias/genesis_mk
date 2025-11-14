@@ -13,6 +13,7 @@
 #include "estruturas.h"
 
 extern bool debugEnabled; // habilita ou não debug
+extern bool gPodeMover;   // Desabilita os inputs dos players em momentos especificos (inicio do Round por exemplo)
 extern u8 gRoom;          // Sala atual
 extern u8 gAlturaDoPiso;  // Altura do chão (posição Y dos personagens)
 extern u16 gInd_tileset;  // Variable used to load background data

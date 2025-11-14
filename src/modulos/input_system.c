@@ -1,12 +1,13 @@
 #include "input_system.h"
 #include "game_vars.h"
 
-void newInputSystem()
+void inputSystem()
 {
     static u16 currentJoyState[2] = {0};
     static u16 previousJoyState[2] = {0};
     u16 buttons[] = {BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_A, BUTTON_B, BUTTON_C, BUTTON_X, BUTTON_Y, BUTTON_Z, BUTTON_START, BUTTON_MODE};
-
+    
+    if(gPodeMover) // travar o controle dos jogadores
     for (int jogador = 0; jogador < 2; jogador++)
     {
         previousJoyState[jogador] = currentJoyState[jogador];

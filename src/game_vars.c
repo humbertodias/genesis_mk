@@ -6,6 +6,7 @@
 // ===============================
 
 bool debugEnabled;
+bool gPodeMover = FALSE;
 u8 gRoom;
 u8 gAlturaDoPiso;
 u16 gInd_tileset;
