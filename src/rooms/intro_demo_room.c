@@ -35,6 +35,7 @@ void saida()
     PAL_setColors(0, palette_black, 64, DMA);
     XGM2_stop();
     SND_PCM4_stopPlay(SOUND_PCM_CH1);
+    SPR_reset();
     gFrames = 0;
     gRoom = TELA_START;
     softClearPlane();

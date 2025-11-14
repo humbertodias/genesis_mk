@@ -18,6 +18,8 @@
 #define PLAYER_1_POS_Y 104
 #define PLAYER_2_POS_X 182
 #define PLAYER_2_POS_Y 104
+#define CURSOR_P1 0
+#define CURSOR_P2 1
 
 void updateSelector(int ind);
 void playerSelected(int ind);
@@ -40,12 +42,30 @@ void freeScrollLine(s16 *scrollLine);
 const u8 OPTIONS_X[7] = {20, 76, 76, 132, 188, 188, 244};
 const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
 
+typedef struct
+{
+  const u8 *locutor;
+  int size;
+  u8 x, y;
+} CharSelectData;
+
+// TODO: acertar isso pois não dá para pegar o tamanho dinamicamente.
+static const CharSelectData charData[7] = {
+    {loc_jc, 13056, OPTIONS_X[JOHNNY_CAGE], OPTIONS_Y[JOHNNY_CAGE]},
+    {loc_kano, 8448, OPTIONS_X[KANO], OPTIONS_Y[KANO]},
+    {loc_raiden, 7680, OPTIONS_X[RAIDEN], OPTIONS_Y[RAIDEN]},
+    {loc_liu_kang, 13056, OPTIONS_X[LIU_KANG], OPTIONS_Y[LIU_KANG]},
+    {loc_suzero, 15872, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]},
+    {loc_scorpion, 13568, OPTIONS_X[SCORPION], OPTIONS_Y[SCORPION]},
+    {loc_sonya, 11264, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]},
+};
+
 void processSelecaoPersonagens()
 {
   bool sair = FALSE;
   u8 selectorBlinkTimer[2] = {0, 0};
 
-  char stri[64];
+  s16 countDown = -1;
 
   while (!sair)
   {
@@ -67,6 +87,7 @@ void processSelecaoPersonagens()
       XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH2, 0, FALSE, 0);
 
       initScrollLine(scrollLine);
+
       drawBackground();
 
       revealBackground(scrollLine);
@@ -80,32 +101,31 @@ void processSelecaoPersonagens()
 
       initSelectorSprite();
 
-      // SPR_update();
-      VDP_waitVSync();
+      // VDP_waitVSync();
     }
 
-    if (gFrames == 50)
+    if (gFrames == 55)
     {
       SYS_enableInts();
     }
 
-    // if (scrollLine == NULL) // se o scrollLine já tiver terminado...
-    // {
     for (int ind = 0; ind < 2; ind++) // para cada jogador
     {
       updateSelector(ind);
-      // Verifica se o jogador selecionou um personagem
+
       playerSelected(ind);
 
-      // TODO: funfa mas tem algo estranho, REVISAR
-      if (GE[ind + 2].sprite)
+      // faz o efeito de piscar o retrato ao selecionar o personagem
+      if (SPR_isVisible(GE[ind + 2].sprite, TRUE))
       {
         // para piscar novamente caso selecionem o mesmo personagem
-        // FIXIT: bug quando o player 2 seleciona primeiro (????)
-        if ((player[ind].selecionado && player[ind + 1].selecionado))
+        if ((player[0].selecionado && player[1].selecionado))
         {
-          if (player[ind].id == player[ind + 1].id)
-            GE[ind + 2].sprite->visibility = VISIBLE;
+          if (player[0].id == player[1].id)
+          {
+            SPR_setDepth(GE[ind + 2].sprite, SPR_MIN_DEPTH);
+            SPR_setAnim(GE[ind + 2].sprite, player[ind].id);
+          }
         }
 
         selectorBlinkTimer[ind]++;
@@ -117,19 +137,39 @@ void processSelecaoPersonagens()
 
         if (selectorBlinkTimer[ind] > 30)
         {
-          // SPR_setVisibility(GE[ind].sprite, HIDDEN);
           SPR_setAnimationLoop(GE[ind + 2].sprite, FALSE);
-          // selectorBlinkTimer[0] = 0;
-          // selectorBlinkTimer[1] = 0;
         }
+      } // FIM PISCA-PISCA
+    } // FIM VARREDURA PLAYER
+
+    if (player[0].selecionado && player[1].selecionado)
+    {
+      if (countDown == 0)
+      {
+        sair = TRUE;
       }
+      else if (countDown == -1)
+      {
+        countDown = 150;
+      }
+      else if (countDown == 50)
+      {
+        SYS_disableInts();
+        PAL_fadeOutAll(18, FALSE);
+        // PAL_fadeOut(0, 15, 5, FALSE);
+        // PAL_fadeOut(16, 30, 5, FALSE);
+        XGM2_stop();
+        VDP_clearPlane(BG_A, TRUE);
+        VDP_clearPlane(BG_B, TRUE);
+      }
+      countDown--;
     }
 
     // Mostra os IDs dos personagens
     if (debugEnabled)
     {
-      // char stri[64];
-      sprintf(stri, "p1: %d", player[0].id);
+      static char stri[64];
+      sprintf(stri, "p1: %d", countDown);
       VDP_drawText(stri, 1, 1);
       sprintf(stri, "p2: %d", player[1].id);
       VDP_drawText(stri, 1, 2);
@@ -138,6 +178,16 @@ void processSelecaoPersonagens()
     SPR_update();
     SYS_doVBlankProcess();
   }
+
+  SPR_clear();
+  // VDP_resetSprites();
+  VDP_releaseAllSprites();
+  gFrames = 0;
+  gRoom = TELA_DEMO_INTRO;
+  // VDP_resetScreen();
+  VDP_setBackgroundColor(0); // Define preto
+  gInd_tileset = TILE_USER_INDEX;
+  // waitMs(2000);
 }
 
 /**
@@ -147,7 +197,6 @@ void processSelecaoPersonagens()
  */
 void updateSelector(int ind)
 {
-  // TODO: talvez deixar fora da função
   if (GE[ind].sprite->visibility == HIDDEN) // se o seletor estiver invisível não permitir mover o cursor.
     return;
 
@@ -291,92 +340,21 @@ void updateSelector(int ind)
 }
 
 // TODO: ver o que fazer quando ambos selecionam ao mesmo tempo
-// Verifica se o jogador selecionou um personagem e toca o áudio correspondente
+// Verifica se o jogador selecionou um personagem
 void playerSelected(int ind)
 {
-  if (GE[ind].sprite->visibility == HIDDEN) // se o seletor estiver invisível não permitir mover o cursor.
+  if (GE[ind].sprite->visibility == HIDDEN)
+    return;
+  if (player[ind].key_JOY_START_status == 0)
     return;
 
-  if (player[ind].key_JOY_START_status > 0)
-  {
-    switch (player[ind].id)
-    {
-    case JOHNNY_CAGE:
-      XGM2_playPCMEx(loc_jc, sizeof(loc_jc), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[JOHNNY_CAGE] + 4, OPTIONS_Y[JOHNNY_CAGE] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-      SPR_setAnim(GE[ind + 2].sprite, JOHNNY_CAGE);
-      break;
-
-    case KANO:
-      XGM2_playPCMEx(loc_kano, sizeof(loc_kano), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[KANO] + 4, OPTIONS_Y[KANO] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, KANO);
-      break;
-
-    case SUBZERO:
-      XGM2_playPCMEx(loc_suzero, sizeof(loc_suzero), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[SUBZERO] + 4, OPTIONS_Y[SUBZERO] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, SUBZERO);
-      break;
-
-    case SONYA:
-      XGM2_playPCMEx(loc_sonya, sizeof(loc_sonya), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[SONYA] + 4, OPTIONS_Y[SONYA] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, SONYA);
-      break;
-
-    case RAIDEN:
-      XGM2_playPCMEx(loc_raiden, sizeof(loc_raiden), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[RAIDEN] + 4, OPTIONS_Y[RAIDEN] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, RAIDEN);
-      break;
-
-    case LIU_KANG:
-      XGM2_playPCMEx(loc_liu_kang, sizeof(loc_liu_kang), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[LIU_KANG] + 4, OPTIONS_Y[LIU_KANG] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, LIU_KANG);
-      break;
-
-    case SCORPION:
-      XGM2_playPCMEx(loc_scorpion, sizeof(loc_scorpion), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[SCORPION] + 4, OPTIONS_Y[SCORPION] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, SCORPION);
-      break;
-
-    default:
-      break;
-    }
-    SPR_setDepth(GE[ind + 2].sprite, 2);
-    GE[ind].sprite->visibility = HIDDEN;
-    player[ind].selecionado = TRUE;
-  }
+  const CharSelectData *d = &charData[player[ind].id];
+  XGM2_playPCMEx(d->locutor, d->size, SOUND_PCM_CH_AUTO, 0, FALSE, FALSE);
+  GE[ind + 2].sprite = SPR_addSprite(&spPortrait, d->x + 4, d->y + 4, TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+  SPR_setAnim(GE[ind + 2].sprite, player[ind].id);
+  SPR_setDepth(GE[ind + 2].sprite, 2);
+  GE[ind].sprite->visibility = HIDDEN;
+  player[ind].selecionado = TRUE;
 }
 
 /**
@@ -406,7 +384,6 @@ void initScrollLine(s16 *scrollLine)
  */
 void drawBackground()
 {
-  // gInd_tileset = 1;
   // BACKGROUND A
   VDP_loadTileSet(stage_char_select_a.tileset, gInd_tileset, DMA);
   VDP_setTileMapEx(BG_A, stage_char_select_a.tilemap,
@@ -557,6 +534,7 @@ void initPlayer()
   player[0].direcao = 1;
   player[0].x = PLAYER_1_POS_X;
   player[0].y = PLAYER_1_POS_Y;
+  player[0].selecionado = FALSE;
 
   player[1].id = SUBZERO;
   player[1].state = PARADO;
@@ -564,6 +542,7 @@ void initPlayer()
   player[1].direcao = -1;
   player[1].x = PLAYER_2_POS_X;
   player[1].y = PLAYER_2_POS_Y;
+  player[1].selecionado = FALSE;
 
   playerState(0, PARADO);
   playerState(1, PARADO);
@@ -588,14 +567,17 @@ void initSelectorSprite()
   GE[0].sprite = SPR_addSprite(&player_seletor,
                                OPTIONS_X[KANO], OPTIONS_Y[KANO],
                                TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-  SPR_setAnim(GE[0].sprite, 0); // animação P1
+  SPR_setAnim(GE[0].sprite, CURSOR_P1); // animação P1
   SPR_setDepth(GE[0].sprite, SPR_MIN_DEPTH);
 
   GE[1].sprite = SPR_addSprite(&player_seletor,
                                OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO],
                                TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-  SPR_setAnim(GE[1].sprite, 1); // animação P2
-  SPR_setDepth(GE[1].sprite, 1);
+  SPR_setAnim(GE[1].sprite, CURSOR_P2); // animação P2
+  SPR_setDepth(GE[1].sprite, 1);        // profundidade menor que o seletor do P1
+  // inicia a animação dos sprites
+  SPR_setAnimationLoop(GE[0].sprite, TRUE);
+  SPR_setAnimationLoop(GE[1].sprite, TRUE);
 }
 
 /**
@@ -607,7 +589,6 @@ void playCursor()
 
 void playMusic()
 {
-  XGM2_setFMVolume(50);
   XGM2_play(mus_select_player);
 }
 
