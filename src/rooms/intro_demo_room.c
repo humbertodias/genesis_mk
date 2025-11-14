@@ -58,7 +58,7 @@ void processIntro()
 
     while (!sair)
     {
-        newInputSystem();
+        inputSystem();
         gFrames++;
 
         loadBrainAtWorkScreen();
@@ -117,7 +117,7 @@ void processIntro()
         }
 
         // start só funciona a partir da tela título do MK ...
-        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && gFrames > 380)
+        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && gFrames > 410)
         {
             sair = TRUE;
         }
@@ -191,6 +191,7 @@ void loadMidwayTitleMKScreen()
         //  PAL_setPalette(PAL1, mk_title_b.palette->data, DMA);
         //  gInd_tileset += mk_title_b.tileset->numTile;
     }
+    gPodeMover = TRUE;
 }
 
 // TELA GORO LIVES

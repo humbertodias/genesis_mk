@@ -10,8 +10,7 @@
 #include "anima_system.h"
 
 // -- DECLARACAO DE VARIAVEIS -- //
-u16 gDistancia; // Distancia entre os Players
-bool gPodeMover = TRUE;
+u16 gDistancia;          // Distancia entre os Players
 s16 gMeioDaTela = 0;     // MEio da Câmera em X
 s16 camPosX = 0;         // Posicao da Camera
 s16 camPosXanterior = 0; // Posicao da Camera no frame Anterior
@@ -99,8 +98,8 @@ int main(bool hardReset)
       char str[64];
       sprintf(str, "tiles nos BGs: %d", gInd_tileset);
       VDP_drawText(str, 1, 1);
-      // sprintf(str, "contagem de frames: %ld", gFrames);
-      // VDP_drawText(str, 1, 2);
+      sprintf(str, "contagem de frames: %ld", gFrames);
+      VDP_drawText(str, 1, 2);
     }
 
     // -- FINALIZAÇÕES -- //

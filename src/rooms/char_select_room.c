@@ -23,6 +23,7 @@
 
 void updateSelector(int ind);
 void playerSelected(int ind);
+void playerSelectBlinkEffect(int ind, u8 selectorBlinkTimer[2]);
 void initScrollLine(s16 *scrollLine);
 void drawBackground();
 void revealBackground(s16 *scrollLine);
@@ -31,7 +32,9 @@ void initSelectorSprite();
 void playCursor();
 void playMusic();
 void freeScrollLine(s16 *scrollLine);
+void exit();
 
+// Seguir sempre a ordem do Enum
 // CAGE      20, 44
 // KANO      76, 44
 // RAIDEN    76, 108
@@ -60,6 +63,43 @@ static const CharSelectData charData[7] = {
     {loc_sonya, 11264, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]},
 };
 
+void exit()
+{
+  SPR_clear();
+  // VDP_resetSprites();
+
+  if (GE[1].sprite)
+  {
+    SPR_releaseSprite(GE[1].sprite);
+    GE[1].sprite = NULL;
+  }
+  if (GE[2].sprite)
+  {
+    SPR_releaseSprite(GE[2].sprite);
+    GE[2].sprite = NULL;
+  }
+  if (GE[3].sprite)
+  {
+    SPR_releaseSprite(GE[3].sprite);
+    GE[3].sprite = NULL;
+  }
+  if (GE[4].sprite)
+  {
+    SPR_releaseSprite(GE[4].sprite);
+    GE[4].sprite = NULL;
+  }
+  VDP_releaseAllSprites();
+  gFrames = 0;
+  gRoom = TELA_DEMO_INTRO;
+  // VDP_resetScreen();
+  VDP_setBackgroundColor(0); // Define preto
+  gInd_tileset = TILE_USER_INDEX;
+
+  waitMs(1000);
+  VDP_waitVSync();
+  SYS_enableInts();
+}
+
 void processSelecaoPersonagens()
 {
   bool sair = FALSE;
@@ -69,17 +109,20 @@ void processSelecaoPersonagens()
 
   while (!sair)
   {
-    newInputSystem();
+    inputSystem();
 
     gFrames++;
 
+    // desabilita interações, ajusta planos e modo de scrolling
     if (gFrames == 1)
     {
       SYS_disableInts();
+      gPodeMover = FALSE;
       VDP_setPlaneSize(128, 64, TRUE);
       VDP_setScrollingMode(HSCROLL_LINE, VSCROLL_PLANE);
     }
 
+    // toca o gongo e inicia o efeito persinana revelando a tela de fundo
     if (gFrames == 20)
     {
       s16 *scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
@@ -93,6 +136,7 @@ void processSelecaoPersonagens()
       revealBackground(scrollLine);
     }
 
+    // toca música, inicia o player, sprites ...
     if (gFrames == 40)
     {
       playMusic();
@@ -101,10 +145,12 @@ void processSelecaoPersonagens()
 
       initSelectorSprite();
 
-      // VDP_waitVSync();
+      VDP_waitVSync();
+      gPodeMover = TRUE; // previnir bug de sprite aparecer errado se ficar movendo o dpad
     }
 
-    if (gFrames == 55)
+    // permite interações
+    if (gFrames > 100)
     {
       SYS_enableInts();
     }
@@ -115,49 +161,24 @@ void processSelecaoPersonagens()
 
       playerSelected(ind);
 
-      // faz o efeito de piscar o retrato ao selecionar o personagem
-      if (SPR_isVisible(GE[ind + 2].sprite, TRUE))
-      {
-        // para piscar novamente caso selecionem o mesmo personagem
-        if ((player[0].selecionado && player[1].selecionado))
-        {
-          if (player[0].id == player[1].id)
-          {
-            SPR_setDepth(GE[ind + 2].sprite, SPR_MIN_DEPTH);
-            SPR_setAnim(GE[ind + 2].sprite, player[ind].id);
-          }
-        }
+      playerSelectBlinkEffect(ind, selectorBlinkTimer);
+    }
 
-        selectorBlinkTimer[ind]++;
-
-        if (selectorBlinkTimer[ind] % 5 == 0)
-        {
-          SPR_nextFrame(GE[ind + 2].sprite);
-        }
-
-        if (selectorBlinkTimer[ind] > 30)
-        {
-          SPR_setAnimationLoop(GE[ind + 2].sprite, FALSE);
-        }
-      } // FIM PISCA-PISCA
-    } // FIM VARREDURA PLAYER
-
+    // TODO: repensar uma forma melhor
     if (player[0].selecionado && player[1].selecionado)
     {
-      if (countDown == 0)
-      {
-        sair = TRUE;
-      }
-      else if (countDown == -1)
+      if (countDown == -1)
       {
         countDown = 150;
+      }
+      else if (countDown == 0)
+      {
+        sair = TRUE;
       }
       else if (countDown == 50)
       {
         SYS_disableInts();
         PAL_fadeOutAll(18, FALSE);
-        // PAL_fadeOut(0, 15, 5, FALSE);
-        // PAL_fadeOut(16, 30, 5, FALSE);
         XGM2_stop();
         VDP_clearPlane(BG_A, TRUE);
         VDP_clearPlane(BG_B, TRUE);
@@ -169,25 +190,49 @@ void processSelecaoPersonagens()
     if (debugEnabled)
     {
       static char stri[64];
-      sprintf(stri, "p1: %d", countDown);
+      sprintf(stri, "p1: %d", player[0].id);
       VDP_drawText(stri, 1, 1);
       sprintf(stri, "p2: %d", player[1].id);
       VDP_drawText(stri, 1, 2);
+      sprintf(stri, "gframes: %ld", gFrames);
+      VDP_drawText(stri, 1, 3);
     }
 
     SPR_update();
     SYS_doVBlankProcess();
   }
 
-  SPR_clear();
-  // VDP_resetSprites();
-  VDP_releaseAllSprites();
-  gFrames = 0;
-  gRoom = TELA_DEMO_INTRO;
-  // VDP_resetScreen();
-  VDP_setBackgroundColor(0); // Define preto
-  gInd_tileset = TILE_USER_INDEX;
-  // waitMs(2000);
+  exit();
+}
+
+// faz o efeito de piscar o retrato ao selecionar o personagem
+void playerSelectBlinkEffect(int ind, u8 selectorBlinkTimer[2])
+{
+  // Se o sprite P&B da foto do personagem estiver visível..
+  if (SPR_isVisible(GE[ind + 2].sprite, TRUE))
+  {
+    // para piscar novamente caso selecionem o mesmo personagem
+    if ((player[0].selecionado && player[1].selecionado))
+    {
+      if (player[0].id == player[1].id)
+      {
+        SPR_setDepth(GE[ind + 2].sprite, SPR_MIN_DEPTH);
+        SPR_setAnim(GE[ind + 2].sprite, player[ind].id);
+      }
+    }
+
+    selectorBlinkTimer[ind]++;
+    // se divisível por 5 ...
+    if (selectorBlinkTimer[ind] % 5 == 0)
+    {
+      SPR_nextFrame(GE[ind + 2].sprite);
+    }
+    // para a animação
+    if (selectorBlinkTimer[ind] > 30)
+    {
+      SPR_setAnimationLoop(GE[ind + 2].sprite, FALSE);
+    }
+  }
 }
 
 /**

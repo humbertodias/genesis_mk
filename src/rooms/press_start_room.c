@@ -38,7 +38,7 @@ void processPressStart()
     // char stri[64];
     while (!sair)
     {
-        newInputSystem();
+        inputSystem();
 
         gFrames++;
 
