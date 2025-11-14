@@ -18,19 +18,23 @@
 #define PLAYER_1_POS_Y 104
 #define PLAYER_2_POS_X 182
 #define PLAYER_2_POS_Y 104
+#define CURSOR_P1 0
+#define CURSOR_P2 1
 
 void updateSelector(int ind);
 void playerSelected(int ind);
-void initScrollLine();
+void playerSelectBlinkEffect(int ind, u8 selectorBlinkTimer[2]);
+void initScrollLine(s16 *scrollLine);
 void drawBackground();
-void revealBackground();
+void revealBackground(s16 *scrollLine);
 void initPlayer();
 void initSelectorSprite();
 void playCursor();
 void playMusic();
-void freeScrollLine();
+void freeScrollLine(s16 *scrollLine);
+void exit();
 
-s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
+// Seguir sempre a ordem do Enum
 // CAGE      20, 44
 // KANO      76, 44
 // RAIDEN    76, 108
@@ -38,74 +42,196 @@ s16 *scrollLine = NULL; // usado para fazer o efeito de persiana
 // SUBZERO  188, 44
 // SCORPION 188, 108
 // SONYA    244, 44
-static const u8 OPTIONS_X[7] = {20, 76, 76, 132, 188, 188, 244};
-static const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
+const u8 OPTIONS_X[7] = {20, 76, 76, 132, 188, 188, 244};
+const u8 OPTIONS_Y[7] = {44, 44, 108, 108, 44, 108, 44};
+
+typedef struct
+{
+  const u8 *locutor;
+  int size;
+  u8 x, y;
+} CharSelectData;
+
+// TODO: acertar isso pois não dá para pegar o tamanho dinamicamente.
+static const CharSelectData charData[7] = {
+    {loc_jc, 13056, OPTIONS_X[JOHNNY_CAGE], OPTIONS_Y[JOHNNY_CAGE]},
+    {loc_kano, 8448, OPTIONS_X[KANO], OPTIONS_Y[KANO]},
+    {loc_raiden, 7680, OPTIONS_X[RAIDEN], OPTIONS_Y[RAIDEN]},
+    {loc_liu_kang, 13056, OPTIONS_X[LIU_KANG], OPTIONS_Y[LIU_KANG]},
+    {loc_suzero, 15872, OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO]},
+    {loc_scorpion, 13568, OPTIONS_X[SCORPION], OPTIONS_Y[SCORPION]},
+    {loc_sonya, 11264, OPTIONS_X[SONYA], OPTIONS_Y[SONYA]},
+};
+
+void exit()
+{
+  SPR_clear();
+  // VDP_resetSprites();
+
+  if (GE[1].sprite)
+  {
+    SPR_releaseSprite(GE[1].sprite);
+    GE[1].sprite = NULL;
+  }
+  if (GE[2].sprite)
+  {
+    SPR_releaseSprite(GE[2].sprite);
+    GE[2].sprite = NULL;
+  }
+  if (GE[3].sprite)
+  {
+    SPR_releaseSprite(GE[3].sprite);
+    GE[3].sprite = NULL;
+  }
+  if (GE[4].sprite)
+  {
+    SPR_releaseSprite(GE[4].sprite);
+    GE[4].sprite = NULL;
+  }
+  VDP_releaseAllSprites();
+  gFrames = 0;
+  gRoom = TELA_DEMO_INTRO;
+  // VDP_resetScreen();
+  VDP_setBackgroundColor(0); // Define preto
+  gInd_tileset = TILE_USER_INDEX;
+
+  waitMs(1000);
+  VDP_waitVSync();
+  SYS_enableInts();
+}
 
 void processSelecaoPersonagens()
 {
-  if (gFrames == 1)
+  bool sair = FALSE;
+  u8 selectorBlinkTimer[2] = {0, 0};
+
+  s16 countDown = -1;
+
+  while (!sair)
   {
-    VDP_setPlaneSize(128, 64, TRUE);
-    VDP_setScrollingMode(HSCROLL_LINE, VSCROLL_PLANE);
-    SYS_disableInts();
+    inputSystem();
 
-    initScrollLine();
-    drawBackground();
-  }
+    gFrames++;
 
-  if (gFrames == 30)
-  {
-    XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH2, 0, FALSE, 0);
-  }
+    // desabilita interações, ajusta planos e modo de scrolling
+    if (gFrames == 1)
+    {
+      SYS_disableInts();
+      gPodeMover = FALSE;
+      VDP_setPlaneSize(128, 64, TRUE);
+      VDP_setScrollingMode(HSCROLL_LINE, VSCROLL_PLANE);
+    }
 
-  if (gFrames == 40)
-  {
-    revealBackground();
+    // toca o gongo e inicia o efeito persinana revelando a tela de fundo
+    if (gFrames == 20)
+    {
+      s16 *scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
 
-    playMusic();
+      XGM2_playPCMEx(snd_gongo, sizeof(snd_gongo), SOUND_PCM_CH2, 0, FALSE, 0);
 
-    initPlayer();
+      initScrollLine(scrollLine);
 
-    initSelectorSprite();
+      drawBackground();
 
-    SPR_update();
+      revealBackground(scrollLine);
+    }
 
-    SYS_enableInts();
-  }
+    // toca música, inicia o player, sprites ...
+    if (gFrames == 40)
+    {
+      playMusic();
 
-  if (scrollLine == NULL) // se o scrollLine já tiver terminado...
-  {
+      initPlayer();
+
+      initSelectorSprite();
+
+      VDP_waitVSync();
+      gPodeMover = TRUE; // previnir bug de sprite aparecer errado se ficar movendo o dpad
+    }
+
+    // permite interações
+    if (gFrames > 100)
+    {
+      SYS_enableInts();
+    }
+
     for (int ind = 0; ind < 2; ind++) // para cada jogador
     {
       updateSelector(ind);
-      // Verifica se o jogador selecionou um personagem
+
       playerSelected(ind);
 
-      //TODO: funfa mas tem algo estranho, REVISAR
-      if (GE[ind + 2].sprite)
+      playerSelectBlinkEffect(ind, selectorBlinkTimer);
+    }
+
+    // TODO: repensar uma forma melhor
+    if (player[0].selecionado && player[1].selecionado)
+    {
+      if (countDown == -1)
       {
-        //   if (GE[ind].sprite->visibility == HIDDEN)
-        //     return;
-
-        selectorBlinkTimer[ind]++;
-
-        if (selectorBlinkTimer[ind] % 5 == 0)
-          SPR_nextFrame(GE[ind + 2].sprite);
-
-        if (selectorBlinkTimer[ind] > 30)
-        {
-          // SPR_setVisibility(GE[ind].sprite, HIDDEN);
-          SPR_setAnimationLoop(GE[ind + 2].sprite, FALSE);
-        }
+        countDown = 150;
       }
+      else if (countDown == 0)
+      {
+        sair = TRUE;
+      }
+      else if (countDown == 50)
+      {
+        SYS_disableInts();
+        PAL_fadeOutAll(18, FALSE);
+        XGM2_stop();
+        VDP_clearPlane(BG_A, TRUE);
+        VDP_clearPlane(BG_B, TRUE);
+      }
+      countDown--;
     }
 
     // Mostra os IDs dos personagens
-    // char stri[64];
-    // sprintf(stri, "p1: %d", player[0].id);
-    // VDP_drawText(stri, 1, 1);
-    // sprintf(stri, "p2: %d", player[1].id);
-    // VDP_drawText(stri, 1, 2);
+    if (debugEnabled)
+    {
+      static char stri[64];
+      sprintf(stri, "p1: %d", player[0].id);
+      VDP_drawText(stri, 1, 1);
+      sprintf(stri, "p2: %d", player[1].id);
+      VDP_drawText(stri, 1, 2);
+      sprintf(stri, "gframes: %ld", gFrames);
+      VDP_drawText(stri, 1, 3);
+    }
+
+    SPR_update();
+    SYS_doVBlankProcess();
+  }
+
+  exit();
+}
+
+// faz o efeito de piscar o retrato ao selecionar o personagem
+void playerSelectBlinkEffect(int ind, u8 selectorBlinkTimer[2])
+{
+  // Se o sprite P&B da foto do personagem estiver visível..
+  if (SPR_isVisible(GE[ind + 2].sprite, TRUE))
+  {
+    // para piscar novamente caso selecionem o mesmo personagem
+    if ((player[0].selecionado && player[1].selecionado))
+    {
+      if (player[0].id == player[1].id)
+      {
+        SPR_setDepth(GE[ind + 2].sprite, SPR_MIN_DEPTH);
+        SPR_setAnim(GE[ind + 2].sprite, player[ind].id);
+      }
+    }
+
+    selectorBlinkTimer[ind]++;
+    // se divisível por 5 ...
+    if (selectorBlinkTimer[ind] % 5 == 0)
+    {
+      SPR_nextFrame(GE[ind + 2].sprite);
+    }
+    // para a animação
+    if (selectorBlinkTimer[ind] > 30)
+    {
+      SPR_setAnimationLoop(GE[ind + 2].sprite, FALSE);
+    }
   }
 }
 
@@ -116,7 +242,6 @@ void processSelecaoPersonagens()
  */
 void updateSelector(int ind)
 {
-  //TODO: talvez deixar fora da função 
   if (GE[ind].sprite->visibility == HIDDEN) // se o seletor estiver invisível não permitir mover o cursor.
     return;
 
@@ -260,102 +385,31 @@ void updateSelector(int ind)
 }
 
 // TODO: ver o que fazer quando ambos selecionam ao mesmo tempo
-// Verifica se o jogador selecionou um personagem e toca o áudio correspondente
+// Verifica se o jogador selecionou um personagem
 void playerSelected(int ind)
 {
-  if (GE[ind].sprite->visibility == HIDDEN) // se o seletor estiver invisível não permitir mover o cursor.
+  if (GE[ind].sprite->visibility == HIDDEN)
+    return;
+  if (player[ind].key_JOY_START_status == 0)
     return;
 
-  if (player[ind].key_JOY_START_status > 0)
-  {
-    switch (player[ind].id)
-    {
-    case JOHNNY_CAGE:
-      XGM2_playPCMEx(loc_jc, sizeof(loc_jc), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[JOHNNY_CAGE] + 4, OPTIONS_Y[JOHNNY_CAGE] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, JOHNNY_CAGE);
-      break;
-
-    case KANO:
-      XGM2_playPCMEx(loc_kano, sizeof(loc_kano), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[KANO] + 4, OPTIONS_Y[KANO] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, KANO);
-      break;
-
-    case SUBZERO:
-      XGM2_playPCMEx(loc_suzero, sizeof(loc_suzero), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[SUBZERO] + 4, OPTIONS_Y[SUBZERO] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, SUBZERO);
-      break;
-
-    case SONYA:
-      XGM2_playPCMEx(loc_sonya, sizeof(loc_sonya), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[SONYA] + 4, OPTIONS_Y[SONYA] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, SONYA);
-      break;
-
-    case RAIDEN:
-      XGM2_playPCMEx(loc_raiden, sizeof(loc_raiden), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[RAIDEN] + 4, OPTIONS_Y[RAIDEN] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, RAIDEN);
-      break;
-
-    case LIU_KANG:
-      XGM2_playPCMEx(loc_liu_kang, sizeof(loc_liu_kang), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[LIU_KANG] + 4, OPTIONS_Y[LIU_KANG] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, LIU_KANG);
-      break;
-
-    case SCORPION:
-      XGM2_playPCMEx(loc_scorpion, sizeof(loc_scorpion), SOUND_PCM_CH_AUTO, 0, FALSE, 0);
-
-      GE[ind + 2].sprite = SPR_addSprite(&spPortrait,
-                                         OPTIONS_X[SCORPION] + 4, OPTIONS_Y[SCORPION] + 4,
-                                         TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
-
-      SPR_setAnim(GE[ind + 2].sprite, SCORPION);
-      break;
-
-    default:
-      break;
-    }
-    SPR_setDepth(GE[ind + 2].sprite, 2);
-    GE[ind].sprite->visibility = HIDDEN;
-  }
+  const CharSelectData *d = &charData[player[ind].id];
+  XGM2_playPCMEx(d->locutor, d->size, SOUND_PCM_CH_AUTO, 0, FALSE, FALSE);
+  GE[ind + 2].sprite = SPR_addSprite(&spPortrait, d->x + 4, d->y + 4, TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+  SPR_setAnim(GE[ind + 2].sprite, player[ind].id);
+  SPR_setDepth(GE[ind + 2].sprite, 2);
+  GE[ind].sprite->visibility = HIDDEN;
+  player[ind].selecionado = TRUE;
 }
 
 /**
  * @brief move a tela para fora da parte visível a esquerda
  * para iniciar o efeito de Persiana.
  */
-void initScrollLine()
+void initScrollLine(s16 *scrollLine)
 {
   // Aloca dinamicamente memória
-  scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
+  // scrollLine = (s16 *)malloc(SCREEN_HEIGHT * sizeof(s16));
   if (!scrollLine) // Verifica se a alocação foi bem-sucedida
   {
     // Falha na alocação
@@ -375,7 +429,6 @@ void initScrollLine()
  */
 void drawBackground()
 {
-  gInd_tileset = 1;
   // BACKGROUND A
   VDP_loadTileSet(stage_char_select_a.tileset, gInd_tileset, DMA);
   VDP_setTileMapEx(BG_A, stage_char_select_a.tilemap,
@@ -400,7 +453,7 @@ void drawBackground()
 /**
  * @brief Revela a tela fazendo o efeito de persiana.
  */
-void revealBackground()
+void revealBackground(s16 *scrollLine)
 {
   struct VenetianBlindsEffect
   {
@@ -507,7 +560,7 @@ void revealBackground()
     SYS_doVBlankProcess();
   }
 
-  freeScrollLine();
+  freeScrollLine(scrollLine);
 }
 
 void initPlayer()
@@ -526,6 +579,7 @@ void initPlayer()
   player[0].direcao = 1;
   player[0].x = PLAYER_1_POS_X;
   player[0].y = PLAYER_1_POS_Y;
+  player[0].selecionado = FALSE;
 
   player[1].id = SUBZERO;
   player[1].state = PARADO;
@@ -533,6 +587,7 @@ void initPlayer()
   player[1].direcao = -1;
   player[1].x = PLAYER_2_POS_X;
   player[1].y = PLAYER_2_POS_Y;
+  player[1].selecionado = FALSE;
 
   playerState(0, PARADO);
   playerState(1, PARADO);
@@ -557,14 +612,17 @@ void initSelectorSprite()
   GE[0].sprite = SPR_addSprite(&player_seletor,
                                OPTIONS_X[KANO], OPTIONS_Y[KANO],
                                TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-  SPR_setAnim(GE[0].sprite, 0); // animação P1
+  SPR_setAnim(GE[0].sprite, CURSOR_P1); // animação P1
   SPR_setDepth(GE[0].sprite, SPR_MIN_DEPTH);
 
   GE[1].sprite = SPR_addSprite(&player_seletor,
                                OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO],
                                TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
-  SPR_setAnim(GE[1].sprite, 1); // animação P2
-  SPR_setDepth(GE[1].sprite, 1);
+  SPR_setAnim(GE[1].sprite, CURSOR_P2); // animação P2
+  SPR_setDepth(GE[1].sprite, 1);        // profundidade menor que o seletor do P1
+  // inicia a animação dos sprites
+  SPR_setAnimationLoop(GE[0].sprite, TRUE);
+  SPR_setAnimationLoop(GE[1].sprite, TRUE);
 }
 
 /**
@@ -576,11 +634,10 @@ void playCursor()
 
 void playMusic()
 {
-  XGM2_setFMVolume(50);
   XGM2_play(mus_select_player);
 }
 
-void freeScrollLine()
+void freeScrollLine(s16 *scrollLine)
 {
   if (scrollLine)
   {

@@ -9,11 +9,8 @@
 #include "sprites.h"
 #include "anima_system.h"
 
-#define DEBUG FALSE
-
 // -- DECLARACAO DE VARIAVEIS -- //
-u16 gDistancia; // Distancia entre os Players
-bool gPodeMover = TRUE;
+u16 gDistancia;          // Distancia entre os Players
 s16 gMeioDaTela = 0;     // MEio da Câmera em X
 s16 camPosX = 0;         // Posicao da Camera
 s16 camPosXanterior = 0; // Posicao da Camera no frame Anterior
@@ -30,7 +27,8 @@ int main(bool hardReset)
   VDP_setScreenHeight224();
   // VDP_setHilightShadow(TRUE);
 
-  gRoom = PALACE_GATES;
+  debugEnabled = FALSE;
+  gRoom = TELA_DEMO_INTRO;
   gFrames = 0;
   gInd_tileset = 0;
   player[0].id = JOHNNY_CAGE;
@@ -44,13 +42,12 @@ int main(bool hardReset)
 
   while (TRUE)
   {
-    gFrames++;
+    // gFrames++;
 
-    newInputSystem();
+    inputSystem();
 
     if (TELA_DEMO_INTRO == gRoom)
     {
-      // enquanto não pressionar start...
       processIntro();
     }
 
@@ -96,13 +93,13 @@ int main(bool hardReset)
     }
 
     // -- DEBUG -- //
-    if (DEBUG)
+    if (debugEnabled)
     {
       char str[64];
       sprintf(str, "tiles nos BGs: %d", gInd_tileset);
       VDP_drawText(str, 1, 1);
-      // sprintf(str, "contagem de frames: %ld", gFrames);
-      // VDP_drawText(str, 1, 2);
+      sprintf(str, "contagem de frames: %ld", gFrames);
+      VDP_drawText(str, 1, 2);
     }
 
     // -- FINALIZAÇÕES -- //

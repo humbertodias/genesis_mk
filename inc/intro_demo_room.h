@@ -1,3 +1,11 @@
+/**
+ *  \file intro_demo_room.h
+ *  \brief Controla as telas de apresentação, demonstração do jogo
+ *  \author Nil Obermüller Schaupp de Aguiar
+ *  \date 01/2025
+ *
+ * Mortal Kombat Plus - Game's presentation and demo screens.
+ */
 #ifndef INTRO_DEMO_ROOM_H
 #define INTRO_DEMO_ROOM_H
 

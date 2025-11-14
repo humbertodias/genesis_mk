@@ -1,7 +1,8 @@
 #SPRITE output_var_name "gfx/file.bmp" <sprite_width> <sprite_height> <compression> <time>
 SPRITE  player_seletor "sprite/player_seletor.png"         7 8 FAST 6
 SPRITE  spPressStart   "sprite/txt/press_start.png"       16 2 BEST 6
-SPRITE  spPortrait     "stages/char_portraits.png"    6 7 FAST 2 
+SPRITE  spPortrait     "stages/char_portraits.png"         6 7 FAST 2 
+SPRITE  spMainMenu     "gfx/menu_options.png"             16 9 FAST 2
 
 PALETTE sonya_p1_pal   "sprite/sonya_p1_paleta_mega.pal"
 PALETTE sonya_p2_pal   "sprite/sonya_p2_paleta_mega.pal"

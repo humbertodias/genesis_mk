@@ -5,6 +5,8 @@
 // Definições das variáveis globais
 // ===============================
 
+bool debugEnabled;
+bool gPodeMover = FALSE;
 u8 gRoom;
 u8 gAlturaDoPiso;
 u16 gInd_tileset;
@@ -13,7 +15,6 @@ u16 gBG_Height;
 s16 gScrollValue;
 u32 gFrames;
 bool gASG_system;
-u8 selectorBlinkTimer[2] = {0, 0};
 
 // Elementos gráficos globais como cursores, sparks, etc.
 GraphicElement GE[25];

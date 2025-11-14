@@ -26,6 +26,7 @@ enum GAME_ROOM
   TELA_TITULO,
   TELA_START,
   SELECAO_PERSONAGENS,
+  BONUS,
   PALACE_GATES
 };
 
@@ -67,6 +68,7 @@ typedef struct
   s8 direcao; // Direção para onde está olhando (1 - Direita, -1 - Esquerda)
   u16 state;  // Estado atual do jogador
   u8 hSpeed;  // Velocidade Horizontal
+  bool selecionado; //TODO:talvez mudar pra ativo pra ser usado futuramente no topo da torre
 
   u16 animFrame;      // frame de animação atual
   u16 animFrameTotal; // quantidade total de frames deste estado de animação
