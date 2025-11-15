@@ -17,16 +17,6 @@ void loadBioScreen(const BioData *data);
 void saida();
 void softClearPlane();
 
-// FIX: hardcoded o tamanho dos vetores da bio
-// static const BioData fighterBios[] = {
-//     {&jc_bio, &jc_name, loc_jc, sizeof(loc_jc), johnnyCageLines_EN, 9},
-//     {&kano_bio, &kano_name, loc_kano, sizeof(loc_kano), kanoLines_EN, 8},
-//     {&raiden_bio, &raiden_name, loc_raiden, sizeof(loc_raiden), raidenLines_EN, 6},
-//     {&liu_kang_bio, &liukang_name, loc_liu_kang, sizeof(loc_liu_kang), liuKangLines_EN, 6},
-//     {&subzero_bio, &subzero_name, loc_suzero, sizeof(loc_suzero), subzeroLines_EN, 6},
-//     {&scorpion_bio, &scorpion_name, loc_scorpion, sizeof(loc_scorpion), scorpionLines_EN, 7},
-//     {&sonya_bio, &sonya_name, loc_sonya, sizeof(loc_sonya), sonyaLines_EN, 7}};
-
 void saida()
 {
     SPR_clear();
