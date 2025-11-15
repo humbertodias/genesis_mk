@@ -27,10 +27,10 @@ jobs:
     - name: Verify
       run: emcc -v        
 
-    - name: Prepare Doxygen output
+    - name: Build Doxygen
       run: make doc
 
-    - name: Prepare WebAssembly output
+    - name: Build WebAssembly
       run: make wasm
 
     - name: Upload site artifact
