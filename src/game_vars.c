@@ -7,6 +7,7 @@
 
 bool debugEnabled;
 bool gPodeMover = FALSE;
+GameLanguage language = BR;
 u8 gRoom;
 u8 gAlturaDoPiso;
 u16 gInd_tileset;

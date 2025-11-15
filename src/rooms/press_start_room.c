@@ -5,11 +5,12 @@
 #include "stages.h"
 #include "sprites.h"
 #include "game_vars.h"
+#include "gfx.h"
 
 #define ACELERACAO 2
 // Variáveis Locais
 static s16 vecTilesScreen[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-// static s16 vecAceleracao[20] = {2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2};
+
 
 void clearVDP1()
 {
@@ -37,7 +38,7 @@ void processPressStart()
     u8 mainMenuOpt = 0;
     bool sair = FALSE;
     gPodeMover = TRUE;
-    // char stri[64];
+
     while (!sair)
     {
         inputSystem();
@@ -60,33 +61,76 @@ void processPressStart()
                              TILE_ATTR_FULL(PAL1, TRUE, FALSE, FALSE, gInd_tileset), 0, 0, 0, 0, 40, 64, CPU);
             PAL_setPalette(PAL1, char_select_b_pal.data, DMA);
             gInd_tileset += screen_opt_b.tileset->numTile;
-            
-            if(GE[0].sprite){
-                SPR_releaseSprite(GE[0].sprite);
-                GE[0].sprite = NULL;
-            }
-            GE[0].sprite = SPR_addSprite(&spMainMenu, 96, 80, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
-            PAL_setPalette(PAL0, spMainMenu.palette->data, DMA);
-            SPR_setAnim(GE[0].sprite, mainMenuOpt);
-        }
 
+            // if (GE[4].sprite)
+            // {
+            //     SPR_releaseSprite(GE[4].sprite);
+            //     GE[4].sprite = NULL;
+            // }
+            GE[4].sprite = SPR_addSprite(&spMainMenu, 96, 80, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+            PAL_setPalette(PAL0, spMainMenu.palette->data, DMA);
+            SPR_setFrame(GE[4].sprite, mainMenuOpt);
+
+            GE[5].sprite = SPR_addSprite(&spOpt,0 ,0, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
+            PAL_setPalette(PAL0, spOpt.palette->data, DMA);
+            SPR_setVisibility(GE[5].sprite, HIDDEN);
+        }
+        // --------------------------- MENU ------------------ FAZER UM MAIS ELABORADO ----------------------
+        // VAI PARA OPTIONS
         if ((player[0].key_JOY_DOWN_status == 1 || player[1].key_JOY_DOWN_status == 1) && mainMenuOpt == 0)
         {
             mainMenuOpt = 1;
-            SPR_setAnim(GE[0].sprite, mainMenuOpt);
+            SPR_setFrame(GE[4].sprite, mainMenuOpt);
         }
-
+        // VAI PARA START
         if ((player[0].key_JOY_UP_status == 1 || player[1].key_JOY_UP_status == 1) && mainMenuOpt == 1)
         {
             mainMenuOpt = 0;
-            SPR_setAnim(GE[0].sprite, mainMenuOpt);
+            // SPR_setAnim(GE[4].sprite, mainMenuOpt);
+            SPR_setFrame(GE[4].sprite, mainMenuOpt);
         }
-
-        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && 
+        // SE ESTIVER EM OPTIONS
+        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && mainMenuOpt == 1)
+        {   
+            mainMenuOpt = 2;
+            SPR_setFrame(GE[4].sprite, mainMenuOpt);
+            (language == EN) ? SPR_setPosition(GE[5].sprite, 104, 80) : SPR_setPosition(GE[5].sprite, 144, 80);
+            SPR_setVisibility(GE[5].sprite, VISIBLE);
+        }
+        // SE TIVER DENTRO DO MENU DE OPÇÕES
+        if(mainMenuOpt == 2)
+        {
+            if ((player[0].key_JOY_LEFT_status == 1 || player[1].key_JOY_LEFT_status == 1) || 
+                (player[0].key_JOY_RIGHT_status == 1 || player[1].key_JOY_RIGHT_status == 1))
+            {
+                if(language == EN){ 
+                    SPR_setPosition(GE[5].sprite, 144, 80); language = BR;
+                } else {
+                    SPR_setPosition(GE[5].sprite, 104, 80); language = EN;
+                }
+            }
+            if((player[0].key_JOY_B_status ==  1|| player[1].key_JOY_B_status == 1)){
+                mainMenuOpt = 0;
+                SPR_setFrame(GE[4].sprite, mainMenuOpt);
+                SPR_setVisibility(GE[5].sprite, HIDDEN);
+            }
+        }
+        // SE APERTAR START
+        if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) &&
             (gFrames > 30 && mainMenuOpt == 0))
         {
+            gRoom = SELECAO_PERSONAGENS;
             sair = TRUE;
         }
+        if(mainMenuOpt ==0) // enquanto não implementar timer de tela
+        {
+            if (player[0].key_JOY_B_status > 0)
+            {
+                gRoom = TELA_DEMO_INTRO;
+                sair = TRUE;
+            }
+        }
+        // -------------------------------------------------------------------------------------------------
 
         vecTilesScreen[0] -= ACELERACAO;
         vecTilesScreen[1] -= ACELERACAO;
@@ -112,19 +156,36 @@ void processPressStart()
         SYS_doVBlankProcess();
     }
 
-    SPR_clear();
+    // --- metodo novo ---- 
+    SPR_reset();
     PAL_fadeOut(0, 15, 5, FALSE);
     PAL_fadeOut(16, 30, 5, FALSE);
-    PAL_setColors(0, palette_black, 64, DMA);
-    gFrames = 0;
-    gRoom = SELECAO_PERSONAGENS;
-    //--
-    VDP_waitVSync();
-    SYS_disableInts();
+    VDP_clearPlane(BG_A, TRUE);
+    VDP_clearPlane(BG_B, TRUE);
+    VDP_setBackgroundColor(0);
     VDP_resetScreen();
-    // VDP_clearPlane(BG_A, TRUE);
-    // VDP_clearPlane(BG_B, TRUE);
-    // VDP_setBackgroundColor(0); // Define preto
+    VDP_setHorizontalScroll(BG_A, 0);
+    VDP_setHorizontalScroll(BG_B, 0);
+    VDP_setVerticalScroll(BG_A, 0);
+    VDP_setVerticalScroll(BG_B, 0);
+    gFrames = 0;
     gInd_tileset = TILE_USER_INDEX;
     SYS_enableInts();
+
+    // ---- metodo antigo --- 
+    // SPR_clear();
+    // PAL_fadeOut(0, 15, 5, FALSE);
+    // PAL_fadeOut(16, 30, 5, FALSE);
+    // PAL_setColors(0, palette_black, 64, DMA);
+    // gFrames = 0;
+    // // gRoom = SELECAO_PERSONAGENS;
+    // //--
+    // VDP_waitVSync();
+    // SYS_disableInts();
+    // VDP_resetScreen();
+    // // VDP_clearPlane(BG_A, TRUE);
+    // // VDP_clearPlane(BG_B, TRUE);
+    // // VDP_setBackgroundColor(0); // Define preto
+    // gInd_tileset = TILE_USER_INDEX;
+    // SYS_enableInts();
 }

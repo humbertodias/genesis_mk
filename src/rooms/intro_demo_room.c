@@ -4,8 +4,8 @@
 #include "input_system.h"
 #include "typewriter_printer.h"
 #include "sprites.h"
-#include "sound.h"
 #include "stages.h"
+#include "audio.h"
 #include "gfx.h"
 #include "bio_textlines.h"
 #include "game_vars.h"
@@ -18,14 +18,14 @@ void saida();
 void softClearPlane();
 
 // FIX: hardcoded o tamanho dos vetores da bio
-static const BioData fighterBios[] = {
-    {&jc_bio, &jc_name, loc_jc, sizeof(loc_jc), johnnyCageLines, 9},
-    {&kano_bio, &kano_name, loc_kano, sizeof(loc_kano), kanoLines, 8},
-    {&raiden_bio, &raiden_name, loc_raiden, sizeof(loc_raiden), raidenLines, 6},
-    {&liu_kang_bio, &liukang_name, loc_liu_kang, sizeof(loc_liu_kang), liuKangLines, 6},
-    {&subzero_bio, &subzero_name, loc_suzero, sizeof(loc_suzero), subzeroLines, 6},
-    {&scorpion_bio, &scorpion_name, loc_scorpion, sizeof(loc_scorpion), scorpionLines, 7},
-    {&sonya_bio, &sonya_name, loc_sonya, sizeof(loc_sonya), sonyaLines, 7}};
+// static const BioData fighterBios[] = {
+//     {&jc_bio, &jc_name, loc_jc, sizeof(loc_jc), johnnyCageLines_EN, 9},
+//     {&kano_bio, &kano_name, loc_kano, sizeof(loc_kano), kanoLines_EN, 8},
+//     {&raiden_bio, &raiden_name, loc_raiden, sizeof(loc_raiden), raidenLines_EN, 6},
+//     {&liu_kang_bio, &liukang_name, loc_liu_kang, sizeof(loc_liu_kang), liuKangLines_EN, 6},
+//     {&subzero_bio, &subzero_name, loc_suzero, sizeof(loc_suzero), subzeroLines_EN, 6},
+//     {&scorpion_bio, &scorpion_name, loc_scorpion, sizeof(loc_scorpion), scorpionLines_EN, 7},
+//     {&sonya_bio, &sonya_name, loc_sonya, sizeof(loc_sonya), sonyaLines_EN, 7}};
 
 void saida()
 {
@@ -74,31 +74,31 @@ void processIntro()
             switch (player[0].id) // preguiça de criar uma variável só pra isso
             {
             case JOHNNY_CAGE:
-                loadBioScreen(&fighterBios[player[0].id]);
+                loadBioScreen(getFighterBio(player[0].id));
                 player[0].id = KANO;
                 break;
             case KANO:
-                loadBioScreen(&fighterBios[player[0].id]);
+                loadBioScreen(getFighterBio(player[0].id));
                 player[0].id = RAIDEN;
                 break;
             case RAIDEN:
-                loadBioScreen(&fighterBios[player[0].id]);
+                loadBioScreen(getFighterBio(player[0].id));
                 player[0].id = LIU_KANG;
                 break;
             case LIU_KANG:
-                loadBioScreen(&fighterBios[player[0].id]);
+                loadBioScreen(getFighterBio(player[0].id));
                 player[0].id = SUBZERO;
                 break;
             case SUBZERO:
-                loadBioScreen(&fighterBios[player[0].id]);
+                loadBioScreen(getFighterBio(player[0].id));
                 player[0].id = SCORPION;
                 break;
             case SCORPION:
-                loadBioScreen(&fighterBios[player[0].id]);
+                loadBioScreen(getFighterBio(player[0].id));
                 player[0].id = SONYA;
                 break;
             case SONYA:
-                loadBioScreen(&fighterBios[player[0].id]);
+                loadBioScreen(getFighterBio(player[0].id));
                 player[0].id = JOHNNY_CAGE;
                 break;
             default:
@@ -230,9 +230,19 @@ void loadGoroLivesScreen()
 
     if (gFrames == 930)
     {
-        for (u16 i = 0; i < sizeof(goroLines[0]); i++)
+        const BioData *goroBio = getFighterBio(GORO);
+        u16 sizeLine = (language == EN) ? goroBio->num_lines_br : goroBio->num_lines_en;
+
+        for (u16 i = 0; i < sizeLine; i++)
         {
-            typewriterEffect(goroLines[i].text, goroLines[i].x, goroLines[i].y, 0, BG_B, PAL1);
+            if (language == EN)
+            {
+                typewriterEffect(goroBio->lines_EN[i].text, goroBio->lines_EN[i].x, goroBio->lines_EN[i].y, 0, BG_B, PAL1);
+            }
+            else
+            {
+                typewriterEffect(goroBio->lines_BR[i].text, goroBio->lines_BR[i].x, goroBio->lines_BR[i].y, 0, BG_B, PAL1);
+            }
         }
     }
 
@@ -272,6 +282,13 @@ void loadBioScreen(const BioData *data)
     VDP_setTextPalette(PAL3);
 
     XGM2_playPCM(data->voice, data->voice_size, SOUND_PCM_CH2);
-    typewriterWriteAllLines(data->lines, data->num_lines, BG_B, PAL3);
+
+    if(language == EN){
+
+        typewriterWriteAllLines(data->lines_EN, data->num_lines_en, BG_B, PAL3);
+    } else {
+        typewriterWriteAllLines(data->lines_BR, data->num_lines_br, BG_B, PAL3);
+    }
+
     XGM2_play(mus_the_beginning);
 }

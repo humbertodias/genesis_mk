@@ -4,6 +4,13 @@
 #include "types.h"
 #include "sprite_eng.h"
 
+// idiomas suportados
+typedef enum
+{
+  EN,
+  BR
+} GameLanguage;
+
 // Lista de Personagens
 enum Fighters
 {
