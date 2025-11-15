@@ -27,8 +27,11 @@ jobs:
     - name: Verify
       run: emcc -v        
 
+    - name: Prepare Doxygen output
+      run: make doc
+
     - name: Prepare WebAssembly output
-      run: make web
+      run: make wasm
 
     - name: Upload site artifact
       uses: actions/upload-pages-artifact@v4
