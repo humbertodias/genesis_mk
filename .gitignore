@@ -12,5 +12,11 @@ res/sprites.h
 res/stages.h
 .DS_Store
 *.zip
+
+# Ignore everything inside web/doc and web/wasm
 web/doc/*
 web/wasm/*
+
+# Except the .gitkeep files
+!web/doc/.gitkeep
+!web/wasm/.gitkeep
