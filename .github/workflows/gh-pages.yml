@@ -28,14 +28,14 @@ jobs:
       run: emcc -v        
 
     - name: Prepare WebAssembly output
-      run: make doxygen
+      run: make web
 
     - name: Upload site artifact
       uses: actions/upload-pages-artifact@v4
       with:
-        path: docs/html
+        path: web
 
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        folder: docs/html
+        folder: web
