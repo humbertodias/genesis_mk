@@ -9,9 +9,6 @@
 #ifndef INTRO_DEMO_ROOM_H
 #define INTRO_DEMO_ROOM_H
 
-#include <genesis.h>
-#include "estruturas.h"
-
 // typedef struct
 // {
 //     const SpriteDefinition *bio;

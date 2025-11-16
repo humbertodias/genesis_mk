@@ -35,3 +35,5 @@ make run
 - Scripts para o Aseprite [sgdk-aseprite-scripts](https://github.com/retrodevbr/sgdk-aseprite-scripts)
 
 - Images em [spriters-resource](https://www.spriters-resource.com/arcade/mortalkombat/)
+
+- Editor de Prioridades na imagem [PNG Palette and Priority Editor for SGDK](https://github.com/Rahzelk/pngpalprio4sgdk)

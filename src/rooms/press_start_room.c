@@ -10,31 +10,9 @@
 void loadBackground();
 void loadMenu(u8 mainMenuOpt);
 
-#define ACELERACAO 2
+#define ACELERACAO 2 // aceleração da rolagem de tela
 // Variáveis Locais
 static s16 vecTilesScreen[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-
-void clearVDP1()
-{
-    SYS_disableInts();
-    SPR_reset();
-    VDP_resetSprites();
-    VDP_releaseAllSprites();
-    SPR_defragVRAM();
-    VDP_clearPlane(BG_A, TRUE);
-    VDP_clearPlane(BG_B, TRUE);
-    // VDP_setTextPlane(BG_B);
-    // VDP_setHorizontalScroll(BG_B, 0);
-    // VDP_setVerticalScroll(BG_B, 0);
-    // VDP_setHorizontalScroll(BG_A, 0);
-    // VDP_setVerticalScroll(BG_A, 0);
-    VDP_setBackgroundColor(0);
-    VDP_resetScreen();
-    // PAL_setColors(0, palette_black, 64, DMA);
-    SYS_enableInts();
-    gInd_tileset = 0;
-}
 
 void processPressStart()
 {
@@ -78,25 +56,31 @@ void processPressStart()
         }
         // SE ESTIVER EM OPTIONS
         if ((player[0].key_JOY_START_status > 0 || player[1].key_JOY_START_status > 0) && mainMenuOpt == 1)
-        {   
+        {
             mainMenuOpt = 2;
             SPR_setFrame(GE[0].sprite, mainMenuOpt);
             (language == EN) ? SPR_setPosition(GE[1].sprite, 104, 80) : SPR_setPosition(GE[1].sprite, 144, 80);
             SPR_setVisibility(GE[1].sprite, VISIBLE);
         }
         // SE TIVER DENTRO DO MENU DE OPÇÕES
-        if(mainMenuOpt == 2)
+        if (mainMenuOpt == 2)
         {
-            if ((player[0].key_JOY_LEFT_status == 1 || player[1].key_JOY_LEFT_status == 1) || 
+            if ((player[0].key_JOY_LEFT_status == 1 || player[1].key_JOY_LEFT_status == 1) ||
                 (player[0].key_JOY_RIGHT_status == 1 || player[1].key_JOY_RIGHT_status == 1))
             {
-                if(language == EN){ 
-                    SPR_setPosition(GE[1].sprite, 144, 80); language = BR;
-                } else {
-                    SPR_setPosition(GE[1].sprite, 104, 80); language = EN;
+                if (language == EN)
+                {
+                    SPR_setPosition(GE[1].sprite, 144, 80);
+                    language = BR;
+                }
+                else
+                {
+                    SPR_setPosition(GE[1].sprite, 104, 80);
+                    language = EN;
                 }
             }
-            if((player[0].key_JOY_B_status ==  1|| player[1].key_JOY_B_status == 1)){
+            if ((player[0].key_JOY_B_status == 1 || player[1].key_JOY_B_status == 1))
+            {
                 mainMenuOpt = 0;
                 SPR_setFrame(GE[0].sprite, mainMenuOpt);
                 SPR_setVisibility(GE[1].sprite, HIDDEN);
@@ -118,7 +102,7 @@ void processPressStart()
         vecTilesScreen[18] -= ACELERACAO;
         vecTilesScreen[19] -= ACELERACAO;
 
-        if (vecTilesScreen[0] == -512) //evitar que estore contador
+        if (vecTilesScreen[0] == -512) // evitar que estore contador
         {
             vecTilesScreen[0] = 0;
             vecTilesScreen[1] = 0;
@@ -135,7 +119,7 @@ void processPressStart()
         SYS_doVBlankProcess();
     }
 
-    // --- metodo novo ---- 
+    // --- metodo novo ----
     SPR_reset();
     PAL_fadeOut(0, 15, 5, FALSE);
     PAL_fadeOut(16, 30, 5, FALSE);
@@ -151,7 +135,7 @@ void processPressStart()
     gInd_tileset = TILE_USER_INDEX;
     SYS_enableInts();
 
-    // ---- metodo antigo --- 
+    // ---- metodo antigo ---
     // SPR_clear();
     // PAL_fadeOut(0, 15, 5, FALSE);
     // PAL_fadeOut(16, 30, 5, FALSE);
@@ -169,6 +153,7 @@ void processPressStart()
     // SYS_enableInts();
 }
 
+// carrega os sprites do menu
 void loadMenu(u8 mainMenuOpt)
 {
     GE[0].sprite = SPR_addSprite(&spMainMenu, 96, 80, TILE_ATTR(PAL0, TRUE, FALSE, FALSE));
@@ -180,6 +165,7 @@ void loadMenu(u8 mainMenuOpt)
     SPR_setVisibility(GE[1].sprite, HIDDEN);
 }
 
+// carrega os planos 
 void loadBackground()
 {
     VDP_setPlaneSize(64, 64, TRUE);

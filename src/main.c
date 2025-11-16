@@ -28,7 +28,7 @@ int main(bool hardReset)
   // VDP_setHilightShadow(TRUE);
 
   debugEnabled = FALSE;
-  gRoom = TELA_DEMO_INTRO;
+  gRoom = BONUS_STAGE;
   gFrames = 0;
   gInd_tileset = 0;
   player[0].id = JOHNNY_CAGE;
@@ -42,8 +42,6 @@ int main(bool hardReset)
 
   while (TRUE)
   {
-    // gFrames++;
-
     inputSystem();
 
     if (TELA_DEMO_INTRO == gRoom)
@@ -59,6 +57,11 @@ int main(bool hardReset)
     if (SELECAO_PERSONAGENS == gRoom)
     {
       processSelecaoPersonagens();
+    }
+
+    if(BONUS_STAGE == gRoom)
+    {
+      processBonusStage();
     }
 
     if (PALACE_GATES == gRoom)
