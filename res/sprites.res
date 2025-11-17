@@ -35,4 +35,6 @@ SPRITE subzero_name    "sprite/txt/subzero_name.png"       8 2 BEST 0
 SPRITE scorpion_name   "sprite/txt/scorpion_name.png"      8 2 BEST 0
 SPRITE sonya_name      "sprite/txt/sonya_name.png"        11 2 BEST 0
 SPRITE liukang_name    "sprite/txt/liukang_name.png"       8 2 BEST 0
+# Bonus Stage 
+SPRITE spKanoBonus     "stages/bonus/kano_bonus.png"      17 17 BEST 4
   
