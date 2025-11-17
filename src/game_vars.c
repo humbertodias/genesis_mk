@@ -7,7 +7,6 @@
 
 bool debugEnabled;
 bool gPodeMover = FALSE;
-GameLanguage language = BR;
 u8 gRoom;
 u8 gAlturaDoPiso;
 u16 gInd_tileset;
@@ -16,8 +15,10 @@ u16 gBG_Height;
 s16 gScrollValue;
 u32 gFrames;
 bool gASG_system;
+s8 gClockL = 9;
+s8 gClockR = 9;
+s8 gClockTimer = 60;
 
-// Elementos gráficos globais como cursores, sparks, etc.
+GameLanguage language = BR;
 GraphicElement GE[25];
-
 Player player[2];
