@@ -16,23 +16,6 @@ typedef struct
     const u16 num_lines_br;       // quantidade de linhas do texto em BR
 } BioData;
 
-// extern const TextLine johnnyCageLines_EN[];
-// extern const TextLine johnnyCageLines_BR[];
-// extern const TextLine kanoLines_EN[];
-// extern const TextLine kanoLines_BR[];
-// extern const TextLine liuKangLines_EN[];
-// extern const TextLine liuKangLines_BR[];
-// extern const TextLine scorpionLines_EN[];
-// extern const TextLine scorpionLines_BR[];
-// extern const TextLine subzeroLines_EN[];
-// extern const TextLine subzeroLines_BR[];
-// extern const TextLine raidenLines_EN[];
-// extern const TextLine raidenLines_BR[];
-// extern const TextLine sonyaLines_EN[];
-// extern const TextLine sonyaLines_BR[];
-extern const TextLine goroLines_EN[];
-extern const TextLine goroLines_BR[];
-
 const BioData* getFighterBio(u16 fighterIndex);
 
 #endif
