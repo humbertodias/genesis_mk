@@ -4,6 +4,8 @@
 #include "gfx.h"
 #include "sprites.h"
 #include "game_vars.h"
+#include "typewriter_printer.h"
+#include "bio_textlines.h"
 
 #define BLOCO_P1_POS_X 16
 #define BLOCO_P2_POS_X 168
@@ -12,10 +14,14 @@
 #define BLOCO_ANIM_QUEBRADO 1
 #define POS_X_P1 24
 #define POS_X_P2 176
-#define POS_Y_P 24
+#define POS_Y_P 56//64 //56
 
 void processBonusStage()
 {
+    for (int i = 0; i < 16; i++)
+    {
+        GE[i].sprite = NULL;
+    }
     while (TRUE)
     {
 
@@ -37,30 +43,42 @@ void processBonusStage()
             PAL_setPalette(PAL1, tym_bgb.palette->data, DMA);
             gInd_tileset += tym_bgb.tileset->numTile;
 
-            // Add Sprite do bloco do P1
-            GE[0].sprite = SPR_addSprite(&spWood, BLOCO_P1_POS_X, BLOCO_POS_Y, TILE_ATTR(PAL1, TRUE, FALSE, FALSE));
-
-            // Add Sprite do bloco do P2
-            GE[1].sprite = SPR_addSprite(&spWood, BLOCO_P2_POS_X, BLOCO_POS_Y, TILE_ATTR(PAL1, TRUE, FALSE, FALSE));
-
-            // Teste da animação do Frame do Bloco destruído
-            SPR_setFrame(GE[1].sprite, BLOCO_ANIM_QUEBRADO);
-
             // Sprite do P1
-            GE[2].sprite = SPR_addSprite(&spKanoBonus, POS_X_P1, POS_Y_P, (TILE_ATTR(PAL2, FALSE, FALSE, FALSE)));
+            GE[0].sprite = SPR_addSpriteSafe(&spKanoBonus, POS_X_P1, POS_Y_P, (TILE_ATTR(PAL2, FALSE, FALSE, FALSE)));
             PAL_setPalette(PAL2, spKanoBonus.palette->data, DMA);
-            SPR_setAnim(GE[2].sprite, 0);
+            SPR_setAnim(GE[0].sprite, 0);
 
             // Sprite do P2
-            GE[3].sprite = SPR_addSprite(&spKanoBonus, POS_X_P2, POS_Y_P, (TILE_ATTR(PAL2, FALSE, FALSE, FALSE)));
+            GE[1].sprite = SPR_addSpriteSafe(&spKanoBonus, POS_X_P2, POS_Y_P, (TILE_ATTR(PAL2, FALSE, FALSE, FALSE)));
             PAL_setPalette(PAL3, spKanoBonus.palette->data, DMA);
-            SPR_setAnim(GE[3].sprite, 1);
+            SPR_setAnim(GE[1].sprite, 0);
+            // SPR_setFrame(GE[1].sprite, 1);
+            // SPR_setAnimationLoop(GE[1].sprite, FALSE);
+
+            // Add Sprite do bloco do P1
+            GE[2].sprite = SPR_addSpriteSafe(&spWood, BLOCO_P1_POS_X, BLOCO_POS_Y, TILE_ATTR(PAL1, TRUE, FALSE, FALSE));
+            SPR_setDepth(GE[2].sprite, SPR_MIN_DEPTH);
+
+            // Add Sprite do bloco do P2
+            GE[3].sprite = SPR_addSpriteSafe(&spWood, BLOCO_P2_POS_X, BLOCO_POS_Y, TILE_ATTR(PAL1, TRUE, FALSE, FALSE));
+            SPR_setDepth(GE[3].sprite, SPR_MIN_DEPTH);
+
+            // Teste da animação do Frame do Bloco destruído
+            SPR_setFrame(GE[3].sprite, BLOCO_ANIM_QUEBRADO);
+
+            GE[4].sprite = SPR_addSpriteSafe(&spMessage1, 56, 24, TILE_ATTR(PAL0, FALSE, FALSE, FALSE));
+            // PAL_setPalette(PAL1, spMessage1.palette->data, DMA);
+            SPR_setDepth(GE[4].sprite, SPR_MIN_DEPTH);
+            // SPR_setFrame(GE[4].sprite, 0);
         }
 
-        if (gFrames > 50)
+        if(gFrames == 60)
         {
-            SPR_setAnim(GE[3].sprite, 2);
-            SPR_setAnimationLoop(GE[3].sprite, FALSE);
+            if(GE[4].sprite)
+            {
+                SPR_releaseSprite(GE[4].sprite);
+                GE[4].sprite = NULL;
+            }
         }
 
         SPR_update();
