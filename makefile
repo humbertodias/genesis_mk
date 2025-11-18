@@ -5,11 +5,12 @@ DOCKER := $(shell which docker)
 DOCKER_IMAGE := registry.gitlab.com/doragasu/docker-sgdk:v$(SGDK_VERSION)
 UNAME_S := $(shell uname -s)
 RETROARCH ?= $(shell which retroarch 2>/dev/null)
-CORE := genesis_plus_gx
+CORE := blastem
 TAG_NAME := $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --short HEAD)
 
 ifeq ($(UNAME_S),Darwin)
     RETROARCH := /Applications/RetroArch.app/Contents/MacOS/RetroArch
+	CORE := genesis_plus_gx
 endif
 
 .PHONY: compile
