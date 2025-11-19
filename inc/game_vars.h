@@ -22,7 +22,11 @@ extern u16 gBG_Height;    // Altura do Cenario em pixels
 extern s16 gScrollValue;  // Scrolling de Cenario
 extern u32 gFrames;       // Frame Counter
 extern bool gASG_system;
+extern s8 gClockL;     // Digito esquerdo do Relogio
+extern s8 gClockR;     // Digito direito do Relogio
+extern s8 gClockTimer; // relógio atualizado a cada segundo
 
+extern GameLanguage language; // definição da linguagem do sistema
 extern GraphicElement GE[25]; // Vetor global de elementos gráficos (GE)
 extern Player player[2];      // Vetor global de jogadores (Player 1 e Player 2)
 

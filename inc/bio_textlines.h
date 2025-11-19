@@ -4,20 +4,18 @@
 #include <genesis.h>
 #include "estruturas.h"
 
-extern const TextLine johnnyCageLines[];
+typedef struct
+{
+    const SpriteDefinition *bio;  // sprites da apresentação da biografia do personagem
+    const SpriteDefinition *name; // sprite do nome do personagem
+    const u8 *voice;              // locutor dizendo o nome
+    const u16 voice_size;         // tamanho do audio do locutor
+    const TextLine *lines_EN;     // textos da biografia em inglês
+    const u16 num_lines_en;       // quantidade de linhas do texto em EN
+    const TextLine *lines_BR;     // textos da biografia em Português
+    const u16 num_lines_br;       // quantidade de linhas do texto em BR
+} BioData;
 
-extern const TextLine kanoLines[];
-
-extern const TextLine liuKangLines[];
-
-extern const TextLine scorpionLines[];
-
-extern const TextLine subzeroLines[];
-
-extern const TextLine raidenLines[];
-
-extern const TextLine sonyaLines[];
-
-extern const TextLine goroLines[];
+const BioData* getFighterBio(u16 fighterIndex);
 
 #endif

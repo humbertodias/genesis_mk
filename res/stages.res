@@ -18,6 +18,10 @@ PALETTE char_select_b_pal   "stages/b/char_select_b_pal.png" NONE
 IMAGE screen_opt_a "stages/scr_opt/screen_options_a.png" NONE
 IMAGE screen_opt_b "stages/scr_opt/screen_options_b.png" NONE
 
+# TELA DE BONUS
+IMAGE tym_bga   "stages/bonus/tym_bga.png" NONE 
+IMAGE tym_bgb   "stages/bonus/tym_bgb.png" NONE 
+
 # ESTAGIO 2 - PALACE GATES
 IMAGE  pg_bga  "stages/s2/palace_gates_bga_v2.png" NONE
 IMAGE  pg_bgb  "stages/s2/palace_gates_bgb_v3.png" NONE 

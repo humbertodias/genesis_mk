@@ -42,8 +42,6 @@ int main(bool hardReset)
 
   while (TRUE)
   {
-    // gFrames++;
-
     inputSystem();
 
     if (TELA_DEMO_INTRO == gRoom)
@@ -59,6 +57,11 @@ int main(bool hardReset)
     if (SELECAO_PERSONAGENS == gRoom)
     {
       processSelecaoPersonagens();
+    }
+
+    if(BONUS_STAGE == gRoom)
+    {
+      processBonusStage();
     }
 
     if (PALACE_GATES == gRoom)

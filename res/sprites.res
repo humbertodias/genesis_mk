@@ -2,7 +2,7 @@
 SPRITE  player_seletor "sprite/player_seletor.png"         7 8 FAST 6
 SPRITE  spPressStart   "sprite/txt/press_start.png"       16 2 BEST 6
 SPRITE  spPortrait     "stages/char_portraits.png"         6 7 FAST 2 
-SPRITE  spMainMenu     "gfx/menu_options.png"             16 9 FAST 2
+SPRITE  spMainMenu     "gfx/menu_options.png"             16 9 FAST 0
 
 PALETTE sonya_p1_pal   "sprite/sonya_p1_paleta_mega.pal"
 PALETTE sonya_p2_pal   "sprite/sonya_p2_paleta_mega.pal"
@@ -35,4 +35,6 @@ SPRITE subzero_name    "sprite/txt/subzero_name.png"       8 2 BEST 0
 SPRITE scorpion_name   "sprite/txt/scorpion_name.png"      8 2 BEST 0
 SPRITE sonya_name      "sprite/txt/sonya_name.png"        11 2 BEST 0
 SPRITE liukang_name    "sprite/txt/liukang_name.png"       8 2 BEST 0
+# Bonus Stage 
+SPRITE spKanoBonus     "stages/bonus/kano_bonus.png"      15 11 BEST 4
   

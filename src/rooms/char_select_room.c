@@ -4,7 +4,7 @@
 #include "input_system.h"
 #include "stages.h"
 #include "sprites.h"
-#include "sound.h"
+#include "audio.h"
 #include "game_vars.h"
 #include "fighters.h"
 #include "anima_system.h"
@@ -609,13 +609,13 @@ void initPlayer()
 void initSelectorSprite()
 {
   // indice 0 e 1 do GE serão usados para carregar o gráfico do seletor
-  GE[0].sprite = SPR_addSprite(&player_seletor,
+  GE[0].sprite = SPR_addSpriteSafe(&player_seletor,
                                OPTIONS_X[KANO], OPTIONS_Y[KANO],
                                TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
   SPR_setAnim(GE[0].sprite, CURSOR_P1); // animação P1
   SPR_setDepth(GE[0].sprite, SPR_MIN_DEPTH);
 
-  GE[1].sprite = SPR_addSprite(&player_seletor,
+  GE[1].sprite = SPR_addSpriteSafe(&player_seletor,
                                OPTIONS_X[SUBZERO], OPTIONS_Y[SUBZERO],
                                TILE_ATTR(PAL1, FALSE, FALSE, FALSE));
   SPR_setAnim(GE[1].sprite, CURSOR_P2); // animação P2
