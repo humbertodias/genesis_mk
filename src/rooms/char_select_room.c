@@ -4,7 +4,7 @@
 #include "input_system.h"
 #include "stages.h"
 #include "sprites.h"
-#include "sound.h"
+#include "audio.h"
 #include "game_vars.h"
 #include "fighters.h"
 #include "anima_system.h"
