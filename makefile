@@ -2,7 +2,7 @@ SGDK_VERSION := 2.11
 UID := $(shell id -u)
 GID := $(shell id -g)
 DOCKER := $(shell which docker)
-DOCKER_IMAGE := registry.gitlab.com/doragasu/docker-sgdk:v$(SGDK_VERSION)
+DOCKER_IMAGE := hldtux/docker-sgdk:v$(SGDK_VERSION)
 UNAME_S := $(shell uname -s)
 RETROARCH ?= $(shell which retroarch 2>/dev/null)
 CORE := blastem
@@ -15,7 +15,7 @@ endif
 
 .PHONY: compile
 compile:
-	docker run --rm --user ${UID}:${GID} -v "${PWD}":/workdir -w /workdir ${DOCKER_IMAGE}
+	docker run --rm --user ${UID}:${GID} -v "${PWD}":/workdir -w /workdir ${DOCKER_IMAGE} debug
 
 shell:
 	docker run -it --rm -v "${PWD}":/workdir -w /workdir --entrypoint=/bin/bash ${DOCKER_IMAGE}

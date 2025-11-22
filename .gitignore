@@ -1,7 +1,6 @@
 out/
 src/boot/
 .idea
-.vscode
 .idea/editor.xml
 .idea/genesis_tutorial_ataque.iml
 .idea/modules.xml
