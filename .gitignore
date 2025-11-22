@@ -7,6 +7,7 @@ src/boot/
 src/main.h
 res/gfx.h
 res/sound.h
+res/audio.h
 res/sprites.h
 res/stages.h
 .DS_Store
