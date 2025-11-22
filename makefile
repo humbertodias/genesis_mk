@@ -13,9 +13,12 @@ ifeq ($(UNAME_S),Darwin)
 	CORE := genesis_plus_gx
 endif
 
-.PHONY: compile
-compile:
+.PHONY: compile/debug compile/release
+compile/debug:
 	docker run --rm --user ${UID}:${GID} -v "${PWD}":/workdir -w /workdir ${DOCKER_IMAGE} debug
+
+compile/release:
+	docker run --rm --user ${UID}:${GID} -v "${PWD}":/workdir -w /workdir ${DOCKER_IMAGE}
 
 shell:
 	docker run -it --rm -v "${PWD}":/workdir -w /workdir --entrypoint=/bin/bash ${DOCKER_IMAGE}
