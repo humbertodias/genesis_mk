@@ -23,7 +23,7 @@ jobs:
         run: sudo apt update -y && sudo apt install -y make
 
       - name: Compile
-        run: make compile
+        run: make compile/release
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v5

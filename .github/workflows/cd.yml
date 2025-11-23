@@ -25,7 +25,7 @@ jobs:
         run: sudo apt update -y && sudo apt install -y zip make
 
       - name: Compile
-        run: make compile
+        run: make compile/release
 
       - name: Package
         run: make zip

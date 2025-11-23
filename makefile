@@ -2,7 +2,7 @@ SGDK_VERSION := 2.11
 UID := $(shell id -u)
 GID := $(shell id -g)
 DOCKER := $(shell which docker)
-DOCKER_IMAGE := registry.gitlab.com/doragasu/docker-sgdk:v$(SGDK_VERSION)
+DOCKER_IMAGE := hldtux/docker-sgdk:v$(SGDK_VERSION)
 UNAME_S := $(shell uname -s)
 RETROARCH ?= $(shell which retroarch 2>/dev/null)
 CORE := blastem
@@ -13,8 +13,11 @@ ifeq ($(UNAME_S),Darwin)
 	CORE := genesis_plus_gx
 endif
 
-.PHONY: compile
-compile:
+.PHONY: compile/debug compile/release
+compile/debug:
+	docker run --rm --user ${UID}:${GID} -v "${PWD}":/workdir -w /workdir ${DOCKER_IMAGE} debug
+
+compile/release:
 	docker run --rm --user ${UID}:${GID} -v "${PWD}":/workdir -w /workdir ${DOCKER_IMAGE}
 
 shell:
