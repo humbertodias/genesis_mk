@@ -38,7 +38,7 @@ zip:
 doc:
 	$(DOCKER) run --rm -u $(UID):$(GID) -v "${PWD}":/workdir -w /workdir nakatt/doxygen
 
-wasm:	compile
+wasm:	compile/release
 	$(DOCKER) build . -f dockerfile-wasm --build-arg CORE_NAME=blastem --build-arg GAME_ROM=out/rom.bin -t wasm
 	$(DOCKER) run -i -u $(UID):$(GID) -v $(PWD):/outside wasm sh -c 'cp -r /workdir/lotr/example/* /outside/web/wasm'
 
